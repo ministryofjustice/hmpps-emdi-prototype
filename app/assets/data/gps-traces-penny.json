@@ -1,0 +1,1801 @@
+{
+  "home-h1": {
+    "meta": {
+      "description": "H1 – Rainsborowe Rd stroll and back",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.876802,
+        "lng": 0.882903,
+        "label": "1",
+        "accuracy": 18,
+        "time": "21:33"
+      },
+      {
+        "lat": 51.876464,
+        "lng": 0.883632,
+        "label": "2",
+        "accuracy": 17,
+        "time": "21:37"
+      },
+      {
+        "lat": 51.875948,
+        "lng": 0.883053,
+        "label": "3",
+        "accuracy": 18,
+        "time": "21:41"
+      },
+      {
+        "lat": 51.87563,
+        "lng": 0.882645,
+        "label": "4",
+        "accuracy": 35,
+        "time": "21:45"
+      },
+      {
+        "lat": 51.876193,
+        "lng": 0.881111,
+        "label": "5",
+        "accuracy": 12,
+        "time": "21:49"
+      },
+      {
+        "lat": 51.875862,
+        "lng": 0.880542,
+        "label": "6",
+        "accuracy": 16,
+        "time": "21:53"
+      },
+      {
+        "lat": 51.875709,
+        "lng": 0.880328,
+        "label": "7",
+        "accuracy": 33,
+        "time": "21:57"
+      },
+      {
+        "lat": 51.875729,
+        "lng": 0.879759,
+        "label": "8",
+        "accuracy": 19,
+        "time": "22:01"
+      },
+      {
+        "lat": 51.875425,
+        "lng": 0.879888,
+        "label": "9",
+        "accuracy": 21,
+        "time": "22:05"
+      },
+      {
+        "lat": 51.874855,
+        "lng": 0.879877,
+        "label": "10",
+        "accuracy": 16,
+        "time": "22:10"
+      },
+      {
+        "lat": 51.874577,
+        "lng": 0.880049,
+        "label": "11",
+        "accuracy": 26,
+        "time": "22:14"
+      },
+      {
+        "lat": 51.874173,
+        "lng": 0.880596,
+        "label": "12",
+        "accuracy": 11,
+        "time": "22:18"
+      },
+      {
+        "lat": 51.873981,
+        "lng": 0.881079,
+        "label": "13",
+        "accuracy": 35,
+        "time": "22:22"
+      },
+      {
+        "lat": 51.873755,
+        "lng": 0.881036,
+        "label": "14",
+        "accuracy": 17,
+        "time": "22:26"
+      },
+      {
+        "lat": 51.873742,
+        "lng": 0.881132,
+        "label": "15",
+        "accuracy": 17,
+        "time": "22:30"
+      },
+      {
+        "lat": 51.873676,
+        "lng": 0.881272,
+        "label": "16",
+        "accuracy": 27,
+        "time": "22:34"
+      },
+      {
+        "lat": 51.873676,
+        "lng": 0.881132,
+        "label": "17",
+        "accuracy": 36,
+        "time": "22:38"
+      },
+      {
+        "lat": 51.873762,
+        "lng": 0.881218,
+        "label": "18",
+        "accuracy": 15,
+        "time": "22:42"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Thursday 24 July 2025, 9:33pm to 10:42pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h2": {
+    "meta": {
+      "description": "H2 – Down Rainsborowe, west towards Layer Rd, loop back",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.872381,
+        "lng": 0.878662,
+        "label": "1",
+        "accuracy": 19,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.872348,
+        "lng": 0.878812,
+        "label": "2",
+        "accuracy": 15,
+        "time": "00:34"
+      },
+      {
+        "lat": 51.872338,
+        "lng": 0.8787,
+        "label": "3",
+        "accuracy": 19,
+        "time": "01:08"
+      },
+      {
+        "lat": 51.872255,
+        "lng": 0.878694,
+        "label": "4",
+        "accuracy": 27,
+        "time": "01:43"
+      },
+      {
+        "lat": 51.872242,
+        "lng": 0.879065,
+        "label": "5",
+        "accuracy": 33,
+        "time": "02:17"
+      },
+      {
+        "lat": 51.872156,
+        "lng": 0.879209,
+        "label": "6",
+        "accuracy": 17,
+        "time": "02:51"
+      },
+      {
+        "lat": 51.872321,
+        "lng": 0.879644,
+        "label": "7",
+        "accuracy": 25,
+        "time": "03:25"
+      },
+      {
+        "lat": 51.873424,
+        "lng": 0.880609,
+        "label": "8",
+        "accuracy": 27,
+        "time": "03:59"
+      },
+      {
+        "lat": 51.873987,
+        "lng": 0.881028,
+        "label": "9",
+        "accuracy": 13,
+        "time": "04:34"
+      },
+      {
+        "lat": 51.874282,
+        "lng": 0.880282,
+        "label": "10",
+        "accuracy": 19,
+        "time": "05:08"
+      },
+      {
+        "lat": 51.874875,
+        "lng": 0.879864,
+        "label": "11",
+        "accuracy": 29,
+        "time": "05:42"
+      },
+      {
+        "lat": 51.875405,
+        "lng": 0.879928,
+        "label": "12",
+        "accuracy": 19,
+        "time": "06:16"
+      },
+      {
+        "lat": 51.875653,
+        "lng": 0.879907,
+        "label": "13",
+        "accuracy": 20,
+        "time": "06:50"
+      },
+      {
+        "lat": 51.875663,
+        "lng": 0.879649,
+        "label": "14",
+        "accuracy": 33,
+        "time": "07:25"
+      },
+      {
+        "lat": 51.87559,
+        "lng": 0.879563,
+        "label": "15",
+        "accuracy": 11,
+        "time": "07:59"
+      },
+      {
+        "lat": 51.87558,
+        "lng": 0.879617,
+        "label": "16",
+        "accuracy": 18,
+        "time": "08:33"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Thursday 24 July 2025, 00:00am to 8:33am",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h3": {
+    "meta": {
+      "description": "H3 – Visit 1 Dereham Close, back via side streets",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.875625,
+        "lng": 0.880174,
+        "label": "1",
+        "accuracy": 14,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.875564,
+        "lng": 0.879943,
+        "label": "2",
+        "accuracy": 17,
+        "time": "02:24"
+      },
+      {
+        "lat": 51.87567,
+        "lng": 0.879903,
+        "label": "3",
+        "accuracy": 29,
+        "time": "04:48"
+      },
+      {
+        "lat": 51.875632,
+        "lng": 0.879814,
+        "label": "4",
+        "accuracy": 12,
+        "time": "07:12"
+      },
+      {
+        "lat": 51.875643,
+        "lng": 0.87961,
+        "label": "5",
+        "accuracy": 19,
+        "time": "09:36"
+      },
+      {
+        "lat": 51.875685,
+        "lng": 0.879618,
+        "label": "6",
+        "accuracy": 20,
+        "time": "12:00"
+      },
+      {
+        "lat": 51.875696,
+        "lng": 0.879669,
+        "label": "7",
+        "accuracy": 25,
+        "time": "14:23"
+      },
+      {
+        "lat": 51.875651,
+        "lng": 0.879688,
+        "label": "8",
+        "accuracy": 20,
+        "time": "16:47"
+      },
+      {
+        "lat": 51.87562,
+        "lng": 0.879795,
+        "label": "9",
+        "accuracy": 14,
+        "time": "19:11"
+      },
+      {
+        "lat": 51.87569,
+        "lng": 0.879683,
+        "label": "10",
+        "accuracy": 13,
+        "time": "21:35"
+      },
+      {
+        "lat": 51.875716,
+        "lng": 0.879688,
+        "label": "11",
+        "accuracy": 13,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Wednesday 23 July 2025, 00:00am to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h4": {
+    "meta": {
+      "description": "H4 – To the skate park, a few laps, then back",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.875625,
+        "lng": 0.880174,
+        "label": "1",
+        "accuracy": 32,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.875564,
+        "lng": 0.879943,
+        "label": "2",
+        "accuracy": 11,
+        "time": "02:24"
+      },
+      {
+        "lat": 51.87567,
+        "lng": 0.879903,
+        "label": "3",
+        "accuracy": 31,
+        "time": "04:48"
+      },
+      {
+        "lat": 51.875632,
+        "lng": 0.879814,
+        "label": "4",
+        "accuracy": 11,
+        "time": "07:12"
+      },
+      {
+        "lat": 51.875643,
+        "lng": 0.87961,
+        "label": "5",
+        "accuracy": 26,
+        "time": "09:36"
+      },
+      {
+        "lat": 51.875685,
+        "lng": 0.879618,
+        "label": "6",
+        "accuracy": 19,
+        "time": "12:00"
+      },
+      {
+        "lat": 51.875696,
+        "lng": 0.879669,
+        "label": "7",
+        "accuracy": 12,
+        "time": "14:23"
+      },
+      {
+        "lat": 51.875651,
+        "lng": 0.879688,
+        "label": "8",
+        "accuracy": 16,
+        "time": "16:47"
+      },
+      {
+        "lat": 51.87562,
+        "lng": 0.879795,
+        "label": "9",
+        "accuracy": 21,
+        "time": "19:11"
+      },
+      {
+        "lat": 51.87569,
+        "lng": 0.879683,
+        "label": "10",
+        "accuracy": 20,
+        "time": "21:35"
+      },
+      {
+        "lat": 51.875716,
+        "lng": 0.879688,
+        "label": "11",
+        "accuracy": 33,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Tuesday 22 July 2025, 00:00am to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h5": {
+    "meta": {
+      "description": "Home trace H5 – north loop then back via west",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.875627,
+        "lng": 0.879873,
+        "label": "1",
+        "accuracy": 14,
+        "time": "23:38"
+      },
+      {
+        "lat": 51.875557,
+        "lng": 0.880131,
+        "label": "2",
+        "accuracy": 23,
+        "time": "23:40"
+      },
+      {
+        "lat": 51.875832,
+        "lng": 0.880474,
+        "label": "3",
+        "accuracy": 20,
+        "time": "23:41"
+      },
+      {
+        "lat": 51.876186,
+        "lng": 0.881083,
+        "label": "4",
+        "accuracy": 36,
+        "time": "23:43"
+      },
+      {
+        "lat": 51.876171,
+        "lng": 0.881472,
+        "label": "5",
+        "accuracy": 18,
+        "time": "23:44"
+      },
+      {
+        "lat": 51.87562,
+        "lng": 0.882663,
+        "label": "6",
+        "accuracy": 17,
+        "time": "23:46"
+      },
+      {
+        "lat": 51.876082,
+        "lng": 0.883145,
+        "label": "7",
+        "accuracy": 33,
+        "time": "23:47"
+      },
+      {
+        "lat": 51.876138,
+        "lng": 0.882987,
+        "label": "8",
+        "accuracy": 11,
+        "time": "23:49"
+      },
+      {
+        "lat": 51.876123,
+        "lng": 0.882963,
+        "label": "9",
+        "accuracy": 13,
+        "time": "23:50"
+      },
+      {
+        "lat": 51.875976,
+        "lng": 0.883076,
+        "label": "10",
+        "accuracy": 23,
+        "time": "23:52"
+      },
+      {
+        "lat": 51.875625,
+        "lng": 0.882724,
+        "label": "11",
+        "accuracy": 18,
+        "time": "23:53"
+      },
+      {
+        "lat": 51.876158,
+        "lng": 0.881389,
+        "label": "12",
+        "accuracy": 29,
+        "time": "23:55"
+      },
+      {
+        "lat": 51.875868,
+        "lng": 0.880487,
+        "label": "13",
+        "accuracy": 24,
+        "time": "23:56"
+      },
+      {
+        "lat": 51.875569,
+        "lng": 0.880139,
+        "label": "14",
+        "accuracy": 13,
+        "time": "23:58"
+      },
+      {
+        "lat": 51.875643,
+        "lng": 0.879849,
+        "label": "15",
+        "accuracy": 13,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Monday 21 July 2025, 11:38pm to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h6": {
+    "meta": {
+      "description": "Home trace H6 – west, south, small square",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.875593,
+        "lng": 0.879798,
+        "label": "1",
+        "accuracy": 20,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.875625,
+        "lng": 0.879836,
+        "label": "2",
+        "accuracy": 12,
+        "time": "01:09"
+      },
+      {
+        "lat": 51.875661,
+        "lng": 0.879736,
+        "label": "3",
+        "accuracy": 12,
+        "time": "02:18"
+      },
+      {
+        "lat": 51.875641,
+        "lng": 0.879718,
+        "label": "4",
+        "accuracy": 17,
+        "time": "03:27"
+      },
+      {
+        "lat": 51.87569,
+        "lng": 0.879672,
+        "label": "5",
+        "accuracy": 16,
+        "time": "04:37"
+      },
+      {
+        "lat": 51.875716,
+        "lng": 0.879731,
+        "label": "6",
+        "accuracy": 18,
+        "time": "05:46"
+      },
+      {
+        "lat": 51.875646,
+        "lng": 0.879761,
+        "label": "7",
+        "accuracy": 25,
+        "time": "06:55"
+      },
+      {
+        "lat": 51.875615,
+        "lng": 0.879763,
+        "label": "8",
+        "accuracy": 21,
+        "time": "08:04"
+      },
+      {
+        "lat": 51.875637,
+        "lng": 0.879801,
+        "label": "9",
+        "accuracy": 21,
+        "time": "09:13"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Monday 21 July 2025, 00:00am to 9:13am",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h7": {
+    "meta": {
+      "description": "Home trace H7 – eastward then diagonal back",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.87569,
+        "lng": 0.87974,
+        "label": "1",
+        "accuracy": 15,
+        "time": "21:45"
+      },
+      {
+        "lat": 51.87576,
+        "lng": 0.87992,
+        "label": "2",
+        "accuracy": 17,
+        "time": "22:00"
+      },
+      {
+        "lat": 51.87583,
+        "lng": 0.88012,
+        "label": "3",
+        "accuracy": 33,
+        "time": "22:15"
+      },
+      {
+        "lat": 51.8758,
+        "lng": 0.88028,
+        "label": "4",
+        "accuracy": 13,
+        "time": "22:30"
+      },
+      {
+        "lat": 51.87568,
+        "lng": 0.88033,
+        "label": "5",
+        "accuracy": 12,
+        "time": "22:45"
+      },
+      {
+        "lat": 51.87556,
+        "lng": 0.88024,
+        "label": "6",
+        "accuracy": 16,
+        "time": "22:59"
+      },
+      {
+        "lat": 51.87547,
+        "lng": 0.88007,
+        "label": "7",
+        "accuracy": 20,
+        "time": "23:14"
+      },
+      {
+        "lat": 51.87546,
+        "lng": 0.87989,
+        "label": "8",
+        "accuracy": 14,
+        "time": "23:29"
+      },
+      {
+        "lat": 51.87554,
+        "lng": 0.87976,
+        "label": "9",
+        "accuracy": 12,
+        "time": "23:44"
+      },
+      {
+        "lat": 51.87564,
+        "lng": 0.8797,
+        "label": "10",
+        "accuracy": 33,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Sunday 20 July 2025, 9:45pm to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h8": {
+    "meta": {
+      "description": "Home trace H8 – short northern dog-leg",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.87567,
+        "lng": 0.87971,
+        "label": "1",
+        "accuracy": 16,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.87582,
+        "lng": 0.87966,
+        "label": "2",
+        "accuracy": 17,
+        "time": "01:00"
+      },
+      {
+        "lat": 51.87596,
+        "lng": 0.87961,
+        "label": "3",
+        "accuracy": 33,
+        "time": "02:01"
+      },
+      {
+        "lat": 51.87604,
+        "lng": 0.87972,
+        "label": "4",
+        "accuracy": 27,
+        "time": "03:01"
+      },
+      {
+        "lat": 51.87602,
+        "lng": 0.8799,
+        "label": "5",
+        "accuracy": 19,
+        "time": "04:01"
+      },
+      {
+        "lat": 51.87594,
+        "lng": 0.88002,
+        "label": "6",
+        "accuracy": 18,
+        "time": "05:02"
+      },
+      {
+        "lat": 51.87582,
+        "lng": 0.88004,
+        "label": "7",
+        "accuracy": 14,
+        "time": "06:02"
+      },
+      {
+        "lat": 51.87572,
+        "lng": 0.87993,
+        "label": "8",
+        "accuracy": 15,
+        "time": "07:02"
+      },
+      {
+        "lat": 51.87568,
+        "lng": 0.87982,
+        "label": "9",
+        "accuracy": 11,
+        "time": "08:03"
+      },
+      {
+        "lat": 51.87566,
+        "lng": 0.87974,
+        "label": "10",
+        "accuracy": 14,
+        "time": "09:03"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Sunday 20 July 2025, 00:00am to 9:03am",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h9": {
+    "meta": {
+      "description": "Home trace H9 – west then north, return mid-block",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.87566,
+        "lng": 0.87972,
+        "label": "1",
+        "accuracy": 17,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.87553,
+        "lng": 0.87964,
+        "label": "2",
+        "accuracy": 12,
+        "time": "02:40"
+      },
+      {
+        "lat": 51.87541,
+        "lng": 0.87952,
+        "label": "3",
+        "accuracy": 14,
+        "time": "05:20"
+      },
+      {
+        "lat": 51.87539,
+        "lng": 0.87936,
+        "label": "4",
+        "accuracy": 26,
+        "time": "08:00"
+      },
+      {
+        "lat": 51.87552,
+        "lng": 0.87934,
+        "label": "5",
+        "accuracy": 13,
+        "time": "10:40"
+      },
+      {
+        "lat": 51.87566,
+        "lng": 0.87942,
+        "label": "6",
+        "accuracy": 25,
+        "time": "13:19"
+      },
+      {
+        "lat": 51.87577,
+        "lng": 0.87954,
+        "label": "7",
+        "accuracy": 33,
+        "time": "15:59"
+      },
+      {
+        "lat": 51.87582,
+        "lng": 0.87969,
+        "label": "8",
+        "accuracy": 16,
+        "time": "18:39"
+      },
+      {
+        "lat": 51.87577,
+        "lng": 0.87979,
+        "label": "9",
+        "accuracy": 19,
+        "time": "21:19"
+      },
+      {
+        "lat": 51.87569,
+        "lng": 0.87982,
+        "label": "10",
+        "accuracy": 17,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Saturday 19 July 2025, 00:00am to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h10": {
+    "meta": {
+      "description": "Home trace H10 – small east loop then south",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.87569,
+        "lng": 0.87973,
+        "label": "1",
+        "accuracy": 19,
+        "time": "19:04"
+      },
+      {
+        "lat": 51.87576,
+        "lng": 0.8799,
+        "label": "2",
+        "accuracy": 18,
+        "time": "19:37"
+      },
+      {
+        "lat": 51.87582,
+        "lng": 0.88007,
+        "label": "3",
+        "accuracy": 17,
+        "time": "20:10"
+      },
+      {
+        "lat": 51.87576,
+        "lng": 0.88021,
+        "label": "4",
+        "accuracy": 12,
+        "time": "20:42"
+      },
+      {
+        "lat": 51.87563,
+        "lng": 0.88025,
+        "label": "5",
+        "accuracy": 15,
+        "time": "21:15"
+      },
+      {
+        "lat": 51.87549,
+        "lng": 0.88017,
+        "label": "6",
+        "accuracy": 36,
+        "time": "21:48"
+      },
+      {
+        "lat": 51.87543,
+        "lng": 0.87999,
+        "label": "7",
+        "accuracy": 29,
+        "time": "22:21"
+      },
+      {
+        "lat": 51.87547,
+        "lng": 0.87982,
+        "label": "8",
+        "accuracy": 18,
+        "time": "22:53"
+      },
+      {
+        "lat": 51.87558,
+        "lng": 0.87974,
+        "label": "9",
+        "accuracy": 24,
+        "time": "23:26"
+      },
+      {
+        "lat": 51.87567,
+        "lng": 0.87971,
+        "label": "10",
+        "accuracy": 29,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Thursday 10 July 2025, 7:04pm to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home-h11": {
+    "meta": {
+      "description": "Home trace H11 – quick west jog then north return",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.87566,
+        "lng": 0.87972,
+        "label": "1",
+        "accuracy": 18,
+        "time": "00:00"
+      },
+      {
+        "lat": 51.87556,
+        "lng": 0.87962,
+        "label": "2",
+        "accuracy": 16,
+        "time": "01:15"
+      },
+      {
+        "lat": 51.87547,
+        "lng": 0.87952,
+        "label": "3",
+        "accuracy": 17,
+        "time": "02:30"
+      },
+      {
+        "lat": 51.87552,
+        "lng": 0.87941,
+        "label": "4",
+        "accuracy": 18,
+        "time": "03:44"
+      },
+      {
+        "lat": 51.87565,
+        "lng": 0.87942,
+        "label": "5",
+        "accuracy": 12,
+        "time": "04:59"
+      },
+      {
+        "lat": 51.87576,
+        "lng": 0.87952,
+        "label": "6",
+        "accuracy": 15,
+        "time": "06:14"
+      },
+      {
+        "lat": 51.87583,
+        "lng": 0.87965,
+        "label": "7",
+        "accuracy": 24,
+        "time": "07:29"
+      },
+      {
+        "lat": 51.87582,
+        "lng": 0.87978,
+        "label": "8",
+        "accuracy": 31,
+        "time": "08:43"
+      },
+      {
+        "lat": 51.87574,
+        "lng": 0.87983,
+        "label": "9",
+        "accuracy": 12,
+        "time": "09:58"
+      },
+      {
+        "lat": 51.87568,
+        "lng": 0.87978,
+        "label": "10",
+        "accuracy": 31,
+        "time": "11:13"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "timeanddate": "Thursday 10 July 2025, 00:00am to 11:13am",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "home": {
+    "meta": {
+      "description": "GPS trace around 46-6 Rainsborowe Rd, Colchester",
+      "point_count": 9
+    },
+    "points": [
+      {
+        "lat": 51.872118,
+        "lng": 0.879819,
+        "label": "1",
+        "accuracy": 17,
+        "time": "22:57"
+      },
+      {
+        "lat": 51.873132,
+        "lng": 0.880274,
+        "label": "2",
+        "accuracy": 18,
+        "time": "23:05"
+      },
+      {
+        "lat": 51.87398,
+        "lng": 0.880961,
+        "label": "3",
+        "accuracy": 18,
+        "time": "23:13"
+      },
+      {
+        "lat": 51.8748,
+        "lng": 0.8804,
+        "label": "4",
+        "accuracy": 23,
+        "time": "23:20"
+      },
+      {
+        "lat": 51.87558,
+        "lng": 0.879982,
+        "label": "5",
+        "accuracy": 11,
+        "time": "23:28"
+      },
+      {
+        "lat": 51.875832,
+        "lng": 0.880384,
+        "label": "6",
+        "accuracy": 25,
+        "time": "23:36"
+      },
+      {
+        "lat": 51.876206,
+        "lng": 0.881221,
+        "label": "7",
+        "accuracy": 24,
+        "time": "23:44"
+      },
+      {
+        "lat": 51.8754,
+        "lng": 0.8831,
+        "label": "8",
+        "accuracy": 12,
+        "time": "23:51"
+      },
+      {
+        "lat": 51.875593,
+        "lng": 0.882677,
+        "label": "9",
+        "accuracy": 17,
+        "time": "23:59"
+      }
+    ],
+    "areas": [
+      {
+        "label": "46-6 Rainsborowe Rd, Colchester",
+        "type": "Home",
+        "summary": "Primary residence (approved address).",
+        "timeanddate": "Thursday 24 July 2025, 10:57pm to 11:59pm",
+        "coordinates": [
+          {
+            "lat": 51.8756573864935,
+            "lng": 0.879613988091588
+          },
+          {
+            "lat": 51.875578713848505,
+            "lng": 0.8797930814049814
+          },
+          {
+            "lat": 51.87566376535057,
+            "lng": 0.8798791839594974
+          },
+          {
+            "lat": 51.87578071090327,
+            "lng": 0.8796966465439234
+          }
+        ]
+      }
+    ]
+  },
+  "fusilier": {
+    "meta": {
+      "description": "Trace along St Mary's Rd to Aingers Green Rd past The Fusilier",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.843963254686,
+        "lng": 1.0745224219947962,
+        "label": "1",
+        "accuracy": 15,
+        "time": "19:13"
+      },
+      {
+        "lat": 51.84354566790743,
+        "lng": 1.0743561250346882,
+        "label": "2",
+        "accuracy": 17,
+        "time": "19:28"
+      },
+      {
+        "lat": 51.8428032818476,
+        "lng": 1.07389478508084,
+        "label": "3",
+        "accuracy": 16,
+        "time": "19:43"
+      },
+      {
+        "lat": 51.842249798560076,
+        "lng": 1.073615835341304,
+        "label": "4",
+        "accuracy": 29,
+        "time": "19:58"
+      },
+      {
+        "lat": 51.84215036970359,
+        "lng": 1.0745224219947962,
+        "label": "5",
+        "accuracy": 20,
+        "time": "20:13"
+      },
+      {
+        "lat": 51.84196808289633,
+        "lng": 1.0750588638015963,
+        "label": "6",
+        "accuracy": 24,
+        "time": "20:27"
+      },
+      {
+        "lat": 51.84193825407579,
+        "lng": 1.0751768809990925,
+        "label": "7",
+        "accuracy": 16,
+        "time": "20:42"
+      },
+      {
+        "lat": 51.84177585237273,
+        "lng": 1.0759922725454285,
+        "label": "8",
+        "accuracy": 14,
+        "time": "20:57"
+      },
+      {
+        "lat": 51.84207414076488,
+        "lng": 1.0766467315497248,
+        "label": "9",
+        "accuracy": 31,
+        "time": "21:12"
+      },
+      {
+        "lat": 51.84208076937336,
+        "lng": 1.0767593843291527,
+        "label": "10",
+        "accuracy": 18,
+        "time": "21:27"
+      }
+    ],
+    "areas": [
+      {
+        "label": "The Fusilier Bar & Restaurant, Aingers Green Rd, Colchester, CO7 8NH",
+        "type": "Public house",
+        "timeanddate": "Thursday 24 July 2025, 7:13pm to 9:27pm",
+        "coordinates": [
+          {
+            "lat": 51.84213239738854,
+            "lng": 1.0743725387308236
+          },
+          {
+            "lat": 51.84230995203009,
+            "lng": 1.074483071312025
+          },
+          {
+            "lat": 51.84227766942007,
+            "lng": 1.0746780105915985
+          },
+          {
+            "lat": 51.84209390642983,
+            "lng": 1.0745976232598156
+          }
+        ]
+      }
+    ]
+  },
+  "kings-arms": {
+    "meta": {
+      "description": "Trace around The Kings Arms pub",
+      "point_count": 7
+    },
+    "points": [
+      {
+        "lat": 51.857392,
+        "lng": 0.956285,
+        "label": "1",
+        "accuracy": 24
+      },
+      {
+        "lat": 51.856828,
+        "lng": 0.95616,
+        "label": "2",
+        "accuracy": 11
+      },
+      {
+        "lat": 51.857793,
+        "lng": 0.956154,
+        "label": "3",
+        "accuracy": 13
+      },
+      {
+        "lat": 51.856977,
+        "lng": 0.955911,
+        "label": "4",
+        "accuracy": 24
+      },
+      {
+        "lat": 51.857031,
+        "lng": 0.956296,
+        "label": "5",
+        "accuracy": 38
+      },
+      {
+        "lat": 51.856885,
+        "lng": 0.955772,
+        "label": "6",
+        "accuracy": 23
+      },
+      {
+        "lat": 51.856895,
+        "lng": 0.956512,
+        "label": "7",
+        "accuracy": 21
+      }
+    ]
+  },
+  "sports-park": {
+    "meta": {
+      "description": "Approach to pitch then shuttle-run zig-zags (football)",
+      "point_count": 14
+    },
+    "points": [
+      {
+        "lat": 51.92661,
+        "lng": 0.901552,
+        "label": "1",
+        "accuracy": 14,
+        "time": "09:49"
+      },
+      {
+        "lat": 51.926802,
+        "lng": 0.903043,
+        "label": "2",
+        "accuracy": 18,
+        "time": "09:53"
+      },
+      {
+        "lat": 51.92664,
+        "lng": 0.903113,
+        "label": "3",
+        "accuracy": 21,
+        "time": "09:57"
+      },
+      {
+        "lat": 51.926603,
+        "lng": 0.903392,
+        "label": "4",
+        "accuracy": 17,
+        "time": "10:01"
+      },
+      {
+        "lat": 51.926458,
+        "lng": 0.904127,
+        "label": "5",
+        "accuracy": 27,
+        "time": "10:05"
+      },
+      {
+        "lat": 51.925995,
+        "lng": 0.904417,
+        "label": "6",
+        "accuracy": 19,
+        "time": "10:08"
+      },
+      {
+        "lat": 51.92616,
+        "lng": 0.905527,
+        "label": "7",
+        "accuracy": 19,
+        "time": "10:12"
+      },
+      {
+        "lat": 51.926405,
+        "lng": 0.905516,
+        "label": "8",
+        "accuracy": 25,
+        "time": "10:16"
+      },
+      {
+        "lat": 51.926425,
+        "lng": 0.905811,
+        "label": "9",
+        "accuracy": 29,
+        "time": "10:20"
+      },
+      {
+        "lat": 51.926378,
+        "lng": 0.906155,
+        "label": "10",
+        "accuracy": 29,
+        "time": "10:24"
+      },
+      {
+        "lat": 51.926507,
+        "lng": 0.906198,
+        "label": "11",
+        "accuracy": 18,
+        "time": "10:28"
+      },
+      {
+        "lat": 51.926613,
+        "lng": 0.905769,
+        "label": "12",
+        "accuracy": 16,
+        "time": "10:32"
+      },
+      {
+        "lat": 51.927232,
+        "lng": 0.905726,
+        "label": "13",
+        "accuracy": 13,
+        "time": "10:36"
+      },
+      {
+        "lat": 51.926931,
+        "lng": 0.906284,
+        "label": "14",
+        "accuracy": 19,
+        "time": "10:40"
+      },
+      {
+        "lat": 51.92697,
+        "lng": 0.906402,
+        "label": "15",
+        "accuracy": 29,
+        "time": "10:44"
+      },
+      {
+        "lat": 51.926904,
+        "lng": 0.906418,
+        "label": "16",
+        "accuracy": 12,
+        "time": "10:47"
+      },
+      {
+        "lat": 51.926673,
+        "lng": 0.906369,
+        "label": "17",
+        "accuracy": 14,
+        "time": "10:51"
+      },
+      {
+        "lat": 51.926683,
+        "lng": 0.906101,
+        "label": "18",
+        "accuracy": 27,
+        "time": "10:55"
+      },
+      {
+        "lat": 51.926974,
+        "lng": 0.905677,
+        "label": "19",
+        "accuracy": 16,
+        "time": "10:59"
+      },
+      {
+        "lat": 51.927195,
+        "lng": 0.906048,
+        "label": "20",
+        "accuracy": 21,
+        "time": "11:03"
+      }
+    ],
+    "areas": [
+      {
+        "label": "Colchester Sports Park, Cuckoo Farm Way, Colchester, Essex, CO4 5YX",
+        "type": "Sports and recreational facilities",
+        "timeanddate": "Sunday 20 July 2025, 9:49am to 11:03am",
+        "coordinates": [
+          {
+            "lat": 51.926871014289134,
+            "lng": 0.9033006965312094
+          },
+          {
+            "lat": 51.92696924961484,
+            "lng": 0.9038582489344866
+          },
+          {
+            "lat": 51.92644430209764,
+            "lng": 0.9040872436715471
+          },
+          {
+            "lat": 51.92636755487016,
+            "lng": 0.9034599972178601
+          }
+        ]
+      }
+    ]
+  },
+  "ladbrokes": {
+    "meta": {
+      "description": "Route down St Botolph's St then west along Eld Lane",
+      "point_count": 10
+    },
+    "points": [
+      {
+        "lat": 51.889655854586614,
+        "lng": 0.9042225090724204,
+        "label": "1",
+        "accuracy": 20,
+        "time": "12:21"
+      },
+      {
+        "lat": 51.88857092374142,
+        "lng": 0.9037479513627124,
+        "label": "2",
+        "accuracy": 16,
+        "time": "12:23"
+      },
+      {
+        "lat": 51.88776649042698,
+        "lng": 0.9033803362354738,
+        "label": "3",
+        "accuracy": 21,
+        "time": "12:24"
+      },
+      {
+        "lat": 51.887560223155376,
+        "lng": 0.9036276409574343,
+        "label": "4",
+        "accuracy": 12,
+        "time": "12:26"
+      },
+      {
+        "lat": 51.88753959637613,
+        "lng": 0.9035808535776038,
+        "label": "5",
+        "accuracy": 19,
+        "time": "12:28"
+      },
+      {
+        "lat": 51.88756434851008,
+        "lng": 0.9041890895153989,
+        "label": "6",
+        "accuracy": 20,
+        "time": "12:29"
+      },
+      {
+        "lat": 51.88764685552474,
+        "lng": 0.9043762390347203,
+        "label": "7",
+        "accuracy": 21,
+        "time": "12:31"
+      },
+      {
+        "lat": 51.88767160759961,
+        "lng": 0.9044564459715722,
+        "label": "8",
+        "accuracy": 21,
+        "time": "12:33"
+      },
+      {
+        "lat": 51.887877874360065,
+        "lng": 0.9051716244918365,
+        "label": "9",
+        "accuracy": 29,
+        "time": "12:34"
+      },
+      {
+        "lat": 51.88830690618962,
+        "lng": 0.9075845165088028,
+        "label": "10",
+        "accuracy": 16,
+        "time": "12:36"
+      }
+    ],
+    "areas": [
+      {
+        "label": "Ladbrokes, 41, 42 St Botolph's St, Colchester, CO2 7EA",
+        "type": "Licensed betting office",
+        "timeanddate": "Thursday 10 July 2025, 12:21pm to 12:36pm",
+        "coordinates": [
+          {
+            "lat": 51.887568080609455,
+            "lng": 0.90346687520216
+          },
+          {
+            "lat": 51.887575903475906,
+            "lng": 0.9037267051821116
+          },
+          {
+            "lat": 51.887522121241496,
+            "lng": 0.9037377954861338
+          },
+          {
+            "lat": 51.88751038692728,
+            "lng": 0.9034716281895983
+          }
+        ]
+      }
+    ]
+  }
+}

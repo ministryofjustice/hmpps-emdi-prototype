@@ -1,0 +1,575 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Location activitiy, Penny Jordan" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Penny Jordan", href: "penny-jordan" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-m govuk-!-margin-bottom-2">
+      <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: X778126 
+      <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+      Date of birth: 17 Mar 1996 (Age 27)
+      <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+      Sentence: GPS community single order​​
+    </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Penny Jordan
+    </h1>
+  </div>
+</div>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "penny-jordan"
+  }, {
+    text: "Location activity",
+    href: "",
+    active: true
+  }, {
+    text: "Case notes",
+    href: ""
+  }]
+}) }}
+
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+<h3 class="govuk-heading-s">1. Search map by date and time</h3>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="bh-map-filters" class="loi-filters__form" novalidate>
+    <div class="bh-filters-grid">
+
+      <!-- Row 1: Date pickers -->
+      <div class="bh-slot bh-date-from">
+        {{ mojDatePicker({
+          id: "bh-date-from",
+          name: "dateFrom",
+          label: { text: "Date from" },
+          classes: "govuk-input--width-10",
+          value: "04/09/2025",
+          maxDate: "04/09/2025"
+        }) }}
+      </div>
+
+      <div class="bh-slot bh-date-to">
+        {{ mojDatePicker({
+          id: "bh-date-to",
+          name: "dateTo",
+          label: { text: "Date to" },
+          classes: "govuk-input--width-10",
+          value: "04/09/2025",
+          maxDate: "04/09/2025"
+        }) }}
+      </div>
+
+      <!-- Row 2: Time inputs -->
+      <div class="bh-slot bh-time-from">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time from</label>
+          <div class="govuk-date-input" id="bh-time-from">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-hour" name="timeFromHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="09">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-min" name="timeFromMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="00">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bh-slot bh-time-to">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time to</label>
+          <div class="govuk-date-input" id="bh-time-to">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-hour" name="timeToHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="09">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-min" name="timeToMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="05">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="bh-slot bh-actions">
+        <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
+          Update map
+        </button>
+        <a href="/pj-location?clear=1" id="bh-clear-filters" class="govuk-link" data-turbo="false">Clear filters</a>
+      </div>
+
+    </div>
+
+    <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  <div id="map" style="height: 600px;"></div>
+  <p class="govuk-body-s"><a href="map-help">Help with the map</a></p>
+</div>
+
+<h3 class="govuk-heading-s" id="filter-by-loi">2. Or filter map by locations of interest</h3>
+<p class="govuk-body">Each row in the locations of interest table records a separate occasion when Penny visited a location of interest. These locations are connected to a person on probation’s licence conditions.</p>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="loi-filters" class="loi-filters__form" novalidate data-tag-fitted="2025-06-08">
+    <div class="loi-filters__row">
+      <div class="loi-filters__group">
+        <label class="govuk-label" for="filter-type">Location</label>
+        <select class="govuk-select" id="filter-type" name="filter-type">
+          <option value="non-home" selected>All locations (not including Home)</option>
+          <option value="">All location (including Home)</option>
+          <option>Home</option>
+          <option>Public house</option>
+          <option>Sports and recreational facilities</option>
+          <option>Licensed betting office</option>
+        </select>
+      </div>
+
+      <div class="loi-filters__group">
+        <label class="govuk-label" for="filter-date">Date range</label>
+        <select class="govuk-select" id="filter-date" name="filter-date">
+          <option value="" id="all-dates-option">All dates</option>
+          <option value="last7">Last 7 days</option>
+          <option value="last30">Last 30 days</option>
+        </select>
+      </div>
+
+      <div class="loi-filters__actions">
+        <button class="govuk-button" data-module="govuk-button" id="apply-loi-filters" type="submit">
+          Filter locations
+        </button>
+      </div>
+    </div>
+
+    <div class="loi-filters__footer">
+      <a href="#" id="clear-loi-filters" class="govuk-link">Clear filters</a>
+    </div>
+
+    <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+{% set start = startIndex or 0 %}
+
+{{ govukTable({
+  attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
+  head: [
+    { text: "Date", attributes: { "aria-sort": "descending" } },
+    { text: "Location type", attributes: { "aria-sort": "none" } },
+    { text: "Address" },
+    { text: "Time", attributes: { "aria-sort": "none" }, classes: "no-wrap" },
+    { text: "View on map" }
+  ],
+  rows: [
+    [
+      { html: loiDates[start + 0].html | safe, attributes: { "data-sort-value": loiDates[start + 0].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "10:57pm to 11:59pm<br/>(1 hour 2 mins)", attributes: { "data-sort-value": "62" }, classes: "no-wrap" },
+      { html: '<a href="#" class="plot-link govuk-link no-wrap" data-trace="home">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 1].html | safe, attributes: { "data-sort-value": loiDates[start + 1].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "9:33pm to 10:42pm<br/>(1 hour 9 mins)", attributes: { "data-sort-value": "69" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h1">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 2].html | safe, attributes: { "data-sort-value": loiDates[start + 2].iso } },
+      { text: "Public house", attributes: { "data-sort-value": "public house" } },
+      { html: "The Fusilier Bar & Restaurant<br/>Aingers Green Rd<br/>Aingers Green<br/>Great Bentley<br/>Colchester<br/>CO7 8NH" },
+      { html: "7:13pm to 9:27pm<br/>(2 hours 14 mins)", attributes: { "data-sort-value": "134" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="fusilier">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 3].html | safe, attributes: { "data-sort-value": loiDates[start + 3].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 8:33am<br/>(8 hours 33 mins)", attributes: { "data-sort-value": "513" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h2">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 4].html | safe, attributes: { "data-sort-value": loiDates[start + 4].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 11:59pm<br/>(23 hours 59 mins)", attributes: { "data-sort-value": "719" }, classes: "no-wrap" },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h3">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 5].html | safe, attributes: { "data-sort-value": loiDates[start + 5].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 11:59pm<br/>(23 hours 59 mins)", attributes: { "data-sort-value": "719" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h4">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 6].html | safe, attributes: { "data-sort-value": loiDates[start + 6].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "11:38pm to 11:59pm<br/>(21 mins)", attributes: { "data-sort-value": "21" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h5">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 7].html | safe, attributes: { "data-sort-value": loiDates[start + 7].iso } },
+      { text: "Public house", attributes: { "data-sort-value": "public house" } },
+      { html: "The Fusilier Bar & Restaurant<br/>Aingers Green Rd<br/>Aingers Green<br/>Great Bentley<br/>Colchester<br/>CO7 8NH" },
+      { html: "7:32pm to 11:05pm<br/>(3 hours 33 mins)", attributes: { "data-sort-value": "213" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="fusilier">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 8].html | safe, attributes: { "data-sort-value": loiDates[start + 8].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 9:13am<br/>(9 hours 13 mins)", attributes: { "data-sort-value": "553" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h6">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 9].html | safe, attributes: { "data-sort-value": loiDates[start + 9].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "9:45pm to 11:59pm<br/>(2 hours 14 mins)", attributes: { "data-sort-value": "134" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h7">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 10].html, attributes: { "data-sort-value": loiDates[start + 10].iso } },
+      { text: "Sports and recreational facilities", attributes: { "data-sort-value": "sports" } },
+      { html: "Colchester Sports Park<br/>Cuckoo Farm Way,<br/>Colchester,<br/>Essex<br/>CO4 5YX" },
+      { html: "9:49am to 11:03am<br/>(1 hour 14 mins)", attributes: { "data-sort-value": "74" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="sports-park">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 11].html, attributes: { "data-sort-value": loiDates[start + 11].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 9:03am<br/>(9 hours 3 mins)", attributes: { "data-sort-value": "543" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h8">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 12].html, attributes: { "data-sort-value": loiDates[start + 12].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 11:59pm<br/>(23 hours 59 mins)", attributes: { "data-sort-value": "719" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h9">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 13].html, attributes: { "data-sort-value": loiDates[start + 13].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "7:04pm to 11:59pm<br/>(4 hours 55 mins)", attributes: { "data-sort-value": "295" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h10">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 14].html, attributes: { "data-sort-value": loiDates[start + 14].iso } },
+      { text: "Licensed betting office", attributes: { "data-sort-value": "licensed betting office" } },
+      { html: "Ladbrokes<br/>41, 42 St Botolph's St<br/>Colchester<br/>CO2 7EA" },
+      { html: "12:21pm to 12:36pm<br/>(15 mins)", attributes: { "data-sort-value": "15" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="ladbrokes">View</a>' }
+    ],
+    [
+      { html: loiDates[start + 15].html, attributes: { "data-sort-value": loiDates[start + 15].iso } },
+      { text: "Home", attributes: { "data-sort-value": "home" } },
+      { html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR" },
+      { html: "00:00am to 11:13am<br/>(11 hours 13 mins)", attributes: { "data-sort-value": "673" } },
+      { html: '<a href="#" class="plot-link govuk-link" data-trace="home-h11">View</a>' }
+    ]
+  ]
+}) }}
+
+
+
+{{ govukPagination({
+  next: { href: "#" },
+  items: [
+    { number: 1, current: true, href: "#" },
+    { number: 2, href: "#" },
+    { number: 3, href: "#" }
+  ]
+}) }}
+
+
+<!-- Staying at home overnight -->
+<section class="govuk-!-margin-bottom-6" aria-labelledby="home-overnight-heading">
+  <h3 class="govuk-heading-s" id="home-overnight-heading">Compliance</h3>
+
+  <div class="app-summary-card govuk-!-margin-bottom-3">
+    <header class="app-summary-card__header">
+      <h3 class="app-summary-card__title"><strong>Staying at home overnight</strong></h3>
+    </header>
+    <div class="app-summary-card__body">
+      <p id="home-overnight-summary" class="govuk-body govuk-!-margin-bottom-3">
+        <!-- Filled by JS using the LOI table rows -->
+      </p>
+      
+      {{ govukDetails({
+        summaryText: "What does overnight mean?",
+        text: "Penny is not subject to an overnight curfew. However, standard licence conditions apply, including 'Reside permanently at an approved address' and 'Not to travel outside the UK'."
+      }) }}
+
+      <!-- 7-day yes/no streak (yesterday back 6 more) -->
+      <div id="home-overnight-streak" class="govuk-!-margin-bottom-1"
+           aria-label="Overnight home compliance (last 14 nights)"></div>
+
+    </div>
+  </div>
+</section>
+
+
+{# -------------------------
+   ✅ Compliance block (kept exactly as requested)
+   ------------------------- #}
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Tag and home monitoring unit (HMU)</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-!-font-weight-regular">EMS were unable to fit Penny's GPS tag on Wednesday 5 and Friday 7 March 2025 as Penny was not available at their approved address. Their tag was fitted on Wednesday 12 March 2025.</span>
+        </dt>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  caption: "Tag tampers and battery recharging",
+  head: [
+    {
+      text: "Date",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    },
+    {
+      text: "Time"
+    },
+    {
+      text: "Tamper type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Tuesday 8 April 2025"
+      },
+      {
+        text: "12.36pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Strap cut</span>'
+      }
+    ],
+    [
+      {
+        text: "Thursday 10 April 2025"
+      },
+      {
+        text: "7.54pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Case open</span>'
+      }
+    ],
+    [
+      {
+        text: "Tuesday 15 April 2025"
+      },
+      {
+        text: "6.05am"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Case open</span>'
+      }
+    ],
+    [
+      {
+        text: "Friday 18 April 2025"
+      },
+      {
+        text: "9.44pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Strap cut</span>'
+      }
+    ]
+  ]
+}) }}
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  caption: "Home monitoring unit (HMU) tampers",
+  head: [
+    {
+      text: "Date",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    },
+    {
+      text: "Time"
+    },
+    {
+      text: "Tamper type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Tuesday 8 April 2025"
+      },
+      {
+        text: "12.36pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">HMU moved</span>'
+      }
+    ]
+  ]
+}) }}
+        </dt>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- Penny-specific config so gps-map.js points at Penny’s data -->
+<script>
+  window.GPS_CONFIG = {
+    DEFAULT_LOI_URL: '/public/data/gps-traces-penny.json',
+    SCENARIOS_URL:   '/public/data/gps-traces-penny-demo.json',
+    DEFAULT_SCENARIO_KEY: 'penny_20250903'
+  };
+</script>
+
+<!-- Leaflet core -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- PolylineDecorator -->
+<script src="/public/javascripts/leaflet.polylineDecorator.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Table filtering -->
+<script src="/public/javascripts/loi-filters.js"></script>
+
+<!-- Duration calculator -->
+<script src="/public/javascripts/duration-helper.js"></script>
+
+<script src="/public/javascripts/bh-filters-align.js"></script>
+<script src="/public/javascripts/bh-map-filters.js"></script>
+<script src="/public/javascripts/bh-date-sync.js"></script>
+<script src="/public/javascripts/bh-loi-row-highlight.js"></script>
+
+<script src="/public/javascripts/bh-location-init.js"></script>
+<script src="/public/javascripts/map-overlays.js"></script>
+<script src="/public/javascripts/gps-map.js"></script>
+<script src="/public/javascripts/bh-update-map.js"></script>
+<script src="/public/javascripts/penny-home.js"></script>
+<script src="/public/javascripts/pj-loi-default.js"></script>
+
+
+
+<script>
+  // Enhancements only — map is created in /public/javascripts/bh-location-init.js
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.map) return;
+
+    // North arrow
+    (function addNorthArrow() {
+      const compass = L.control({ position: 'topleft' });
+      compass.onAdd = function () {
+        const bar = L.DomUtil.create('div', 'leaflet-bar');
+        const a = L.DomUtil.create('a', '', bar);
+        a.href = '#';
+        a.title = 'North';
+        a.setAttribute('aria-label', 'North arrow');
+        a.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><polygon points="12,3 20,21 12,16 4,21" /></svg>';
+        L.DomEvent.on(a, 'click', (e) => L.DomEvent.stop(e));
+        return bar;
+      };
+      compass.addTo(window.map);
+    })();
+
+    // Restore previously chosen base (Street/Satellite)
+    try {
+      var lastBase = (localStorage.getItem('loi-base') || 'street').toLowerCase();
+      var base = (lastBase === 'satellite') ? window.satelliteLayer : window.streetLayer;
+      if (base && !window.map.hasLayer(base)) base.addTo(window.map);
+
+      // Persist choice when user switches base layers
+      window.map.on('baselayerchange', function (e) {
+        if (e && e.name) localStorage.setItem('loi-base', e.name.toLowerCase());
+      });
+    } catch (e) {
+      console.warn('[bh] base layer restore skipped:', e);
+    }
+
+    // IMPORTANT: do NOT call setupMapOverlays() here — it’s already called in bh-location-init.js
+  });
+</script>
+
+
+{% endblock %}

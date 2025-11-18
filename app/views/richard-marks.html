@@ -1,0 +1,439 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Overview, Richard Marks" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Richard Marks", href: "richard-marks" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: X778126 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 23 April 1996 (Age 27)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: GPS community single order​​
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Richard Marks
+    </h1>
+  </div>
+</div>
+
+
+{{ mojAlert({
+  variant: "warning",
+  title: "Failure to charge battery",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="rm-location#tag-breaches">View Richard&apos;s tag breaches</a>.'
+}) }}
+
+{{ mojAlert({
+  variant: "warning",
+  title: "4 locations of interest visited in the last 7 days",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="rm-location">View Richard&apos;s locations of interest</a>.'
+}) }}
+
+
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "",
+    active: true
+  }, {
+    text: "Location activity",
+    href: "rm-location"
+  }, {
+    text: "Case notes",
+    href: "rm-case-notes-ems"
+  }]
+}) }}
+
+<h2 class="govuk-heading-m">Overview</h2>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="personalDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Personal details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all personal details</a>
+    </div-->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Name</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">Richard Marks</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Also known as</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">Ricky Marksman</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Gender</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue">Male</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="dateOfBirthAndAgeLabel">Date of birth</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="dateOfBirthAndAgeValue">
+            23 April 1996 (Age 27)
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="contactNumberLabel">Contact number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span class="app-!-font-family-tabular" data-qa="contactNumberValue">
+            No contact number
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="currentCircumstancesLabel">Current circumstances</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="currentCircumstancesValue">None</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="disabilitiesLabel">Disabilities</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="disabilitiesValue">No disabilities</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="adjustmentsLabel">Adjustments</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="adjustmentsValue">No adjustments</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="contactDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Contact details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Approved address</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">
+            31 High Street<br/>
+            London<br/>
+            W1A 1AA
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Phone number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">020 7450 4000</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Mobile number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">07771 900 900</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Email</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue"><a href="mailto:richard.marks@gmail.com">richard.marks@gmail.com</a></span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="RODetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Responsible officer (RO)</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Name</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">Simon Radcliffe</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Address</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">
+            31 High Street<br/>
+            London<br/>
+            W1A 1AA
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Phone number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">020 7450 4000</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Mobile number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">07771 900 900</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Email</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue"><a href="mailto:richard.marks@gmail.com">richard.marks@gmail.com</a></span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="sentenceDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Sentence details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Main offence</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">Criminal damage to property - 05600</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Order</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">GPS community single order</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">EM licence conditions</p>
+          <span class="govuk-!-font-weight-regular secondary-text">People on probation may have other licence conditions not related to EM. <a href="#">View all licence conditions</a></span>          
+        </dt>
+        <dd class="govuk-summary-list__value">
+            <h4 class="govuk-!-margin-bottom-0">Trail Monitoring (GPS)</h4>
+            
+Allow person(s) as designated by your supervising officer to install an electronic monitoring tag on you and access to install any associated equipment in your property, and for the purpose of ensuring that equipment is functioning correctly. You must not damage or tamper with these devices and must ensure that the tag is charged. You must report to your supervising officer immediately if the tag or the associated equipment are not working correctly. This will be for the purpose of monitoring your electronic whereabouts (trail monitoring only) licence condition unless otherwise authorised by your supervising officer.
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: "GPS tag details"
+    },
+    actions: { }
+  },
+  rows: [
+    {
+      key: {
+        text: "Start date"
+      },
+      value: {
+        text: "Wednesday 5 May 2025"
+      }
+    },
+    {
+      key: {
+        text: "End date"
+      },
+      value: {
+        text: "Friday 5 September 2025"
+      }
+    },
+    {
+      key: {
+        text: "Tag fitted"
+      },
+      value: {
+        text: "Wednesday 12 March 2025"
+      }
+    },
+    {
+      key: {
+        text: "Days remaining"
+      },
+      value: {
+        text: "89 days left"
+      }
+    },
+    {
+      key: {
+        text: "Released"
+      },
+      value: {
+        text: "Tuesday 4 March 2025"
+      }
+    },
+    {
+      key: {
+        text: "Released from"
+      },
+      value: {
+        text: "HMP Brixton"
+      }
+    },
+    {
+      key: {
+        text: "Tag model"
+      },
+      value: {
+        text: "OM247-SOLO3"
+      }
+    },
+    {
+      key: {
+        text: "Tag serial number"
+      },
+      value: {
+        text: "GPSMT12345"
+      }
+    },
+    {
+      key: {
+        text: "Tag status"
+      },
+      value: {
+        text: "On"
+      }
+    },
+    {
+      key: {
+        text: "HMU status"
+      },
+      value: {
+        text: "On"
+      }
+    }
+  ]
+}) }}
+
+
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="helpDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Help and support</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <h4 class="govuk-!-margin-bottom-0 govuk-!-margin-top-0">GPS location monitoring team</h4>
+          <span class="govuk-!-font-weight-regular">
+            Email: <a href="mailto:hdc@justice.gov.uk">gps@justice.gov.uk</a><br/>
+            Telephone: 0800 123 4567<br/>
+            Open 24 hours a day, 7 days a week</span>
+        </dt>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% endblock %}

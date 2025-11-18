@@ -1,0 +1,113 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Help with the map" %}
+
+{% block content %}
+
+<a href="javascript:history.back()" class="govuk-back-link">Back</a>
+
+
+<h2 class="govuk-heading-m">Help with the map</h2>
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">GPS delay</h2>
+
+  <div style="overflow: hidden;">
+    <div style="float: right; width: 200px; height: 200px;" aria-hidden="true"></div>
+
+    <p class="govuk-body">
+      The information shown on maps is based on the GPS data received from tags which is usually subject to delays of around 10 to 15 minutes.
+      </p>
+    <p class="govuk-body">
+      Delays vary depending on network coverage and how often tags upload GPS data.
+      </p>
+    <p class="govuk-body">
+      Use timestamps to find out when and how long a person on probation visited a location.
+      </p>
+  </div>
+</div>
+
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Locations of interest</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/help-loi.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      As a person on probation enters or leaves areas a location of interest this movement is recorded in their location history and on their map.
+      </p>
+    <p class="govuk-body">
+      Locations of interest have defined boundaries which reflect the real-world and include:
+      </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>exclusion and inclusion zones</li>
+      <li>home and other addresses - for example, family, friend and parental</li>
+      <li>places of interest - for example, pubs</li>
+      <li>required locations - for example, places of work and training providers</li>
+    </ul>
+    <p class="govuk-body">
+      <a href="#" class="govuk-link">View full list of locations of interest</a>
+    </p>
+  </div>
+
+  <div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Confidence circles</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/help-coc.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      The centre of a circle shows a person on probation’s most likely location.
+    </p>
+    <p class="govuk-body">
+      Circle size reflects the accuracy of GPS data and our level of confidence about the person on probation’s exact location. For example:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>smaller circles = more confidence about a location</li>
+      <li>larger circles = less confidence about a location</li>
+    </ul>
+    <p class="govuk-body">
+      Various factors affect the accuracy of GPS data and the size of confidence circles including:
+      </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>building density</li>
+      <li>GPS drift</li>
+      <li>GPS satellite availability</li>
+      <li>signal obstruction</li>
+    </ul>
+    <p class="govuk-body">
+      <a href="#" class="govuk-link">View full list of factors</a>
+  </div>
+</div>
+
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Lines and arrows</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/help-lines.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      The lines on maps show the likely path a person on probation took between locations and do not represent a confirmed route.
+      </p>
+    <p class="govuk-body">
+      They only estimate and give a general sense of the person on probation's movement over time.
+      </p>
+    <p class="govuk-body">
+      The arrows on lines show a person on probation's direction of travel.
+    </p>
+  </div>
+</div>
+
+
+</div>
+
+
+{% endblock %}

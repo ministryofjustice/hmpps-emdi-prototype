@@ -1,0 +1,88 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Design history – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Design history</h1>
+  <p class="govuk-body">Notes on design and development decisions in this prototype.</p>
+  <p class="govuk-body"><a href="/">Return to prototype</a></p>
+
+  <dl class="govuk-summary-list govuk-!-margin-top-6">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">4 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Added a two-week <strong>“Staying at home overnight”</strong> chart with equal-width bars, top-aligned cells, unambiguous date-range labels, and a <strong>fortnight compliance total</strong>. Fixed month abbreviations to 3 chars and simplified cross-month labels.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">3 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        LOI table loads with <strong>“All locations (not including Home)”</strong> selected by default; Home rows can be shown via the existing Location filter. Added robust <code>Clear filters</code> behaviour and exported <code>window.plotTrace</code> for cross-script calls.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">2 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Synced <strong>area popup dates</strong> with LOI table dates (server-rendered) to avoid mismatches. Introduced a <code>whenMapReady</code> helper to ensure default traces plot reliably after soft reloads.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">1 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Adjusted LOI table date generator so the latest rows show <strong>yesterday</strong> (testing happens in the morning); kept four most recent rows on the same day. Improved popup styling and polygon colours (pink areas, blue tracks).
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">28 August 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Added <strong>cross-midnight time filtering</strong> to Update Map. LOI polygons now use <span style="color:#d53880;font-weight:bold">pink</span>; trails and arrows use <span style="color:#1d70b8;font-weight:bold">blue</span>.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">27 August 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Set up <strong>demo scenarios JSON</strong> with 1 static + 4 moving days, remapped to start at 25/08/2025.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">26 August 2025</dt>
+      <dd class="govuk-summary-list__value">
+        Default map base layer switched to <strong>Satellite view</strong>; then later to <strong>Street view</strong>.
+      </dd>
+    </div>
+  </dl>
+
+  <h2 class="govuk-heading-m govuk-!-margin-top-8">Accessibility considerations</h2>
+  <ul class="govuk-list govuk-list--bullet">
+    <li><strong>Map status updates:</strong> Added <code>aria-live="polite"</code> live regions so screen reader users are notified when the map updates without interruption.</li>
+    <li><strong>Clear filters:</strong> Ensures a predictable reset to the default map state to avoid confusing partial UI states.</li>
+    <li><strong>Point markers:</strong> Markers expose meaningful <code>title</code>/<code>aria-label</code> text (point #, accuracy, time, coordinates).</li>
+    <li><strong>Areas/polygons:</strong> Popups use semantic HTML with headings and concise labels; dates match the LOI table to reduce cognitive load.</li>
+    <li><strong>Overnight chart:</strong> Each bar has an <code>aria-label</code> giving the full overnight span (19:00→07:00) and compliance status; visible labels use compact date ranges.</li>
+    <li><strong>Colour and contrast:</strong> Red/green is always paired with text or ARIA descriptions (no colour-only cues).</li>
+    <li><strong>Tables:</strong> GOV.UK table macros with proper semantics and sortable headers; <code>aria-sort</code> attributes used where applicable.</li>
+    <li><strong>Structure:</strong> Consistent heading levels and GOV.UK component patterns to aid navigation by assistive tech.</li>
+  </ul>
+
+  <h2 class="govuk-heading-m govuk-!-margin-top-6">Accessibility – next steps</h2>
+  <ul class="govuk-list govuk-list--bullet">
+    <li><strong>Keyboard-only checks:</strong> Ensure all controls (filters, “View on map”, Clear filters, base-layer switch) are reachable and operable via keyboard with visible focus.</li>
+    <li><strong>Screen reader runs:</strong> Quick audits with NVDA + Firefox and VoiceOver + Safari; confirm live region announcements are timely and not verbose.</li>
+    <li><strong>Contrast testing:</strong> Validate bar colours, table text, and focus states against WCAG AA (including hover/focus states).</li>
+    <li><strong>Zoom & reflow:</strong> Test at 200%/400% zoom and on small screens for reflow with no horizontal scrolling of key content.</li>
+    <li><strong>Motion/animation preferences:</strong> Respect <code>prefers-reduced-motion</code> if any animated transitions are introduced later.</li>
+    <li><strong>Sortable tables:</strong> Verify <code>aria-sort</code> updates correctly when columns are sorted and that sort order is perceivable to SR users.</li>
+    <li><strong>Error & status messaging:</strong> Standardise error summaries and inline errors for filters; ensure programmatic focus is set on update.</li>
+    <li><strong>Map keyboard fallback:</strong> Provide non-map alternatives (table rows, summary text) for users who cannot or do not use the map.</li>
+    <li><strong>Colour-blind review:</strong> Check red/green bars with common colour-vision simulations; add a small legend if user research suggests it.</li>
+    <li><strong>User research:</strong> Include at least one session with AT users during alpha to validate assumptions about labels and interactions.</li>
+  </ul>
+{% endblock %}

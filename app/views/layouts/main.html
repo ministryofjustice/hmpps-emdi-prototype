@@ -5,12 +5,35 @@ https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
 
 {% extends "govuk-prototype-kit/layouts/govuk-branded.njk" %}
 {% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
 
 {% block header %}
 
-    {{ govukHeader() }}
-    {{ govukServiceNavigation({
-        serviceName: serviceName
-    })}}
+  {{ govukHeader({
+    serviceName: "Electronic Monitoring Data Insights <span class='app-env-badge'>PROTOTYPE</span>" | safe,
+    serviceUrl: "/"
+  }) }}
+
+  {{ mojPrimaryNavigation({
+        label: "My Services",
+        items: navItems
+      }) }}
+
+{% endblock %}
+
+{% block footer %}
+
+  {{ govukFooter({
+    meta: {
+      items: [
+        {
+          href: "/design-history",
+          text: "Design history"
+        }
+      ],
+      visuallyHiddenTitle: "Footer links"
+    }
+  }) }}
 
 {% endblock %}

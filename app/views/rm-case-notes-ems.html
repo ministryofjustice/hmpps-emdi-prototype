@@ -1,0 +1,104 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Case notes, Richard Marks" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Richard Marks", href: "richard-marks" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: X778126 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 23 April 1996 (Age 27)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: GPS community single order​​
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Richard Marks
+    </h1>
+  </div>
+</div>
+
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "richard-marks"
+  }, {
+    text: "Location activity",
+    href: "rm-location"
+  }, {
+    text: "Case notes",
+    href: "",
+    active: true
+  }]
+}) }}
+
+<h2 class="govuk-heading-m" id="map-header">Case notes</h2>
+
+
+{%- from "moj/components/side-navigation/macro.njk" import mojSideNavigation -%}
+
+<div class="govuk-grid-row">
+
+  <div class="govuk-grid-column-one-third">
+
+    {{ mojSideNavigation({
+      label: "Side navigation",
+      items: [{
+        text: "EMS",
+        href: "rm-case-notes-ems",
+        active: true
+      }, {
+        text: "NDelius",
+        href: "rm-case-notes-nd"
+      }, {
+        text: "OASys",
+        href: "rm-case-notes-oasys"
+      }]
+    }) }}
+
+  </div>
+
+  <div class="govuk-grid-column-two-thirds">
+<div class="govuk-!-margin-bottom-6">
+<h3 class="govuk-heading-s">EMS</h3>
+  <h4 class="govuk-heading-s">Field Monitoring Officer home visit</h4>
+  <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Assessment Date:</strong> 10 July 2025</p>
+  <p class="govuk-body-s govuk-!-margin-bottom-2"><strong>FMO:</strong> Jack Smith | <strong>Risk Level:</strong> Medium</p>
+  <p class="govuk-body">Richard is currently residing at an address approved by the supervising officer, a private tenancy arranged through a family contact. He has been at this address since release on 02/07/2025 and there are no concerns regarding suitability or stability at this time.</p>
+  <p class="govuk-body">During interview, Richard reported that the landlord is aware of his licence status and electronic monitoring conditions. There are no other residents at the property. The premises were visited during an unannounced home visit (13/07/2025) and found to be clean and well maintained. No evidence of antisocial behaviour or association with known offenders.</p>
+  <p class="govuk-body">Richard identifies his current accommodation as a protective factor, stating it offers him “a quiet space to reset and get back on track.” He has expressed interest in seeking part-time employment and has made initial enquiries at a local job centre.</p>
+  <p class="govuk-body govuk-!-margin-bottom-6">No current concerns regarding homelessness, transience or association with criminogenic peer groups linked to this address. Accommodation is assessed as stable and suitable. No intervention required in this area at present.</p>
+
+  <h4 class="govuk-heading-s">Field Monitoring Officer home visit</h4>
+  <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Assessment Date:</strong> 3 July 2025</p>
+  <p class="govuk-body-s govuk-!-margin-bottom-2"><strong>FMO:</strong> Jack Smith | <strong>Risk Level:</strong> Medium</p>
+  <p class="govuk-body">Richard identifies his current accommodation as a protective factor, stating it offers him “a quiet space to reset and get back on track.” He has expressed interest in seeking part-time employment and has made initial enquiries at a local job centre.</p>
+  <p class="govuk-body">No current concerns regarding homelessness, transience or association with criminogenic peer groups linked to this address. Accommodation is assessed as stable and suitable. No intervention required in this area at present.</p>
+  <p class="govuk-body">Richard is currently residing at an address approved by the supervising officer, a private tenancy arranged through a family contact. He has been at this address since release on 02/07/2025 and there are no concerns regarding suitability or stability at this time.</p>
+  <p class="govuk-body">During interview, Richard reported that the landlord is aware of his licence status and electronic monitoring conditions. There are no other residents at the property. The premises were visited during an unannounced home visit (13/07/2025) and found to be clean and well maintained. No evidence of antisocial behaviour or association with known offenders.</p>
+</div>
+
+  </div>
+
+</div>
+
+
+{% endblock %}

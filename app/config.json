@@ -1,8 +1,8 @@
 {
-  "serviceName": "Service name goes here",
+  "serviceName": "Electronic monitoring",
   "plugins": {
     "govuk-frontend": {
-      "rebrand": true
+      "rebrand": false
     }
   }
 }

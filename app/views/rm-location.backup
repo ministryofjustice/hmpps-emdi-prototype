@@ -1,0 +1,485 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Location activitiy, Richard Marks" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Richard Marks", href: "richard-marks" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: X778126 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 23 April 1996 (Age 27)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: GPS community single order​​
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Richard Marks
+    </h1>
+  </div>
+</div>
+
+
+{{ mojAlert({
+  variant: "warning",
+  title: "Failure to charge battery",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="#">View Richard&apos;s tag breaches</a>.'
+}) }}
+
+{{ mojAlert({
+  variant: "warning",
+  title: "4 locations of interest visited in the last 7 days",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="#">View Richard&apos;s locations of interest</a>.'
+}) }}
+
+
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "richard-marks"
+  }, {
+    text: "Location activity",
+    href: "",
+    active: true
+  }, {
+    text: "Case notes",
+    href: "rm-case-notes-ems"
+  }]
+}) }}
+
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+<h3 class="govuk-heading-s">Interactive map</h3>
+
+<div class="govuk-!-margin-bottom-6">
+  <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  <img id="map-image" src="/public/images/map1.png" alt="Map 1">
+  <p class="govuk-body-s"><a href="map-help">Help with the map</a></p>
+</div>
+
+<h3 class="govuk-heading-s">Locations of interest</h3>
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  head: [
+    {
+      text: "Date",
+      attributes: {
+        "aria-sort": "descending"
+      }
+    },
+    {
+      text: "Location type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Address"
+    },
+    {
+      text: "Duration",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Plot on map"
+      
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Thursday 24 July 2025",
+        attributes: {
+          "data-sort-value": "24 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "18 hours 56 minutes",
+        attributes: {
+          "data-sort-value": "18:56"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Thursday 24 July 2025",
+        attributes: {
+          "data-sort-value": "24 July 2025"
+        }
+      },
+      {
+        text: "Public house",
+        attributes: {
+          "data-sort-value": "public house"
+        }
+      },
+      {
+        html: "The Fusilier Bar & Restaurant<br/>
+        Aingers Green Rd<br/>
+        Aingers Green<br/>
+        Great Bentley<br/>
+        Colchester<br/>
+        CO7 8NH"
+      },
+      {
+        text: "2 hours 18 minutes",
+        attributes: {
+          "data-sort-value": "02:18"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map2.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Wednesday 23 July 2025",
+        attributes: {
+          "data-sort-value": "23 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "16 hours 23 minutes",
+        attributes: {
+          "data-sort-value": "16:23"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Tuesday 22 July 2025",
+        attributes: {
+          "data-sort-value": "22 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "18 hours 49 minutes",
+        attributes: {
+          "data-sort-value": "18:49"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Monday 21 July 2025",
+        attributes: {
+          "data-sort-value": "21 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "12 hours 3 minutes",
+        attributes: {
+          "data-sort-value": "12:03"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Sunday 20 July 2025",
+        attributes: {
+          "data-sort-value": "20 July 2025"
+        }
+      },
+      {
+        text: "Sports and recreational facilities",
+        attributes: {
+          "data-sort-value": "sports"
+        }
+      },
+      {
+        html: "Colchester Sports Park<br/>
+        Cuckoo Farm Way<br/>
+        Colchester<br/>
+        Essex<br/>
+        CO4 5YX"
+      },
+      {
+        text: "1 hours 3 minutes",
+        attributes: {
+          "data-sort-value": "01:03"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map3.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Sunday 20 July 2025",
+        attributes: {
+          "data-sort-value": "20 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "16 hours 23 minutes",
+        attributes: {
+          "data-sort-value": "16:23"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Saturday 19 July 2025",
+        attributes: {
+          "data-sort-value": "19 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "19 hours 18 minutes",
+        attributes: {
+          "data-sort-value": "19:18"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Saturday 19 July 2025",
+        attributes: {
+          "data-sort-value": "19 July 2025"
+        }
+      },
+      {
+        text: "Public house",
+        attributes: {
+          "data-sort-value": "public house"
+        }
+      },
+      {
+        html: "The Kings Arms<br/>
+        Main Rd<br/>
+        Colchester<br/>
+        CO7 7DJ"
+      },
+      {
+        text: "2 hours 56 minutes",
+        attributes: {
+          "data-sort-value": "02:56"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map4.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Friday 18 July 2025",
+        attributes: {
+          "data-sort-value": "18 July 2025"
+        }
+      },
+      {
+        text: "Home",
+        attributes: {
+          "data-sort-value": "home"
+        }
+      },
+      {
+        html: "46-6 Rainsborowe Rd<br/>Colchester"
+      },
+      {
+        text: "15 hours 8 minutes",
+        attributes: {
+          "data-sort-value": "15:08"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map1.png">Plot on map</a>'
+      }
+    ],
+    [
+      {
+        text: "Friday 18 July 2025",
+        attributes: {
+          "data-sort-value": "18 July 2025"
+        }
+      },
+      {
+        text: "Licensed betting office",
+        attributes: {
+          "data-sort-value": "licensed betting office"
+        }
+      },
+      {
+        html: "Ladbrokes<br/>
+        41, 42 St Botolph's St<br/>
+        Colchester<br/>
+        CO2 7EA"
+      },
+      {
+        text: "15 minutes",
+        attributes: {
+          "data-sort-value": "00:15"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map" data-map-src="/public/images/map5.png">Plot on map</a>'
+      }
+    ]
+  ]
+}) }}
+
+
+{{ govukPagination({
+  next: {
+    href: "#"
+  },
+  items: [
+    {
+      number: 1,
+      current: true,
+      href: "#"
+    },
+    {
+      number: 2,
+      href: "#"
+    },
+    {
+      number: 3,
+      href: "#"
+    }
+  ]
+}) }}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+function isElementInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+
+let scrollTimeout;
+
+$('.plot-map').on('click', function (e) {
+  e.preventDefault();
+  clearTimeout(scrollTimeout);
+
+  const mapSrc = $(this).data('map-src');
+  $('#map-image')
+    .attr('src', mapSrc)
+    .attr('tabindex', '-1')
+    .focus(); // Make map focusable and move focus for screen readers
+
+  $('#map-status').text('Map updated to show location');
+
+  const mapHeader = $('#map-header')[0];
+  if (!isElementInViewport(mapHeader)) {
+    scrollTimeout = setTimeout(() => {
+      $('html, body').animate({
+        scrollTop: $('#map-header').offset().top - 20
+      }, 300);
+    }, 100);
+  }
+
+  const $row = $(this).closest('tr');
+  $('.highlighted-row').removeClass('highlighted-row');
+  $row.addClass('highlighted-row');
+  setTimeout(() => $row.removeClass('highlighted-row'), 2000);
+});
+
+</script>
+
+{% endblock %}

@@ -4,3 +4,622 @@
 // 
 
 // Add extra styles here
+
+/* Environment banner badge */
+/* Header environment badge (uses the header's navigation slot) */
+.app-env-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  border-radius: 0px;
+  background: #cce1f5;   /* light blue */
+  color: #0B0C0C;        /* GOV.UK blue */
+}
+
+
+/* Remove underline/hover states the header adds to nav links */
+.app-env-badge,
+.app-env-badge:link,
+.app-env-badge:visited,
+.app-env-badge:hover,
+.app-env-badge:active,
+.app-env-badge:focus {
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* Keep only the first calendar button per picker */
+.moj-date-picker__button--clear,
+.moj-date-picker__remove { display: none !important; }
+.moj-date-picker .moj-datepicker__toggle ~ .moj-datepicker__toggle {
+    display: none !important;
+  }
+
+.secondary-text {
+  color: $govuk-secondary-text-colour;
+}
+
+.highlighted-row {
+  background-color: #F3F2F1; 
+  transition: background-color 0.3s ease;
+}
+
+/* Permanent highlight for the active table row */
+tr.is-active-row > td { background-color: #F3F2F1; }
+
+
+/* Penny's Home/Not home stuff */
+/* 7-day streak layout */
+.app-streak {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;           /* a touch more room to fit labels */
+  align-items: start;
+}
+
+.app-streak__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-start; /* ensure content starts at top of the cell */
+}
+
+
+.app-streak__bar {
+  width: 100%;
+  height: 16px;
+  border-radius: 3px;
+  background: #b1b4b6; /* fallback */
+  margin: 0;
+}
+
+
+.app-streak__bar--yes { background: #00703c; } /* GOV.UK green */
+.app-streak__bar--no  { background: #d4351c; } /* GOV.UK red */
+
+/* Date label under each bar */
+/* allow wrapping into two lines, keep centred */
+.app-streak__label {
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;    /* <-- allow wrapping */
+  word-break: break-word; /* break if needed */
+  max-width: 100%;        /* constrain to the grid cell */
+  margin: 0;
+}
+
+/* two-week wrapper */
+.app-streak-2w {
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 20px;
+}
+
+
+
+
+.no-wrap {
+    white-space: nowrap;
+  }
+
+
+ /* Panel */
+.loi-filters {
+  background-color: #f3f2f1;
+  padding: 16px;
+}
+@media (min-width: 40.0625em){ .loi-filters { padding: 20px; } }
+
+/* Layout: 2 selects + button on one row */
+.loi-filters__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px 2px!important;           /* ↓ smaller gap between selects */
+  align-items: end;         /* align controls on their bottoms */
+}
+
+/* Button alignment fix */
+.loi-filters__actions {
+  align-self: end;          /* ensure button sits on baseline */
+  display: flex;
+  width: 220px;
+}
+.loi-filters__actions .govuk-button {
+  margin-bottom: 0;         /* remove default bottom margin */
+}
+
+/* Clear link below, left-aligned */
+.loi-filters__footer {
+  margin-top: 8px;          /* small space below controls */
+}
+
+/* optional fallback if needed */
+.is-hidden { display: none !important; }
+
+/* Mobile: stack neatly */
+@media (max-width: 40.0525em){
+  .loi-filters__row { grid-template-columns: 1fr; }
+  .loi-filters__actions { align-self: start; }
+}
+
+/* ================================
+   LOI table — expandable transcript
+   ================================ */
+
+/* Make the toggle button look like a GOV.UK link but keep it a <button> */
+.app-link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.app-link-button.govuk-link {
+  /* Ensure link look even if other styles conflict */
+  color: #1d70b8;
+  text-decoration: underline;
+}
+.app-link-button.govuk-link:hover   { color: #003078; }
+.app-link-button.govuk-link:visited { color: #4c2c92; }
+
+/* Group the two-row item visually:
+   - No border between parent row and its expansion row
+   - Single divider AFTER the pair
+*/
+.app-row-parent td { border-bottom: 0; }
+
+.app-row-expansion > td {
+  border-top: 0;
+  border-bottom: 1px solid #b1b4b6;
+  /* Comfortable spacing; we also add 5px left padding below for alignment */
+  padding: 12px 0 6px 0;
+  background: #ffffff; /* default collapsed background */
+}
+
+/* Open/highlight state: both rows share the light grey */
+.app-row-parent--open td,
+.app-row-expansion--open td {
+  background: #F3F2F1;
+}
+
+/* Align the toggle area to the left (per your preference) */
+.app-expansion-actions {
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+/* Transcript scrolling container */
+.app-route-target {
+  max-height: 320px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+/* Nudge left edge in:
+   - first (Date) cell in the data row
+   - the expansion row cell
+*/
+tbody > tr:not(.app-row-expansion) > td:first-child {
+  padding-left: 5px;
+}
+.app-row-expansion > td {
+  padding-left: 5px; /* applies alongside padding above */
+}
+
+/* Utility */
+.no-wrap { white-space: nowrap; }
+
+/* Keep the Show/Hide row grey when the first row is auto-selected */
+tbody > tr.is-active-row + tr.app-row-expansion > td {
+  background: #F3F2F1;
+}
+tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
+
+
+
+/* Map popup container */
+.leaflet-popup-content-wrapper.area-card-popup,
+.leaflet-popup-content-wrapper .area-card {
+  border-radius: 8px;
+}
+
+.area-card {
+  font-family: inherit;
+}
+
+.area-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 4px 0;
+}
+
+.app-area-chip {
+  display: inline-block;
+  background: #BBD4EA;
+  color: #000;
+  line-height: 1;
+  padding: 5px 6px;
+  font-size: 16px;
+  margin: 0 0 6px 0;
+}
+
+.app-area-when {
+  margin:0;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Optional: tighter popup chrome */
+.leaflet-popup-content {
+  margin: 10px 12px;
+}
+
+/* GPS point popup styling */
+.leaflet-popup-content {
+  margin: 6px 8px !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.gps-point-popup .leaflet-popup-content {
+  min-width: 220px;   /* try 220–260px, adjust as you like */
+  white-space: normal; /* allow wrapping instead of squishing */
+}
+.gps-point-popup .govuk-heading-s {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.gps-point-popup .govuk-summary-list {
+  margin-bottom: 0;
+}
+
+.gps-point-popup .govuk-summary-list__key,
+.gps-point-popup .govuk-summary-list__value {
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.gps-point-popup .govuk-summary-list__row {
+  margin-bottom: 2px;
+}
+
+.gps-point-popup code {
+  font-size: 12px;
+  background: #f3f2f1;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.leaflet-popup-tip {
+  background: white;
+}
+
+
+
+/* Make the MOJ Date Picker calendar sit above the Leaflet map */
+.pika-single {                /* calendar element used by the MOJ date picker */
+  z-index: 10000 !important;  /* higher than Leaflet controls/popups */
+}
+
+/* Ensure the filters block stacks above the map if they overlap */
+.loi-filters {
+  position: relative;
+  z-index: 2;
+}
+#map {
+  position: relative;
+  z-index: 1;
+}
+
+/* Billy Hoskins map time and date filter adjustments */
+/* === Billy Hoskins: map filters layout === */
+#bh-map-filters .bh-filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto; /* col1=from, col2=to, col3=actions */
+  column-gap: 24px;                     /* controls the space between the two columns */
+  row-gap: 14px;
+  align-items: start;
+}
+
+/* Place items explicitly so columns line up across both rows */
+#bh-map-filters .bh-date-from { grid-column: 1; grid-row: 1; align-self: end; }
+#bh-map-filters .bh-date-to   { grid-column: 2; grid-row: 1; align-self: end; }
+#bh-map-filters .bh-time-from { grid-column: 1; grid-row: 2; }
+#bh-map-filters .bh-time-to   { grid-column: 2; grid-row: 2; }
+#bh-map-filters .bh-actions   {
+  grid-column: 3; grid-row: 2;          /* align with the time row (not the date row) */
+  display: flex; align-items: center; gap: 16px;
+}
+
+/* Prevent wrapping of button/link text */
+#bh-map-filters .bh-actions .govuk-button { margin: 0; white-space: nowrap; }
+#bh-map-filters .bh-actions a { white-space: nowrap; }
+
+/* Mobile: stack cleanly */
+@media (max-width: 40.0525em){
+  #bh-map-filters .bh-filters-grid {
+    grid-template-columns: 1fr; column-gap: 0;
+  }
+  #bh-map-filters .bh-date-from,
+  #bh-map-filters .bh-date-to,
+  #bh-map-filters .bh-time-from,
+  #bh-map-filters .bh-time-to,
+  #bh-map-filters .bh-actions {
+    grid-column: 1; grid-row: auto;
+  }
+  #bh-map-filters .bh-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  align-self: start;
+}
+}
+
+/* Billy: compact filters panel */
+#bh-map-filters .bh-filters-panel {
+  padding: 12px 16px;                   /* was ~20px */
+}
+
+/* Tighten vertical rhythm inside the panel */
+#bh-map-filters .bh-filters-grid {
+  row-gap: 6px;                         /* less space between date + time rows */
+  column-gap: 40px;                     /* keep a nice horizontal gap */
+}
+
+/* Nuke default big form-group gaps (only inside this panel) */
+#bh-map-filters .govuk-form-group {
+  margin-bottom: 0;
+}
+
+/* Labels sit closer to inputs */
+#bh-map-filters .govuk-label {
+  margin-bottom: 2px;
+}
+
+/* Inputs shouldn’t add extra bottom space */
+#bh-map-filters .govuk-input {
+  margin-bottom: 0;
+}
+
+/* Actions row: stay on the “time” row, no extra margins */
+#bh-map-filters .bh-actions {
+  align-self: start;
+  display: flex;
+  align-items: center;                  /* vertically centre button + link */
+  gap: 16px;
+  margin-top: 0;                        /* leave the JS to set this if needed */
+}
+#bh-map-filters .bh-actions .govuk-button {
+  margin: 0;                            /* remove default bottom margin */
+}
+
+
+
+
+// Summary card styling. Can be removed if you update the html to use the GOV.UK Summary Card component
+// https://design-system.service.gov.uk/components/summary-card/
+
+.app-summary-card {
+    border: 1px solid #b1b4b6
+}
+
+.app-summary-card .app-summary-card__header {
+    align-items: center;
+    background-color: #f3f2f1;
+    padding: 15px
+}
+
+@media (min-width: 48.0625em) {
+    .app-summary-card .app-summary-card__header {
+        display:flex;
+        justify-content: space-between;
+        align-items: start
+    }
+}
+
+.app-summary-card .app-summary-card__title {
+    font-family: GDS Transport,arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    margin: 0
+}
+
+@media print {
+    .app-summary-card .app-summary-card__title {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-summary-card .app-summary-card__title {
+        font-size:1.1875rem;
+        line-height: 1.3157894737
+    }
+}
+
+@media print {
+    .app-summary-card .app-summary-card__title {
+        font-size: 14pt;
+        line-height: 1.15
+    }
+}
+
+.app-summary-card .app-summary-card__meta {
+    font-family: GDS Transport,arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: .875rem;
+    line-height: 1.1428571429;
+    display: block;
+    margin: 0
+}
+
+@media print {
+    .app-summary-card .app-summary-card__meta {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-summary-card .app-summary-card__meta {
+        font-size:1rem;
+        line-height: 1.25
+    }
+}
+
+@media print {
+    .app-summary-card .app-summary-card__meta {
+        font-size: 14pt;
+        line-height: 1.2
+    }
+}
+
+.app-summary-card .app-summary-card__actions {
+    font-family: GDS Transport,arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25
+}
+
+@media print {
+    .app-summary-card .app-summary-card__actions {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-summary-card .app-summary-card__actions {
+        font-size:1.1875rem;
+        line-height: 1.3157894737
+    }
+}
+
+@media print {
+    .app-summary-card .app-summary-card__actions {
+        font-size: 14pt;
+        line-height: 1.15
+    }
+}
+
+.app-summary-card .app-summary-card__actions-list {
+    width: 100%;
+    margin: 0;
+    padding: 0
+}
+
+.app-summary-card .app-summary-card__actions-list-item {
+    display: block;
+    white-space: nowrap
+}
+
+@media (min-width: 48.0625em) {
+    .app-summary-card .app-summary-card__actions-list-item {
+        display:inline-block;
+        margin-left: 10px;
+        text-align: right
+    }
+}
+
+.app-summary-card .app-summary-card__actions-list-item:first-child {
+    margin-left: 0
+}
+
+.app-summary-card .app-summary-card__body {
+    font-family: GDS Transport,arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    padding: 15px
+}
+
+@media print {
+    .app-summary-card .app-summary-card__body {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-summary-card .app-summary-card__body {
+        font-size:1.1875rem;
+        line-height: 1.3157894737
+    }
+}
+
+@media print {
+    .app-summary-card .app-summary-card__body {
+        font-size: 14pt;
+        line-height: 1.15
+    }
+}
+
+.app-summary-card .govuk-summary-list,.app-summary-card .govuk-table {
+    margin-bottom: 0
+}
+
+.app-summary-card .govuk-summary-list__row:last-child,.app-summary-card .govuk-summary-list__row:last-child>*,.app-summary-card .govuk-table__row:last-child .govuk-table__cell {
+    border-bottom: 0
+}
+
+.app-summary-card--large-title .app-summary-card__title {
+    font-family: GDS Transport,arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.1111111111
+}
+
+@media print {
+    .app-summary-card--large-title .app-summary-card__title {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-summary-card--large-title .app-summary-card__title {
+        font-size:1.2rem;
+        line-height: 1.25
+    }
+}
+
+@media print {
+    .app-summary-card--large-title .app-summary-card__title {
+        font-size: 18pt;
+        line-height: 1.15
+    }
+}
+
+@media print {
+    .app-summary-card__header {
+        page-break-inside: avoid;
+        -moz-column-break-inside: avoid;
+        break-inside: avoid
+    }
+
+    .app-summary-card__actions {
+        display: none
+    }
+}

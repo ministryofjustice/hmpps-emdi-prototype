@@ -1,0 +1,249 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "#", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Cases" %}
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <h1 class="govuk-heading-l">Cases</h1>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "My cases",
+    href: "#",
+    active: true
+  }, {
+    text: "Recently viewed cases",
+    href: "#"
+  }]
+}) }}
+
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  head: [
+    {
+      text: "Name / CRN",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    },
+    {
+      text: "Date of birth / Age",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Tag type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Sentence",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Recent tag activity",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        html: '<a href="#" class="govuk-link govuk-!-font-weight-bold no-wrap">MEDFORD, Terry</a><br/>
+
+        <span class="secondary-text govuk-!-font-weight-bold">X778127</span>',
+        attributes: {
+          "data-sort-value": "MEDFORD, Terry"
+        }
+      },
+      {
+        html: '8 Nov 1996<br/>
+        <span class="secondary-text">Age 27</span>',
+        attributes: {
+          "data-sort-value": "27"
+        }
+      },
+      {
+        text: "HDC curfew",
+        attributes: {
+          "data-sort-value": "HDC curfew"
+        }
+      },
+      {
+        text: "Adult Custody > 12m",
+        attributes: {
+          "data-sort-value": "Adult Custody > 12m"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map">Compliance forecast updated</a>',
+        attributes: {
+          "data-sort-value": "Compliance forecast updated"
+        }
+      }
+    ],
+    [
+      {
+        html: '<a href="richard-marks" class="govuk-link govuk-!-font-weight-bold">MARKS, Richard</a><br/>
+        <span class="secondary-text govuk-!-font-weight-bold">X778126</span>',
+        attributes: {
+          "data-sort-value": "MARKS, Richard"
+        }
+      },
+      {
+        html: '23 April 1996<br/>
+        <span class="secondary-text">Age 27</span>',
+        attributes: {
+          "data-sort-value": "27"
+        }
+      },
+      {
+        text: "GPS location monitoring",
+        attributes: {
+          "data-sort-value": "GPS location monitoring"
+        }
+      },
+      {
+        text: "CJA - Community Order",
+        attributes: {
+          "data-sort-value": "CJA - Community Order"
+        }
+      },
+      {
+        html: '<a href="location" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">5</span>',
+        
+        attributes: {
+          "data-sort-value": "New location of interest"
+        }
+      }
+    ],
+    [
+      {
+        html: '<a href="billy-hoskins" class="govuk-link govuk-!-font-weight-bold">HOSKINS, Billy</a><br/>
+
+        <span class="secondary-text govuk-!-font-weight-bold">Y123456</span>',
+        attributes: {
+          "data-sort-value": "HOSKINS, Billy"
+        }
+      },
+      {
+        html: '18 Nov 1995<br/>
+        <span class="secondary-text">Age 26</span>',
+        attributes: {
+          "data-sort-value": "26"
+        }
+      },
+      {
+        text: "GPS location monitoring",
+        attributes: {
+          "data-sort-value": "GPS location monitoring"
+        }
+      },
+      {
+        text: "Adult Custody > 12m",
+        attributes: {
+          "data-sort-value": "Adult Custody > 12m"
+        }
+      },
+      {
+        html: '<a href="bh-location#filter-by-loi" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">3</span>',
+        attributes: {
+          "data-sort-value": "New location of interest"
+        }
+      }
+    ],
+    [
+      {
+        html: '<a href="#" class="govuk-link govuk-!-font-weight-bold">KNIGHT, Mike</a><br/>
+
+        <span class="secondary-text govuk-!-font-weight-bold">B234567</span>',
+        attributes: {
+          "data-sort-value": "KNIGHT, Mike"
+        }
+      },
+      {
+        html: '29 Jan 1990<br/>
+        <span class="secondary-text">Age 31</span>',
+        attributes: {
+          "data-sort-value": "31"
+        }
+      },
+      {
+        text: "AAMT",
+        attributes: {
+          "data-sort-value": "AAMT"
+        }
+      },
+      {
+        text: "CJA - Community Order",
+        attributes: {
+          "data-sort-value": "CJA - Community Order"
+        }
+      },
+      {
+        html: '<a href="#" class="govuk-link plot-map">Alcohol measure updated</a>',
+        attributes: {
+          "data-sort-value": "Alcohol measure updated"
+        }
+      }
+    ],
+    [
+      {
+        html: '<a href="penny-jordan" class="govuk-link govuk-!-font-weight-bold">JORDAN, Penny</a><br/>
+
+        <span class="secondary-text govuk-!-font-weight-bold">X662727</span>',
+        attributes: {
+          "data-sort-value": "JORDAN, Penny"
+        }
+      },
+      {
+        html: '17 Mar 1996<br/>
+        <span class="secondary-text">Age 27</span>',
+        attributes: {
+          "data-sort-value": "27"
+        }
+      },
+      {
+        text: "GPS location monitoring",
+        attributes: {
+          "data-sort-value": "GPS location monitoring"
+        }
+      },
+      {
+        text: "CJA - Std Determinate Custody",
+        attributes: {
+          "data-sort-value": "CJA - Std Determinate Custody"
+        }
+      },
+      {
+        html: '<a href="location" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">1</span>',
+        attributes: {
+          "data-sort-value": "New location of interest"
+        }
+      }
+    ]
+  ]
+}) }}
+    
+  </div>
+</div>
+
+{% endblock %}

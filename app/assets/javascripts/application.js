@@ -1,8 +1,7 @@
-//
-// For guidance on how to add JavaScript see:
-// https://prototype-kit.service.gov.uk/docs/adding-css-javascript-and-images
-//
+// application.js
 
-window.GOVUKPrototypeKit.documentReady(() => {
-  // Add JavaScript here
-})
+// Load your custom JS (no need for GOVUKPrototypeKit here)
+$(function () {
+  // Just load gps-map directly if needed
+  // Or remove this file entirely if unused
+});

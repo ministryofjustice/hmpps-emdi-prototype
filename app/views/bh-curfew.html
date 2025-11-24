@@ -1,0 +1,242 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Curfew activity, Billy Hoskins" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Billy Hoskins", href: "billy-hoskins" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: Y123456 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 18 Nov 1995 (Age 29)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        <a href="https://www.figma.com/proto/vlCrUVrP6fuq59QzUg9lyy/GPS-Alpha-2.0?page-id=6722%3A15258&node-id=6936-6250&p=f&viewport=-4249%2C-4220%2C0.21&t=gk748NC1vQvFiqZc-8&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=6722%3A16450&hide-ui=1" style="color:#505a5f; text-decoration: none;">Sentence: Community Order (12 months)</a>
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Billy Hoskins
+    </h1>
+  </div>
+</div>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "billy-hoskins"
+  }, {
+    text: "Location activity",
+    href: "bh-location"
+  },
+  {
+    text: "Curfew activity",
+    href: "",
+    active: true
+  }, {
+    text: "Tag management",
+    href: "bh-tag-breaches"
+  }]
+}) }}
+
+  <div class="govuk-width-container">
+      <h2 class="govuk-heading-m" id="map-header">Curfew activity</h2>
+
+
+      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+
+      <h3 class="govuk-heading-s" id="map-header">Recent activity</h3>
+      <p class="govuk-body">
+        Billy Hoskins was <strong>out during curfew for 31 minutes</strong> from 1:05am to 1:36am on Sunday 12 October 2025.
+      </p>
+
+      <p class="govuk-body">
+        They were also out during curfew from <strong>1am to 2am on Friday 10 October 2025</strong> and from <strong>4:30am to 6:30am on Saturday 11 October 2025</strong>.
+      </p>
+
+      <p class="govuk-body">
+        They <strong>arrived late</strong> at their approved address on 5 days for a total of <strong>33 minutes</strong>.
+      </p>
+
+      <p class="govuk-body">
+        They <strong>left early</strong> from their approved address on 1 day for a total of <strong>7 minutes</strong>. 
+      </p>
+
+      <p class="govuk-body">
+        Recent activity includes any times that the person has been out during curfew, even where there may be a reasonable excuse.
+      </p>
+      {% endcall %}
+
+      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+      <h3 class="govuk-heading-s govuk-!-margin-top-10" id="atvs">Accumulated time violations (ATV)</h3>
+
+      <p class="govuk-body">
+        Billy has built up <strong>100 violation minutes</strong> since their home detention tag (HDC) was fitted on <strong>Wednesday 12 August 2025</strong>.
+      </p>
+      <p class="govuk-body">
+        These are known as ‘accumulated time violations’ (ATV) and only include ‘unreasonable’ violations.
+      </p>
+      <p class="govuk-body">
+        Billy is now 20 minutes away from breaching their curfew conditions.
+      </p>
+      {% endcall %}
+  </div>
+
+<h3 id="violation-minutes" class="govuk-heading-m">Violation minutes</h3>
+
+{{ govukDetails({
+  summaryText: "Choose date range",
+  html: "
+  <ul id='range-chooser' class='govuk-list govuk-list--spaced'>
+    <li><a href='#' data-range='7'>Last 7 days</a></li>
+    <li><a href='#' data-range='30'>Last 30 days</a></li>
+    <li class='govuk-!-margin-bottom-0'><a href='#' data-range='43'>Since tag was fitted (43 days)</a></li>
+  </ul>"
+}) }}
+
+<h4 id="violation-heading" class="govuk-heading-s">Since tag was fitted (43 days)</h4>
+
+
+<div id="curfew-toolbar">
+  <div class="bh-chart-wrap govuk-!-margin-bottom-4">
+    <div class="bh-chart-header">
+      <button class="govuk-button govuk-button--secondary" id="curfew-btn-toggle-view"
+              aria-controls="bh-chart, bh-table" data-view="chart">
+        Change to accessible table view
+      </button>
+
+      <div id="curfew-duration-controls">
+        <p class="govuk-!-margin-bottom-0 govuk-!-font-size-16">
+          Show duration:
+          <a href="#" class="bh-duration-link" data-min="0">All</a> |
+          <a href="#" class="bh-duration-link" data-min="1">Over 1 min</a> |
+          <a href="#" class="bh-duration-link" data-min="5">Over 5 mins</a> |
+          <a href="#" class="bh-duration-link" data-min="15">Over 15 mins</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+
+  <div id="curfew-chart-wrap" role="img"
+       aria-label="Line chart showing violation minutes by day for the selected range."
+       class="bh-chart-area">
+    <canvas id="violationsChart" height="300"></canvas>
+  </div>
+
+  <!-- Table view (hidden by default, becomes visible when toggled) -->
+<div id="curfew-table-wrap" hidden>
+  <table class="govuk-table" data-module="moj-sortable-table">
+    <caption class="govuk-table__caption govuk-table__caption--m" id="bh-table-caption">
+      Violation events – since tag was fitted (placeholder data)
+    </caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header" aria-sort="ascending">Date</th>
+        <th scope="col" class="govuk-table__header">Time</th>
+        <th scope="col" class="govuk-table__header">Duration</th>
+        <th scope="col" class="govuk-table__header">Violation type</th>
+        <th scope="col" class="govuk-table__header">Status</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body" id="bh-events-body">
+      <!-- rows injected by JS -->
+    </tbody>
+  </table>
+
+  <div class="govuk-!-margin-top-3">
+    <nav id="bh-pager" class="moj-pagination" aria-label="Results"></nav>
+  </div>
+
+</div>
+
+<p class="govuk-body govuk-!-margin-top-0">&nbsp;</p>
+
+{{ govukDetails({
+  summaryText: "How these violations were calculated",
+  html: "
+  <p class='govuk-body'>Violation minutes show how long a person on probation was away from home for when they violated their curfew.</p>
+  <p class='govuk-body'>Violation minutes are recorded when the person on probation:</p>
+  <ul class='govuk-list govuk-list--bullet'>
+    <li>arrives home after their curfew start time</li>
+    <li>goes out during their curfew period</li>
+    <li>leaves home before their curfew end time</li>
+  </ul>
+  <p class='govuk-body'>The violation minutes on show include reasonable and unreasonable violations.</p>
+  <p class='govuk-body'>Violations may be considered ‘reasonable’ if the person on probation can provide evidence that they had a good reason for violating their curfew.</p>
+  "
+}) }}
+
+<section class="bh-curfew-overview govuk-!-margin-bottom-7">
+  <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+  <div class="bh-curfew-grid govuk-width-container">
+    <!-- LEFT HAND narrative -->
+    <div class="bh-curfew-left">
+      <h3 class="govuk-heading-m govuk-!-margin-top-10">Curfew compliance forecast</h3>
+
+<p class='govuk-body'>Billy Hoskins is not likely to comply with their HDC over the next 14 days.</p>
+
+<h4 class="govuk-heading-s">How this forecast was calculated</h4>
+
+<p class='govuk-body'>This forecast uses the following 3 variables to produce Billy’s likelihood of compliance:</p>
+<ul class='govuk-list govuk-list--bullet'>
+  <li>their number of violation minutes over the last 7 days</li>
+  <li>their percentage of total days with a time violation since their HDC tag was fitted</li>
+  <li>whether they have any previous custodial sentences</li>
+</ul>
+
+<p class='govuk-body'>A person on probation is considered as being not likely to comply with their HDC if their forecast calculates their likelihood of compliance as being less than 50%.</p>
+    </div>
+
+    <!-- RIGHT: the forecast card -->
+    <aside class="bh-forecast-card" aria-labelledby="forecast-heading">
+      <h2 id="forecast-heading" class="govuk-heading-s govuk-!-margin-bottom-2">Forecast summary</h2>
+
+      <span class="bh-tag bh-tag--danger-outline govuk-!-margin-bottom-3" aria-label="Not likely">
+        NOT LIKELY
+      </span>
+
+      <p class="govuk-body govuk-!-margin-bottom-4">
+        Electronic monitoring calculates the likelihood of compliance as being
+        <strong>less than 50%</strong>
+      </p>
+
+      <p class="govuk-hint govuk-!-margin-bottom-10 govuk-!-font-size-16">
+        This forecast was calculated at 9:30am on Tuesday 14 October 2025.</p>
+      <p class="govuk-hint govuk-!-margin-bottom-10 govuk-!-font-size-16">
+         This forecast will be updated each day when the latest data is available.
+      </p>
+    </aside>
+
+  </div>
+  <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+</section>
+
+{# Chart.js #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+
+<script src="/public/javascripts/curfew-time-normaliser.js" defer></script>
+
+{# Your controller that builds/updates the chart and heading #}
+<script src="/public/javascripts/curfew-charts.js" defer></script>
+
+<script src="/public/javascripts/curfew-view-toggle.js" defer></script>
+
+{% endblock %}

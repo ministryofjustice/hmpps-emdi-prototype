@@ -1,0 +1,53 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Confirm location of interest" %}
+
+{% block content %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+<div class="govuk-width-container">
+  <h1 class="govuk-heading-l">Confirm location</h1>
+  <p class="govuk-body">
+    6 addresses found for <b>{{ data.postcode or 'wr11nl' }}</b> and <b>{{ data.searchString or '1' }}</b>. 
+    <a href="add-location1" class="govuk-link">Search again</a>
+  </p>
+
+  {{ govukInsetText({
+    html: (data.selectedAddress or "No address selected yet") | replace(", ", "<br>")
+  }) }}
+
+  <form method="post" action="/add-location3" novalidate>
+    {{ govukInput({
+      id: "loiName",
+      name: "loiName",
+      label: {
+        text: "Name your custom location",
+        classes: "govuk-label-p"
+      },
+      value: data.loiName
+    }) }}
+
+    {{ govukButton({
+      text: "Save this address",
+      type: "submit"
+    }) }}
+  </form>
+
+  {{ govukInsetText({
+    html: "It can take up to 24 hours for a new location to appear on the map."
+  }) }}
+
+  <p class="govuk-body"><a href="add-location2" class="govuk-link">Use a different address</a></p>
+  <p class="govuk-body govuk-!-margin-bottom-0"><a href="add-manually" class="govuk-link">Enter address manually</a></p>
+</div>
+{% endblock %}

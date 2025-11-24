@@ -24,9 +24,9 @@
           <span class="govuk-caption-m govuk-!-margin-bottom-2">
         <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: X778126 
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Date of birth: 23 April 1996 (Age 27)
+        Date of birth: 23 April 1996 (Age 29)
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Sentence: GPS community single order​​
+        Sentence: Community Order (12 months)
       </span>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
       Richard Marks
@@ -34,7 +34,7 @@
   </div>
 </div>
 
-
+<!-- 
 {{ mojAlert({
   variant: "warning",
   title: "Failure to charge battery",
@@ -50,9 +50,9 @@
   dismissible: true,
   html: '<a href="rm-location">View Richard&apos;s locations of interest</a>.'
 }) }}
+-->
 
 
-{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
 
 {{ mojSubNavigation({
   label: "Sub navigation",
@@ -64,8 +64,8 @@
     text: "Location activity",
     href: "rm-location"
   }, {
-    text: "Case notes",
-    href: "rm-case-notes-ems"
+    text: "Tag management",
+    href: ""
   }]
 }) }}
 
@@ -114,7 +114,7 @@
         </dt>
         <dd class="govuk-summary-list__value">
           <span data-qa="dateOfBirthAndAgeValue">
-            23 April 1996 (Age 27)
+            23 April 1996 (Age 29)
           </span>
         </dd>
       </div>
@@ -299,7 +299,7 @@
           <span data-qa="nameLabel">Order</span>
         </dt>
         <dd class="govuk-summary-list__value">
-          <span data-qa="nameValue">GPS community single order</span>
+          <span data-qa="nameValue">CJA - Community Order</span>
         </dd>
       </div>
 

@@ -1,0 +1,58 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Select location of interest" %}
+
+{% block content %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<div class="govuk-width-container">
+  <form method="post" action="/add-location2" novalidate>
+    {{ govukRadios({
+      name: "selectedAddress",
+      value: data.selectedAddress,
+      classes: "govuk-radios--small",
+      fieldset: {
+        legend: {
+          text: "Select a location",
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--l"
+        }
+      },
+      formGroup: {
+        beforeInputs: {
+          html: "<p class='govuk-body'>6 addresses found for <b>"
+                + (data.postcode or 'wr11nl')
+                + "</b> and <b>"
+                + (data.searchString or '1')
+                + "</b>. <a href='add-location1' class='govuk-link'>Search again</a></p>"
+        }
+      },
+      items: [
+        { value: "1 Finch Road, Stanway, Colchester, CO3 8DF",  text: "1 Finch Road, Stanway, Colchester, CO3 8DF" },
+        { value: "10 Finch Road, Stanway, Colchester, CO3 8DF",  text: "10 Finch Road, Stanway, Colchester, CO3 8DF" },
+        { value: "11 Finch Road, Stanway, Colchester, CO3 8DF",  text: "11 Finch Road, Stanway, Colchester, CO3 8DF" },
+        { value: "100 Finch Road, Stanway, Colchester, CO3 8DF",  text: "100 Finch Road, Stanway, Colchester, CO3 8DF" },
+        { value: "101 Finch Road, Stanway, Colchester, CO3 8DF",  text: "101 Finch Road, Stanway, Colchester, CO3 8DF" },
+        { value: "110 Finch Road, Stanway, Colchester, CO3 8DF",  text: "110 Finch Road, Stanway, Colchester, CO3 8DF" }
+      ]
+    }) }}
+
+    {{ govukButton({
+      text: "Save this address",
+      type: "submit"
+    }) }}
+  </form>
+
+  <p class="govuk-body govuk-!-margin-bottom-10"><a href="add-manually" class="govuk-link">Enter address manually</a></p>
+  <p class="govuk-body govuk-!-margin-bottom-0"><a href="bh-manage-locations" class="govuk-link">Cancel and go back</a></p>
+</div>
+{% endblock %}

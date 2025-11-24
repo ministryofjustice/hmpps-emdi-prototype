@@ -1,0 +1,3574 @@
+{
+  "totalDays": 43,
+  "days": [
+    {
+      "date": "2025-09-01",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 53
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 13
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 39
+        },
+        {
+          "minutes": 12,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 3
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 5
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 3
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 39
+        },
+        {
+          "minutes": 19,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 40
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 33
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 45
+        },
+        {
+          "minutes": 9,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 10
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 6
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 30
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 4
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 24
+        }
+      ]
+    },
+    {
+      "date": "2025-09-02",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 19
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 49
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 16
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 45
+        },
+        {
+          "minutes": 21,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 51
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 48
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 44
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 53
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 10
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 3
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 9
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 41
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 1
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 43
+        }
+      ]
+    },
+    {
+      "date": "2025-09-03",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 8
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 16
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 24
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 21
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 33
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 43
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 12
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 31
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 59
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 29
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 26
+        },
+        {
+          "minutes": 17,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 47
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 18
+        }
+      ]
+    },
+    {
+      "date": "2025-09-04",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 52
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 15
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 16
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 44
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 21
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 29
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 19
+        },
+        {
+          "minutes": 14,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 27
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 8
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 38
+        },
+        {
+          "minutes": 8,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 1
+        }
+      ]
+    },
+    {
+      "date": "2025-09-05",
+      "events": [
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 53
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 1
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 15
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 54
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 34
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 27
+        },
+        {
+          "minutes": 13,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 31
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 5
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 7
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 28
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 8
+        }
+      ]
+    },
+    {
+      "date": "2025-09-06",
+      "events": [
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 26
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 23
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 13
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 18
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 28
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 5
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 48
+        }
+      ]
+    },
+    {
+      "date": "2025-09-07",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 44
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 56
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 20
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 42
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 38
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 11
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 26
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 2
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 47
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 46
+        },
+        {
+          "minutes": 7,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 48
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 20
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 41
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 18
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 22
+        },
+        {
+          "minutes": 16,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 1
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 47
+        }
+      ]
+    },
+    {
+      "date": "2025-09-08",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 46
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 20
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 37
+        },
+        {
+          "minutes": 13,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 19
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 46
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 56
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 51
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 6
+        },
+        {
+          "minutes": 21,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 7
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 41
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 42
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 13
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 12
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 30
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 53
+        }
+      ]
+    },
+    {
+      "date": "2025-09-09",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 11
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 56
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 16
+        },
+        {
+          "minutes": 11,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 53
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 59
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 5
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 9
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 24
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 58
+        },
+        {
+          "minutes": 18,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 23
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 15
+        }
+      ]
+    },
+    {
+      "date": "2025-09-10",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 30
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 2
+        },
+        {
+          "minutes": 56,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 18
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 24
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 6
+        },
+        {
+          "minutes": 19,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 59
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 22
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 54
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 37
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 36
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 20
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 11
+        }
+      ]
+    },
+    {
+      "date": "2025-09-11",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 39
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 9
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 4
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 52
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 22
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 52
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 13
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 52
+        },
+        {
+          "minutes": 10,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 52
+        },
+        {
+          "minutes": 25,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 52
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 40
+        }
+      ]
+    },
+    {
+      "date": "2025-09-12",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 54
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 52
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 16
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 59
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 49
+        },
+        {
+          "minutes": 16,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 40
+        },
+        {
+          "minutes": 15,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 4
+        },
+        {
+          "minutes": 22,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 33
+        }
+      ]
+    },
+    {
+      "date": "2025-09-13",
+      "events": [
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 48
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 3
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 15
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 3
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 53
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 8
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 37
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 55
+        }
+      ]
+    },
+    {
+      "date": "2025-09-14",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 29
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 55
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 59
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 2
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 9
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 29
+        }
+      ]
+    },
+    {
+      "date": "2025-09-15",
+      "events": [
+        {
+          "minutes": 19,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 29
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 14
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 37
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 1
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 11
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 43
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 46
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 14
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 25
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 23
+        }
+      ]
+    },
+    {
+      "date": "2025-09-16",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 18
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 32
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 11
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 51
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 2
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 33
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 10
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 0
+        }
+      ]
+    },
+    {
+      "date": "2025-09-17",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 25
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 49
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 17
+        },
+        {
+          "minutes": 8,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 10
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 37
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 44
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 20
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 29
+        }
+      ]
+    },
+    {
+      "date": "2025-09-18",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 15
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 51
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 57
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 48
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 38
+        },
+        {
+          "minutes": 14,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 3
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 53
+        },
+        {
+          "minutes": 21,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 14
+        }
+      ]
+    },
+    {
+      "date": "2025-09-19",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 27
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 34
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 10
+        },
+        {
+          "minutes": 6,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 30
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 28
+        },
+        {
+          "minutes": 19,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 50
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 55
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 49
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 9
+        },
+        {
+          "minutes": 25,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 22
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 43
+        }
+      ]
+    },
+    {
+      "date": "2025-09-20",
+      "events": [
+        {
+          "minutes": 13,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 34
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 55
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 53
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 50
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 57
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 23
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 56
+        },
+        {
+          "minutes": 14,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 58
+        }
+      ]
+    },
+    {
+      "date": "2025-09-21",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 45
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 3
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 16
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 14
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 54
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 55
+        }
+      ]
+    },
+    {
+      "date": "2025-09-22",
+      "events": [
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 43
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 53
+        },
+        {
+          "minutes": 30,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 56
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 53
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 43
+        },
+        {
+          "minutes": 8,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 14
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 47
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 42
+        },
+        {
+          "minutes": 13,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 18
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 54
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 1
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 20
+        }
+      ]
+    },
+    {
+      "date": "2025-09-23",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 44
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 26
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 9
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 5
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 7
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 38
+        },
+        {
+          "minutes": 9,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 55
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 26
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 59
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 53
+        },
+        {
+          "minutes": 14,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 14
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 38
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 28
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 33
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 36
+        }
+      ]
+    },
+    {
+      "date": "2025-09-24",
+      "events": [
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 27
+        },
+        {
+          "minutes": 8,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 29
+        },
+        {
+          "minutes": 37,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 42
+        },
+        {
+          "minutes": 20,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 59
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 13
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 47
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 56
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 10
+        },
+        {
+          "minutes": 8,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 55
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 0
+        }
+      ]
+    },
+    {
+      "date": "2025-09-25",
+      "events": [
+        {
+          "minutes": 7,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 2
+        },
+        {
+          "minutes": 6,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 41
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 55
+        },
+        {
+          "minutes": 8,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 41
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 15
+        },
+        {
+          "minutes": 8,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 34
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 54
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 21
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 47
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 7
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 2
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 15
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 11
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 37
+        }
+      ]
+    },
+    {
+      "date": "2025-09-26",
+      "events": [
+        {
+          "minutes": 7,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 48
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 49
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 1
+        },
+        {
+          "minutes": 9,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 8
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 12
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 11
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 7
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 12
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 22
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 53
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 5
+        }
+      ]
+    },
+    {
+      "date": "2025-09-27",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 31
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 4
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 19
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 2
+        },
+        {
+          "minutes": 20,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 53
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 12
+        }
+      ]
+    },
+    {
+      "date": "2025-09-28",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 26
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 21
+        },
+        {
+          "minutes": 13,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 26
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 47
+        },
+        {
+          "minutes": 27,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 55
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 48
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 43
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 48
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 31
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 27
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 18
+        }
+      ]
+    },
+    {
+      "date": "2025-09-29",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 38
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 17
+        },
+        {
+          "minutes": 17,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 22
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 2
+        },
+        {
+          "minutes": 8,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 55
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 14
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 37
+        },
+        {
+          "minutes": 7,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 28
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 20
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 3
+        }
+      ]
+    },
+    {
+      "date": "2025-09-30",
+      "events": [
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 26
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 2,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 57
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 34
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 21
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 51
+        },
+        {
+          "minutes": 14,
+          "type": "unacceptable",
+          "startHH": 1,
+          "startMM": 5
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 30
+        },
+        {
+          "minutes": 13,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 51
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 16
+        }
+      ]
+    },
+    {
+      "date": "2025-10-01",
+      "events": [
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 49
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 24
+        },
+        {
+          "minutes": 26,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 44
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 49
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 14
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 40
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 46
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 38
+        }
+      ]
+    },
+    {
+      "date": "2025-10-02",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 12
+        },
+        {
+          "minutes": 18,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 39
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 50
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 4
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 15
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 47
+        },
+        {
+          "minutes": 7,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 12
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 40
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 51
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 56
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 43
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 8
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 28
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 59
+        },
+        {
+          "minutes": 11,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 51
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 32
+        }
+      ]
+    },
+    {
+      "date": "2025-10-03",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 39
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 2
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 43
+        },
+        {
+          "minutes": 28,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 45
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 9
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 8
+        },
+        {
+          "minutes": 15,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 21
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 0
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 28
+        }
+      ]
+    },
+    {
+      "date": "2025-10-04",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 52
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 53
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 45
+        },
+        {
+          "minutes": 11,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 38
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 9
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 19,
+          "startMM": 10
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 0
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 24
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 41
+        }
+      ]
+    },
+    {
+      "date": "2025-10-05",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 9
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 7
+        },
+        {
+          "minutes": 13,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 49
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 19
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 58
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 17
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 34
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 36
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 5
+        }
+      ]
+    },
+    {
+      "date": "2025-10-06",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 0
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 22,
+          "startMM": 19
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 29
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 20
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 44
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 11
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 2
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 6
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 33
+        },
+        {
+          "minutes": 24,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 34
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 6,
+          "startMM": 3
+        }
+      ]
+    },
+    {
+      "date": "2025-10-07",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 0
+        },
+        {
+          "minutes": 4,
+          "type": "acceptable",
+          "startHH": 20,
+          "startMM": 39
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 58
+        },
+        {
+          "minutes": 16,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 4
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 16
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 59
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 47
+        },
+        {
+          "minutes": 6,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 7
+        },
+        {
+          "minutes": 15,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 49
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 36
+        }
+      ]
+    },
+    {
+      "date": "2025-10-08",
+      "events": [
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 23
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 33
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 32
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 20
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 40
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 41
+        },
+        {
+          "minutes": 11,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 28
+        },
+        {
+          "minutes": 12,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 35
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 25
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 27
+        },
+        {
+          "minutes": 0,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 2
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 44
+        }
+      ]
+    },
+    {
+      "date": "2025-10-09",
+      "events": [
+        {
+          "minutes": 31,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 34
+        },
+        {
+          "minutes": 3,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 21
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 54
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 2,
+          "startMM": 8
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 16
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 48
+        },
+        {
+          "minutes": 8,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 46
+        },
+        {
+          "minutes": 4,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 28
+        },
+        {
+          "minutes": 12,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 54
+        },
+        {
+          "minutes": 6,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 47
+        },
+        {
+          "minutes": 7,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 24
+        },
+        {
+          "minutes": 24,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 17
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 4
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 36
+        }
+      ]
+    },
+    {
+      "date": "2025-10-10",
+      "events": [
+        {
+          "minutes": 39,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 45
+        },
+        {
+          "minutes": 4,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 12
+        },
+        {
+          "minutes": 10,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 19
+        },
+        {
+          "minutes": 34,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 3
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 48
+        },
+        {
+          "minutes": 10,
+          "type": "acceptable",
+          "startHH": 23,
+          "startMM": 14
+        },
+        {
+          "minutes": 5,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 12
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 1
+        }
+      ]
+    },
+    {
+      "date": "2025-10-11",
+      "events": [
+        {
+          "minutes": 18,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 27
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 1,
+          "startMM": 9
+        },
+        {
+          "minutes": 4,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 7
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 8
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 4,
+          "startMM": 45
+        },
+        {
+          "minutes": 6,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 34
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 21,
+          "startMM": 52
+        },
+        {
+          "minutes": 27,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 53
+        },
+        {
+          "minutes": 32,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 20
+        },
+        {
+          "minutes": 5,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 28
+        },
+        {
+          "minutes": 18,
+          "type": "unacceptable",
+          "startHH": 20,
+          "startMM": 51
+        },
+        {
+          "minutes": 3,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 1
+        },
+        {
+          "minutes": 10,
+          "type": "acceptable",
+          "startHH": 22,
+          "startMM": 17
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 19,
+          "startMM": 59
+        },
+        {
+          "minutes": 4,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 31
+        },
+        {
+          "minutes": 3,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 29
+        },
+        {
+          "minutes": 6,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 56
+        },
+        {
+          "minutes": 23,
+          "type": "acceptable",
+          "startHH": 4,
+          "startMM": 1
+        }
+      ]
+    },
+    {
+      "date": "2025-10-12",
+      "events": [
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 6
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 4
+        },
+        {
+          "minutes": 16,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 20
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 21,
+          "startMM": 20
+        },
+        {
+          "minutes": 6,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 34
+        },
+        {
+          "minutes": 17,
+          "type": "acceptable",
+          "startHH": 3,
+          "startMM": 57
+        },
+        {
+          "minutes": 4,
+          "type": "pending",
+          "startHH": 5,
+          "startMM": 55
+        },
+        {
+          "minutes": 9,
+          "type": "unacceptable",
+          "startHH": 4,
+          "startMM": 40
+        },
+        {
+          "minutes": 21,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 24
+        },
+        {
+          "minutes": 17,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 5
+        },
+        {
+          "minutes": 18,
+          "type": "unacceptable",
+          "startHH": 0,
+          "startMM": 3
+        }
+      ]
+    },
+    {
+      "date": "2025-10-13",
+      "events": [
+        {
+          "minutes": 5,
+          "type": "pending",
+          "startHH": 23,
+          "startMM": 4
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 0,
+          "startMM": 48
+        },
+        {
+          "minutes": 28,
+          "type": "unacceptable",
+          "startHH": 23,
+          "startMM": 30
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 27
+        },
+        {
+          "minutes": 12,
+          "type": "pending",
+          "startHH": 2,
+          "startMM": 18
+        },
+        {
+          "minutes": 1,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 25
+        },
+        {
+          "minutes": 3,
+          "type": "pending",
+          "startHH": 3,
+          "startMM": 2
+        },
+        {
+          "minutes": 1,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 50
+        },
+        {
+          "minutes": 37,
+          "type": "pending",
+          "startHH": 21,
+          "startMM": 12
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 20,
+          "startMM": 8
+        },
+        {
+          "minutes": 16,
+          "type": "pending",
+          "startHH": 6,
+          "startMM": 20
+        },
+        {
+          "minutes": 1,
+          "type": "pending",
+          "startHH": 19,
+          "startMM": 48
+        },
+        {
+          "minutes": 3,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 54
+        },
+        {
+          "minutes": 2,
+          "type": "unacceptable",
+          "startHH": 5,
+          "startMM": 31
+        },
+        {
+          "minutes": 2,
+          "type": "acceptable",
+          "startHH": 5,
+          "startMM": 8
+        },
+        {
+          "minutes": 7,
+          "type": "pending",
+          "startHH": 0,
+          "startMM": 41
+        },
+        {
+          "minutes": 5,
+          "type": "acceptable",
+          "startHH": 6,
+          "startMM": 12
+        },
+        {
+          "minutes": 7,
+          "type": "pending",
+          "startHH": 1,
+          "startMM": 16
+        },
+        {
+          "minutes": 2,
+          "type": "pending",
+          "startHH": 22,
+          "startMM": 49
+        },
+        {
+          "minutes": 4,
+          "type": "unacceptable",
+          "startHH": 3,
+          "startMM": 27
+        }
+      ]
+    }
+  ]
+}

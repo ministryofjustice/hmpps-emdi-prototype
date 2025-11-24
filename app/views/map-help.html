@@ -1,5 +1,7 @@
 {% extends "layouts/main.html" %}
 
+{% set currentNav = "" %}
+
 {% set navItems = [
   { text: "Home", href: "index", active: false },
   { text: "Cases", href: "cases", active: false },
@@ -13,7 +15,7 @@
 <a href="javascript:history.back()" class="govuk-back-link">Back</a>
 
 
-<h2 class="govuk-heading-m">Help with the map</h2>
+<h2 class="govuk-heading-l">Help with the map</h2>
 
 <div class="govuk-!-margin-bottom-6">
   <h2 class="govuk-heading-m">GPS delay</h2>
@@ -22,7 +24,7 @@
     <div style="float: right; width: 200px; height: 200px;" aria-hidden="true"></div>
 
     <p class="govuk-body">
-      The information shown on maps is based on the GPS data received from tags which is usually subject to delays of around 10 to 15 minutes.
+      The information shown on maps is based on the GPS data received from tags which is usually subject to delays of around 10 to 15 minutes. 
       </p>
     <p class="govuk-body">
       Delays vary depending on network coverage and how often tags upload GPS data.
@@ -41,20 +43,18 @@
     <img src="/public/images/help-loi.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
 
     <p class="govuk-body">
-      As a person on probation enters or leaves areas a location of interest this movement is recorded in their location history and on their map.
+      As a person on probation enters or leaves a location of interest this movement is recorded in their location history and on their map.
       </p>
     <p class="govuk-body">
       Locations of interest have defined boundaries which reflect the real-world and include:
       </p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>exclusion and inclusion zones</li>
-      <li>home and other addresses - for example, family, friend and parental</li>
       <li>places of interest - for example, pubs</li>
       <li>required locations - for example, places of work and training providers</li>
     </ul>
-    <p class="govuk-body">
-      <a href="#" class="govuk-link">View full list of locations of interest</a>
-    </p>
+    <p class="govuk-body">When you view a location of interest on the map, you’ll be able to check where the person was before and after they visited the location.</p>
+    <p class="govuk-body">The map will include the person’s GPS trail from around 10 minutes before to around 10 minutes after they were detected at that location.</p>
+    <p class="govuk-body">If you want to view more of their GPS trail, you can adjust the timings using the filter above the map.</p>
   </div>
 
   <div class="govuk-!-margin-bottom-6">
@@ -82,8 +82,7 @@
       <li>GPS satellite availability</li>
       <li>signal obstruction</li>
     </ul>
-    <p class="govuk-body">
-      <a href="#" class="govuk-link">View full list of factors</a>
+    
   </div>
 </div>
 

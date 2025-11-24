@@ -1,0 +1,189 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Tag management, Billy Hoskins" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Billy Hoskins", href: "billy-hoskins" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: Y123456 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 18 Nov 1995 (Age 29)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        <a href="https://www.figma.com/proto/vlCrUVrP6fuq59QzUg9lyy/GPS-Alpha-2.0?page-id=6722%3A15258&node-id=6936-6250&p=f&viewport=-4249%2C-4220%2C0.21&t=gk748NC1vQvFiqZc-8&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=6722%3A16450&hide-ui=1" style="color:#505a5f; text-decoration: none;">Sentence: Community Order (12 months)</a>
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Billy Hoskins
+    </h1>
+  </div>
+</div>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "billy-hoskins"
+  }, {
+    text: "Location activity",
+    href: "bh-location"
+  }, {
+    text: "Curfew activity",
+    href: "bh-curfew"
+  }, {
+    text: "Tag management",
+    href: "bh-tag-breaches",
+    active: true
+  }]
+}) }}
+
+<h2 class="govuk-heading-m">Tag management</h2>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Tag and home monitoring unit (HMU)</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-!-font-weight-regular">EMS were unable to fit Billy's GPS tag on Wednesday 5 and Friday 7 March 2025 as Billy was not available at their approved address. Their tag was fitted on Wednesday 12 March 2025.</span>
+        </dt>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  caption: "Tag tampers and battery recharging",
+  head: [
+    {
+      text: "Date",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    },
+    {
+      text: "Time"
+    },
+    {
+      text: "Tamper type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Tuesday 8 April 2025"
+      },
+      {
+        text: "12:36pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Strap cut</span>'
+      }
+    ],
+    [
+      {
+        text: "Thursday 10 April 2025"
+      },
+      {
+        text: "7:54pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Case open</span>'
+      }
+    ],
+    [
+      {
+        text: "Tuesday 15 April 2025"
+      },
+      {
+        text: "6:05am"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Case open</span>'
+      }
+    ],
+    [
+      {
+        text: "Friday 18 April 2025"
+      },
+      {
+        text: "9:44pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">Strap cut</span>'
+      }
+    ]
+  ]
+}) }}
+
+{{ govukTable({
+  attributes: {
+    "data-module": "moj-sortable-table"
+  },
+  caption: "Home monitoring unit (HMU) tampers",
+  head: [
+    {
+      text: "Date",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    },
+    {
+      text: "Time"
+    },
+    {
+      text: "Tamper type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Tuesday 8 April 2025"
+      },
+      {
+        text: "12:36pm"
+      },
+      {
+        html: '<span class="govuk-!-font-weight-bold govuk-error-message">HMU moved</span>'
+      }
+    ]
+  ]
+}) }}
+        </dt>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% endblock %}

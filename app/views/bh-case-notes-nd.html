@@ -1,0 +1,112 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Case notes, Billy Hoskins" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: "Billy Hoskins", href: "billy-hoskins" }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: Y123456 
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: 18 Nov 1995 (Age 29)
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        <a href="https://www.figma.com/proto/vlCrUVrP6fuq59QzUg9lyy/GPS-Alpha-2.0?page-id=6722%3A15258&node-id=6936-6250&p=f&viewport=-4249%2C-4220%2C0.21&t=gk748NC1vQvFiqZc-8&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=6722%3A16450&hide-ui=1" style="color:#505a5f; text-decoration: none;">Sentence: Community Order (12 months)</a>
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      Billy Hoskins
+    </h1>
+  </div>
+</div>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "billy-hoskins"
+  }, {
+    text: "Location activity",
+    href: "bh-location"
+  }, {
+    text: "Curfew activity",
+    href: "bh-curfew"
+  }, {
+    text: "Tag management",
+    href: "",
+    active: true
+  }]
+}) }}
+
+<h2 class="govuk-heading-m" id="map-header">Case notes</h2>
+
+
+{%- from "moj/components/side-navigation/macro.njk" import mojSideNavigation -%}
+
+<div class="govuk-grid-row">
+
+  <div class="govuk-grid-column-one-third">
+
+    {{ mojSideNavigation({
+      label: "Side navigation",
+      items: [{
+        text: "EMS",
+        href: "bh-tag-breaches"
+      }, {
+        text: "NDelius",
+        href: "bh-case-notes-nd",
+        active: true
+      }, {
+        text: "OASys",
+        href: "bh-case-notes-oasys"
+      }]
+    }) }}
+
+  </div>
+
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-!-margin-bottom-6">
+      <h3 class="govuk-heading-s">NDelius</h3>
+      <h4 class="govuk-heading-s">Office Visit</h4>
+      <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Date:</strong> 16/07/2025</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Author:</strong> JANE DOE (Probation Officer)</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-2"><strong>Type:</strong> Office Visit</p>
+      <p class="govuk-body">Billy attended the scheduled appointment at Southside Probation Office at 10:00am. He arrived on time and presented as sober and appropriately dressed.</p>
+      <p class="govuk-body">Discussion focused on compliance with curfew and electronic monitoring. No reported tampering or charging issues with the GPS tag. Billy stated he is currently staying at his approved address and looking for part-time work.</p>
+      <p class="govuk-body">AAMR requirement discussed. He denies any alcohol use and tag data confirms compliance to date. Next appointment agreed for 23/07/2025 at 10am.</p>
+      <p class="govuk-body govuk-!-margin-bottom-0">No immediate concerns raised. Monitoring to continue as planned.</p>
+    </div>
+
+    <div class="govuk-!-margin-bottom-6">
+      <h4 class="govuk-heading-s">Home Visit</h4>
+      <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Date:</strong> 13/07/2025</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-1"><strong>Author:</strong> MICHAEL CLARKE (Probation Service Officer)</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-2"><strong>Type:</strong> Home Visit</p>
+      <p class="govuk-body">Unannounced home visit conducted at 4:45pm. Billy was present and cooperative. Visual inspection of the EM equipment carried out; all devices appeared intact and charging as expected.</p>
+      <p class="govuk-body">Billy reported frustration around job application rejections but acknowledged the importance of continuing efforts. Encouraged to attend local employment support drop-in next Wednesday.</p>
+      <p class="govuk-body govuk-!-margin-bottom-0">No breaches or safeguarding concerns noted. Accommodation remains stable.</p>
+    </div>
+
+
+  </div>
+
+</div>
+
+
+{% endblock %}

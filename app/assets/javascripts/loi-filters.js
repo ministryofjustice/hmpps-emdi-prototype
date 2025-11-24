@@ -2,142 +2,161 @@
 (function () {
   'use strict';
 
+  // --- small utilities -------------------------------------------------------
   function onReady(fn) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', fn, { once: true });
-    } else {
-      fn();
-    }
+    } else { fn(); }
   }
 
-  onReady(function initLoiFilters() {
+  // Wait for a selector to exist
+  function waitForEl(selector, cb, tries = 40) {
+    const el = document.querySelector(selector);
+    if (el) return cb(el);
+    if (tries <= 0) return console.warn('[loi-filters] gave up waiting for', selector);
+    setTimeout(() => waitForEl(selector, cb, tries - 1), 50);
+  }
+
+  // Wait for at least one row in the LOI table body
+  function waitForRows(table, cb, tries = 40) {
+    const tbody = table.tBodies && table.tBodies[0];
+    const rowCount = tbody ? tbody.querySelectorAll('tr').length : 0;
+    if (rowCount > 0) return cb(tbody);
+    if (tries <= 0) return console.warn('[loi-filters] tbody present but no rows after waiting.');
+    setTimeout(() => waitForRows(table, cb, tries - 1), 50);
+  }
+
+  // Parse ISO (YYYY-MM-DD) or UK-ish long dates
+  function parseUkOrIsoDate(str) {
+    if (!str) return null;
+    const s = String(str).trim();
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])); // local midnight
+    const d = new Date(s);
+    return isNaN(d) ? null : d;
+  }
+
+  onReady(function boot() {
     console.log('[loi-filters] loaded');
 
-    // Elements
-    const form = document.getElementById('loi-filters');
-    if (!form) {
-      console.warn('[loi-filters] #loi-filters not found; aborting.');
-      return;
-    }
+    // Wait for the specific LOI table to exist…
+    waitForEl('#bh-loi-table', function (table) {
+      console.log('[loi-filters] table found? 1');
 
-    const $table = $('[data-module="moj-sortable-table"]').first();
-    if (!$table.length) {
-      console.warn('[loi-filters] table not found; aborting.');
-      return;
-    }
-    const $tbody = $table.find('tbody');
-    const $pagination = $('.govuk-pagination').first();
-    const statusEl = document.getElementById('loi-filter-status');
+      // …then wait until it actually has rows
+      waitForRows(table, function (tbody) {
+        const form = document.getElementById('loi-filters');
+        if (!form) {
+          console.warn('[loi-filters] #loi-filters not found; aborting.');
+          return;
+        }
 
-    // Cache rows
-    const rows = $tbody.find('tr').map(function () {
-      const $tr = $(this);
-      const $tds = $tr.find('td');
+        const statusEl = document.getElementById('loi-filter-status');
+        // Pagination: closest one to the table, fallback to first on page
+        const pagination =
+          table.closest('.govuk-width-container')?.querySelector('.govuk-pagination') ||
+          document.querySelector('.govuk-pagination');
 
-      const $dateCell = $tds.eq(0);
-      const rawDate = $dateCell.find('[data-sort-value]').attr('data-sort-value') || $dateCell.text().trim();
-      const date = parseUkDate(rawDate);
+        // Cache rows (DOM, not jQuery)
+        const rows = Array.from(tbody.querySelectorAll('tr')).map(tr => {
+          // Date from first cell (prefer data-sort-value)
+          const dateCell = tr.cells[0];
+          const rawDate =
+            (dateCell && dateCell.getAttribute('data-sort-value')) ||
+            (dateCell && dateCell.textContent.trim()) || '';
+          const date = parseUkOrIsoDate(rawDate);
 
-      const type = ($tds.eq(1).text() || '').trim().toLowerCase();
+          // Type from second cell (prefer machine keys)
+          const typeCell = tr.cells[1];
+          const typeKey = (
+            (typeCell && typeCell.getAttribute('data-loi-type')) ||
+            (typeCell && typeCell.getAttribute('data-sort-value')) ||
+            (typeCell && typeCell.textContent) ||
+            ''
+          ).trim().toLowerCase();
 
-      return { $tr, date, type };
-    }).get();
+          return { tr, date, typeKey };
+        });
 
-    if (!rows.length) {
-      console.warn('[loi-filters] no table rows found; aborting.');
-      return;
-    }
+        if (!rows.length) {
+          console.warn('[loi-filters] table exists but no rows found.');
+          return;
+        }
 
-    // Latest date in table
-    const latestDate = new Date(Math.max.apply(null, rows.map(r => r.date?.getTime() || 0)));
+        // Anchor for relative “last 7/30” filters
+        const latestDate = new Date(Math.max.apply(null, rows.map(r => r.date?.getTime() || 0)));
 
-    // Tag fitted label
-    const fittedStr = form.dataset.tagFitted; // e.g. "2025-06-08"
-    const tagFittedDate = fittedStr ? new Date(fittedStr) : null;
-    updateAllDatesLabel(latestDate, tagFittedDate);
+        // Wire up
+        form.addEventListener('submit', applyFilters);
+        const clearLink = document.getElementById('clear-loi-filters');
+        if (clearLink) clearLink.addEventListener('click', clearFilters);
 
-    // Wire up
-    $('#loi-filters').on('submit', applyFilters);
-    $('#clear-loi-filters').on('click', clearFilters);
+        // Optional: apply once on load if a filter is already chosen
+        applyFilters();
 
-    // ---- functions
+        // ---- functions ------------------------------------------------------
+        function applyFilters(ev) {
+          if (ev) ev.preventDefault();
 
-    function parseUkDate(str) {
-      const d = new Date(str); // e.g. "24 July 2025"
-      return isNaN(d) ? null : d;
-    }
+          const typeSel = document.getElementById('filter-type');
+          const dateSel = document.getElementById('filter-date');
 
-    function updateAllDatesLabel(latest, fitted) {
-      const opt = document.getElementById('all-dates-option');
-      if (!opt) return;
-      if (fitted instanceof Date && !isNaN(fitted)) {
-        const msDay = 24 * 60 * 60 * 1000;
-        const days = Math.max(0, Math.round((latest - fitted) / msDay));
-        opt.textContent = `All dates (since date fitted ${days} days)`;
-      } else {
-        opt.textContent = 'All dates';
-      }
-    }
+          const typeFilterRaw = (typeSel && typeSel.value || '').trim().toLowerCase();
+          const dateFilter = (dateSel && dateSel.value) || ''; // '', 'last7', 'last30'
 
-    function applyFilters(ev) {
-      if (ev) ev.preventDefault();
+          let shown = 0;
 
-      const typeFilterRaw = ($('#filter-type').val() || '').trim().toLowerCase();
-      const dateFilter = $('#filter-date').val(); // '', 'last7', 'last30'
+          rows.forEach(r => {
+            let match = true;
 
-      let shown = 0;
+            // Type filter (includes historic 'non-home' quirk)
+            if (typeFilterRaw) {
+              if (typeFilterRaw === 'non-home') {
+                if (r.typeKey === 'home') match = false;
+              } else if (!(r.typeKey === typeFilterRaw || r.typeKey.includes(typeFilterRaw))) {
+                match = false;
+              }
+            }
 
-      rows.forEach(r => {
-        let match = true;
+            // Date range filter
+            if (match && r.date instanceof Date && !isNaN(r.date)) {
+              if (dateFilter === 'last7' || dateFilter === 'last30') {
+                const days = (dateFilter === 'last7') ? 7 : 30;
+                const diffDays = Math.floor((latestDate - r.date) / (1000 * 60 * 60 * 24));
+                if (diffDays > days) match = false;
+              }
+            }
 
-        // Location type filtering (includes special "non-home")
-        if (typeFilterRaw) {
-          if (typeFilterRaw === 'non-home') {
-            // show everything EXCEPT exact 'home'
-            if (r.type === 'home') match = false;
-          } else {
-            // normal contains check (e.g. "public house")
-            if (!r.type.includes(typeFilterRaw)) match = false;
+            r.tr.hidden = !match;
+            if (match) shown++;
+          });
+
+          if (statusEl) statusEl.textContent = `Showing ${shown} of ${rows.length} records.`;
+
+          if (pagination) {
+            const hasTypeFilter = (document.getElementById('filter-type')?.selectedIndex || 0) > 0;
+            if (hasTypeFilter) {
+              pagination.setAttribute('hidden', 'hidden');
+              pagination.setAttribute('aria-hidden', 'true');
+              // jQuery present? keep old behaviour too:
+              if (typeof window.$ === 'function') { $(pagination).hide(); }
+            } else {
+              pagination.removeAttribute('hidden');
+              pagination.setAttribute('aria-hidden', 'false');
+              if (typeof window.$ === 'function') { $(pagination).show(); }
+            }
           }
         }
 
-        // Date range
-        if (match && r.date instanceof Date && !isNaN(r.date)) {
-          if (dateFilter === 'last7' || dateFilter === 'last30') {
-            const days = dateFilter === 'last7' ? 7 : 30;
-            const diffDays = Math.floor((latestDate - r.date) / (1000 * 60 * 60 * 24));
-            if (diffDays > days) match = false;
-          }
+        function clearFilters(ev) {
+          if (ev) ev.preventDefault();
+          const typeSel = document.getElementById('filter-type');
+          const dateSel = document.getElementById('filter-date');
+          if (typeSel) typeSel.value = '';
+          if (dateSel) dateSel.value = '';
+          applyFilters();
         }
-
-        r.$tr.toggle(match);
-        if (match) shown++;
       });
-
-      if (statusEl) {
-        statusEl.textContent = `Showing ${shown} of ${rows.length} records.`;
-      }
-
-      // Hide pagination when Location filter is not "All location types"
-      if ($pagination.length) {
-        const hasTypeFilter = document.getElementById('filter-type')?.selectedIndex > 0;
-        if (hasTypeFilter) {
-          $pagination.attr('hidden', 'hidden')
-                     .attr('aria-hidden', 'true')
-                     .hide();
-        } else {
-          $pagination.removeAttr('hidden')
-                     .attr('aria-hidden', 'false')
-                     .show();
-        }
-      }
-    }
-
-    function clearFilters(ev) {
-      if (ev) ev.preventDefault();
-      $('#filter-type').val('');
-      $('#filter-date').val('');
-      applyFilters(); // also re-shows pagination
-    }
+    });
   });
 })();

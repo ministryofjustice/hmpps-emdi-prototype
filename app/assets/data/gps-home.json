@@ -362,7 +362,7 @@
     "label": "46-6 Rainsborowe Rd, Colchester",
     "type": "Home",
     "summary": "Primary residence (approved address).",
-    "timeanddate": "Thursday 24 July 2025, 10:57pm to 11:59pm",
+    "timeanddate": "Thursday 24 July 2025, 10:57pm to 11:59pm (1hr 2mins)",
         "coordinates": [
           { "lat": 51.8756573864935, "lng": 0.879613988091588 },
           { "lat": 51.875578713848505, "lng": 0.8797930814049814 },
@@ -393,7 +393,7 @@
     "areas": [
       {
     "label": "The Fusilier Bar & Restaurant, Aingers Green Rd, Colchester, CO7 8NH",
-    "type": "Public house",
+    "type": "Pub",
     "timeanddate": "Thursday 24 July 2025, 7:13pm to 9:27pm",
         "coordinates": [
           { "lat": 51.84213239738854, "lng": 1.0743725387308236 },

@@ -9,31 +9,75 @@ https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
 {% from "govuk/components/footer/macro.njk" import govukFooter %}
 
 {% block header %}
+<link rel="stylesheet" href="/public/stylesheets/bh-curfew.css">
 
-  {{ govukHeader({
-    serviceName: "Electronic Monitoring Data Insights <span class='app-env-badge'>PROTOTYPE</span>" | safe,
-    serviceUrl: "/"
-  }) }}
+{%- from "moj/components/domain-specific/probation/header/macro.njk" import pdsHeader -%}
 
-  {{ mojPrimaryNavigation({
-        label: "My Services",
-        items: navItems
-      }) }}
+{{ pdsHeader({
+  environmentName: 'Prototype',
+  environmentNameColour: 'govuk-tag--blue',
+  name: 'J. Smith',
+  manageDetailsLink: '/',
+  servicesLink: '#',
+  services: [
+    {
+      heading: 'Manage people on probation',
+      href: '#',
+      target: '_self'
+    },
+    {
+      heading: 'Electronic monitoring',
+      href: '#',
+      target: '_self'
+    }
+  ]
+}) }}
+      
+{% if currentNav is not defined %}{% set currentNav = 'home' %}{% endif %}
+
+{{ govukServiceNavigation({
+  serviceName: "Electronic monitoring data insights",
+  serviceUrl: "/",
+  navigation: [
+    { href: "/",       text: "Home",   active: currentNav == "home" },
+    { href: "/cases",  text: "Cases",  active: currentNav == "cases" },
+    { href: "#", text: "Search", active: currentNav == "search" }
+  ]
+}) }}
 
 {% endblock %}
 
 {% block footer %}
 
-  {{ govukFooter({
-    meta: {
-      items: [
-        {
-          href: "/design-history",
-          text: "Design history"
-        }
-      ],
-      visuallyHiddenTitle: "Footer links"
-    }
-  }) }}
-
+  <!-- BEGIN PDS FOOTER (pasted from component service /footer page) -->
+<footer class="probation-common-footer govuk-!-display-none-print" role="contentinfo">
+  <div class="govuk-width-container">
+    
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="probation-common-footer__support-links">
+          <h2 class="govuk-visually-hidden">Support links</h2>
+          <ul class="probation-common-footer__inline-list">
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/accessibility">Accessibility</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/cookies-policy">Cookies policy</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/privacy-policy">Privacy policy</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="/design-history">Design history</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="/manage-prototype/clear-data">Clear data</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+  <!-- END PDS FOOTER -->
 {% endblock %}

@@ -1,0 +1,78 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Report requested
+{% endblock %}
+
+{% block content %}
+
+<a href="/rm-location" class="govuk-back-link">Back</a>
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{{ govukPanel({
+  titleText: "Report requested",
+  html: "Your reference number<br><strong>HDJ2123F</strong>"
+}) }}
+
+<p class="govuk-body">Your report is being created. We have sent you a confirmation email.</p>
+<p>You can come back to this page any time using the following link.</p>
+
+<p>
+  <a href="#">
+    https://hmpps-edmi-prototype-v3.onrender.com/rm-report-ready
+  </a>
+</p>
+
+<h2 class="govuk-heading-m">Report summary</h2>
+
+{% if data["rm-report-start-datetime"] %}
+  {% set startFormatted = data["rm-report-start-datetime"] | date("d MMMM yyyy h:mma") %}
+{% else %}
+  {% set startFormatted = "Not set" %}
+{% endif %}
+
+{% if data["rm-report-requested-at"] %}
+  {% set requestedFormatted = data["rm-report-requested-at"] | date("d MMMM yyyy h:mma") %}
+{% else %}
+  {% set requestedFormatted = "Not recorded" %}
+{% endif %}
+
+{{ govukSummaryList({
+  rows: [
+    {
+        key:   { text: "Report start date and time" },
+        value: { text: data["rm-report-start-label"] or "Not set" }
+    },
+    {
+      key: { text: "Report length" },
+      value: {
+        text: data["rm-report-length"] or "7 days"
+      }
+    },
+    {
+      key: { text: "Hours shown per map" },
+      value: {
+        text: data["rm-report-hours-per-map"] or "6 hours"
+      }
+    },
+        {
+        key:   { text: "Date and time requested" },
+        value: { text: data["rm-report-requested-label"] or "Not recorded" }
+        }
+  ]
+}) }}
+
+
+<h2 class="govuk-heading-m">What happens next?</h2>
+<p>Your report is being created. It will be available here to download when it’s ready.
+It will typically take 10 minutes to create a weekly report with 6-hour maps.</p>
+
+<a href="/rm-report-ready" class="govuk-button" data-module="govuk-button">
+  Refresh status
+</a>
+
+<p><a class="govuk-link" href="/rm-location">Back to location activity</a></p>
+<p><a class="govuk-link" href="/rm-create-report">Create another report</a></p>
+
+{% endblock %}

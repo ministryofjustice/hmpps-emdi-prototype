@@ -1,0 +1,46 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Find location of interest" %}
+
+{% block content %}
+
+<div class="govuk-width-container">
+  <h1 class="govuk-heading-l">Find a location</h1>
+
+  <form method="post" action="/add-location1" novalidate>
+    {{ govukInput({
+      label: { text: "Postcode" },
+      classes: "govuk-!-width-two-thirds",
+      hint: { text: "For example, AA3 1AB." },
+      id: "postcode",
+      name: "postcode",
+      value: data.postcode
+    }) }}
+
+    {{ govukInput({
+      label: { text: "Building number or name" },
+      classes: "govuk-!-width-two-thirds",
+      hint: { text: "For example, 15 or Prospect Cottage." },
+      id: "searchString",
+      name: "searchString",
+      value: data.searchString
+    }) }}
+
+    {{ govukButton({
+      text: "Find address",
+      type: "submit"
+    }) }}
+  </form>
+
+  <p class="govuk-body govuk-!-margin-bottom-10"><a href="add-manually" class="govuk-link">Enter address manually</a></p>
+  <p class="govuk-body govuk-!-margin-bottom-0"><a href="bh-manage-locations" class="govuk-link">Cancel and go back</a></p>
+</div>
+{% endblock %}

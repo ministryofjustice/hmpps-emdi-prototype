@@ -1,5 +1,7 @@
 {% extends "layouts/main.html" %}
 
+{% set currentNav = "cases" %}
+
 {% set navItems = [
   { text: "Home", href: "index", active: false },
   { text: "Cases", href: "#", active: true },
@@ -110,9 +112,9 @@
       },
       {
         html: '23 April 1996<br/>
-        <span class="secondary-text">Age 27</span>',
+        <span class="secondary-text">Age 29</span>',
         attributes: {
-          "data-sort-value": "27"
+          "data-sort-value": "29"
         }
       },
       {
@@ -128,7 +130,7 @@
         }
       },
       {
-        html: '<a href="location" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">5</span>',
+        html: '<a href="rm-location#filter-by-loi" class="govuk-link plot-map">New location of interest recorded</a>',
         
         attributes: {
           "data-sort-value": "New location of interest"
@@ -146,25 +148,25 @@
       },
       {
         html: '18 Nov 1995<br/>
-        <span class="secondary-text">Age 26</span>',
+        <span class="secondary-text">Age 29</span>',
         attributes: {
-          "data-sort-value": "26"
+          "data-sort-value": "29"
         }
       },
       {
-        text: "GPS location monitoring",
+        text: "HDC and trail monitoring",
         attributes: {
-          "data-sort-value": "GPS location monitoring"
+          "data-sort-value": "HDC and trail monitoring"
         }
       },
       {
-        text: "Adult Custody > 12m",
+        text: "Community Order (12 months)",
         attributes: {
-          "data-sort-value": "Adult Custody > 12m"
+          "data-sort-value": "Community Order (12 months)"
         }
       },
       {
-        html: '<a href="bh-location#filter-by-loi" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">3</span>',
+        html: '<a href="bh-location#filter-by-loi" class="govuk-link plot-map">New location of interest recorded</a>',
         attributes: {
           "data-sort-value": "New location of interest"
         }
@@ -216,9 +218,9 @@
       },
       {
         html: '17 Mar 1996<br/>
-        <span class="secondary-text">Age 27</span>',
+        <span class="secondary-text">Age 29</span>',
         attributes: {
-          "data-sort-value": "27"
+          "data-sort-value": "29"
         }
       },
       {
@@ -234,7 +236,7 @@
         }
       },
       {
-        html: '<a href="location" class="govuk-link plot-map">New location of interest recorded</a> <span id="notifications" class="moj-notification-badge">1</span>',
+        html: '<a href="pj-location#filter-by-loi" class="govuk-link plot-map">New location of interest recorded</a>',
         attributes: {
           "data-sort-value": "New location of interest"
         }

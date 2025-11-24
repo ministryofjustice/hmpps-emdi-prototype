@@ -1,0 +1,44 @@
+/* ===== Curfew overview layout ===== */
+
+.bh-curfew-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px; /* content + right card */
+  gap: 24px;
+}
+
+/* Phone / small tablet → single column */
+@media (max-width: 48rem) { /* 768px */
+  .bh-curfew-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Forecast card ===== */
+
+.bh-forecast-card {
+  background: #f3f2f1;         /* GOV.UK light grey panel */
+  padding: 15px;
+}
+
+/* Tag: outline red, uppercase, compact */
+.bh-tag {
+  font-family: "GDS Transport", arial, sans-serif;
+  display: inline-block;
+  padding: 4px 8px 3px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.bh-tag--danger-outline {
+  color: #d4351c;
+  border: 2px solid #d4351c;
+  background: white;
+}
+
+/* Optional: tighten spacing of paragraphs inside the card on small screens */
+@media (max-width: 48rem) {
+  .bh-forecast-card { padding: 16px; }
+}

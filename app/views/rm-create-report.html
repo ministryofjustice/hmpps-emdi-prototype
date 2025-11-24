@@ -1,0 +1,106 @@
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/back-link/macro.njk"   import govukBackLink %}
+{% from "govuk/components/button/macro.njk"      import govukButton %}
+{% from "govuk/components/select/macro.njk"      import govukSelect %}
+{% from "govuk/components/input/macro.njk"       import govukInput %}
+{% from "govuk/components/fieldset/macro.njk"    import govukFieldset %}
+{% from "moj/components/date-picker/macro.njk"   import mojDatePicker %}
+
+{% block pageTitle %}
+  Create trail monitoring report – {{ serviceName }} – GOV.UK
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {{ govukBackLink({
+      text: "Back",
+      href: "rm-location"
+    }) }}
+
+    <h1 class="govuk-heading-l">Create trail monitoring report</h1>
+
+<form method="post" action="/rm-create-report">
+
+  {{ mojDatePicker({
+    id: "rm-report-start-date",
+    name: "rm-report-start-date",
+    label: { text: "Report start date" },
+    hint: {
+        text: "Select a start date for the report"
+    },
+    maxDate: "26/11/2025"
+  }) }}
+
+       <div class="govuk-form-group govuk-!-margin-top-6">
+        {% call govukFieldset({
+          legend: {
+            text: "Start time",
+            classes: "govuk-fieldset__legend--m"
+          }
+        }) %}
+          <p class="govuk-hint">Enter a start time for the report</p>
+
+          <div class="govuk-date-input" id="report-start-time">
+            <div class="govuk-date-input__item">
+              {{ govukInput({
+                id: "rm-report-start-hour",
+                name: "rm-report-start-hour",
+                classes: "govuk-input--width-2",
+                label: { text: "Hour" },
+                inputmode: "numeric",
+                value: "00"
+              }) }}
+            </div>
+            <div class="govuk-date-input__item">
+              {{ govukInput({
+                id: "rm-report-start-minute",
+                name: "rm-report-start-minute",
+                classes: "govuk-input--width-2",
+                label: { text: "Minute" },
+                inputmode: "numeric",
+                value: "01"
+              }) }}
+            </div>
+          </div>
+        {% endcall %}
+      </div>
+
+  {{ govukSelect({
+    id: "rm-report-length",
+    name: "rm-report-length",
+    label: { text: "Report length" },
+    items: [
+      { value: "1 day", text: "1 day" },
+      { value: "3 days", text: "3 days" },
+      { value: "7 days",  text: "7 days" },
+      { value: "14 days", text: "14 days" }      
+    ]
+  }) }}
+
+  {{ govukSelect({
+    id: "rm-report-hours-per-map",
+    name: "rm-report-hours-per-map",
+    label: { text: "Hours shown per map" },
+    items: [
+      { value: "1 hour",  text: "1 hour" },
+      { value: "2 hours", text: "2 hours" },
+      { value: "3 hours", text: "3 hours" },
+      { value: "4 hours", text: "4 hours" },
+      { value: "6 hours", text: "6 hours", selected: true },
+      { value: "8 hours", text: "8 hours" },
+      { value: "12 hours", text: "12 hours" }
+    ]
+  }) }}
+
+  {{ govukButton({
+    text: "Create location report"
+  }) }}
+</form>
+
+
+  </div>
+</div>
+{% endblock %}

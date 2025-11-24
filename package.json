@@ -5,10 +5,13 @@
     "start": "govuk-prototype-kit start"
   },
   "dependencies": {
-   "@govuk-prototype-kit/common-templates": "2.0.1",
-    "@ministryofjustice/frontend": "^5.1.5",
-    "govuk-frontend": "5.11.1",
+    "@govuk-prototype-kit/common-templates": "2.0.1",
+    "@ministryofjustice/frontend": "7.1.0",
+    "govuk-frontend": "5.11.2",
     "govuk-prototype-kit": "13.18.0",
     "jquery": "3.7.1"
+  },
+  "overrides": {
+    "govuk-frontend": "5.11.2"
   }
 }

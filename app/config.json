@@ -1,5 +1,5 @@
 {
-  "serviceName": "Electronic monitoring",
+  "serviceName": "Electronic monitoring data insights",
   "plugins": {
     "govuk-frontend": {
       "rebrand": false

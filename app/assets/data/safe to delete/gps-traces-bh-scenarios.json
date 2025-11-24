@@ -1,0 +1,68 @@
+{
+  "bh_day_evening_overlap": {
+    "points": [
+      { "lat": 50.923801, "lng": -0.140210, "time": "2025-08-24T06:45:00Z", "accuracy": 12, "label": 1 },
+      { "lat": 50.924320, "lng": -0.139700, "time": "2025-08-24T07:10:00Z", "accuracy": 9,  "label": 2 },
+      { "lat": 50.924950, "lng": -0.139150, "time": "2025-08-24T19:30:00Z", "accuracy": 18, "label": 3 },
+      { "lat": 50.925420, "lng": -0.138600, "time": "2025-08-24T20:05:00Z", "accuracy": 8,  "label": 4 }
+    ],
+    "areas": [
+      {
+        "label": "Home",
+        "type": "LOI",
+        "timeanddate": "Daily overnight",
+        "coordinates": [
+          { "lat": 50.924850, "lng": -0.140200 },
+          { "lat": 50.925050, "lng": -0.139900 },
+          { "lat": 50.924600, "lng": -0.139600 },
+          { "lat": 50.924400, "lng": -0.139950 }
+        ]
+      }
+    ]
+  },
+
+  "bh_cross_midnight": {
+    "points": [
+      { "lat": 50.922300, "lng": -0.142800, "time": "2025-08-25T23:40:00Z", "accuracy": 10, "label": 1 },
+      { "lat": 50.922900, "lng": -0.142100, "time": "2025-08-25T23:55:00Z", "accuracy": 11, "label": 2 },
+      { "lat": 50.923500, "lng": -0.141400, "time": "2025-08-26T00:10:00Z", "accuracy": 10, "label": 3 },
+      { "lat": 50.924100, "lng": -0.140700, "time": "2025-08-26T00:25:00Z", "accuracy": 9,  "label": 4 }
+    ],
+    "areas": [
+      {
+        "label": "Curfew zone",
+        "type": "Curfew",
+        "timeanddate": "22:00–06:00",
+        "coordinates": [
+          { "lat": 50.923200, "lng": -0.141900 },
+          { "lat": 50.923900, "lng": -0.141200 },
+          { "lat": 50.923300, "lng": -0.140400 },
+          { "lat": 50.922600, "lng": -0.141100 }
+        ]
+      }
+    ]
+  },
+
+  "bh_sparse_day_then_cluster": {
+    "points": [
+      { "lat": 50.926400, "lng": -0.138200, "time": "2025-08-27T09:00:00Z", "accuracy": 25, "label": 1 },
+      { "lat": 50.927200, "lng": -0.137900, "time": "2025-08-27T13:00:00Z", "accuracy": 20, "label": 2 },
+      { "lat": 50.927260, "lng": -0.137850, "time": "2025-08-27T13:05:00Z", "accuracy": 7,  "label": 3 },
+      { "lat": 50.927300, "lng": -0.137820, "time": "2025-08-27T13:07:00Z", "accuracy": 6,  "label": 4 },
+      { "lat": 50.927340, "lng": -0.137790, "time": "2025-08-27T13:10:00Z", "accuracy": 6,  "label": 5 }
+    ],
+    "areas": [
+      {
+        "label": "Excluded pub",
+        "type": "Exclusion",
+        "timeanddate": "All times",
+        "coordinates": [
+          { "lat": 50.927450, "lng": -0.137950 },
+          { "lat": 50.927600, "lng": -0.137700 },
+          { "lat": 50.927200, "lng": -0.137500 },
+          { "lat": 50.927050, "lng": -0.137750 }
+        ]
+      }
+    ]
+  }
+}

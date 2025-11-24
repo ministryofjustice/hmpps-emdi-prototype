@@ -5,6 +5,106 @@
 
 // Add extra styles here
 
+// Remove blue bar
+.govuk-header__container, .govuk-header { border: none; margin-bottom: 0px;}
+
+.guidance-panel {
+    border-left-color: govuk-colour('blue');
+    background-color: #eaf4f9;
+    margin: 20px 0!important;
+}
+
+.moj-page-header-actions { margin-bottom: 10px!important;}
+
+#bh-step-forward { font-size: 19px;}
+
+// Richard's file download icon
+.app-attachment__thumbnail {
+  width: 100px;
+  height: auto;
+  display: block;
+}
+
+.app-attachment__thumbnail svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gem-c-attachment {
+    position: relative;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    font-size: 1.1875rem;
+    line-height: 1.31579;
+}
+
+.gem-c-attachment__thumbnail-image {
+    display: block;
+    width: auto;
+    max-width: 100px;
+    height: 100px;
+    box-shadow: rgba(11, 12, 12, 0.4) 0px 2px 2px;
+    fill: rgb(177, 180, 182);
+    stroke: rgb(177, 180, 182);
+    border-width: initial;
+    border-style: initial;
+    border-color: rgba(11, 12, 12, 0.1);
+    border-image: initial;
+    outline: rgba(11, 12, 12, 0.1) solid 5px;
+    background: rgb(255, 255, 255);
+}
+
+.app-attachment {
+  display: flex;
+  align-items: flex-start;  /* top align like the GOV version */
+  gap: 20px;                /* space between icon and text */
+  margin-bottom: 30px;
+}
+
+.app-attachment__thumbnail {
+  width: 120px;              /* matches GOV’s approximate size */
+  flex-shrink: 0;
+}
+
+.app-attachment__thumbnail svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.app-attachment__details {
+  flex: 1;
+}
+
+
+
+.curfew-forecast-break {
+  margin: 30px 0;
+}
+
+button.govuk-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #D4351C;
+  text-decoration: underline;
+  cursor: pointer;
+}
+button.govuk-link:hover {
+  color: #003078;
+}
+
+.warning-text {
+  color: govuk-colour("red");
+}
+
+.success-text {
+  color:#008B76;
+}
+
 /* Environment banner badge */
 /* Header environment badge (uses the header's navigation slot) */
 .app-env-badge {
@@ -45,12 +145,12 @@
 }
 
 .highlighted-row {
-  background-color: #F3F2F1; 
+  background-color: #FFF8CC;
   transition: background-color 0.3s ease;
 }
 
 /* Permanent highlight for the active table row */
-tr.is-active-row > td { background-color: #F3F2F1; }
+tr.is-active-row > td { background-color: #FFF8CC; }
 
 
 /* Penny's Home/Not home stuff */
@@ -103,6 +203,61 @@ tr.is-active-row > td { background-color: #F3F2F1; }
 }
 
 
+/* Penny search panel layout (4 cols: Date | Time | Period | Actions) */
+/* Grid: 4 cols (date | time | period | button), then a full-width row for the clear link */
+.bh-filters-grid{
+  display:grid;
+  grid-template-columns:minmax(14rem,1fr) minmax(10rem,0.5fr) minmax(14rem,1fr) max-content;
+  grid-template-areas:
+    "date time period actions"
+    "clear clear clear clear";
+  column-gap:32px;
+  row-gap:12px;
+
+  /* <- THIS forces all form controls to line up at the bottom */
+  align-items:end;
+}
+
+/* place items */
+.bh-date-from  { grid-area:date; }
+.bh-time-from  { grid-area:time; }
+.bh-period     { grid-area:period; }
+.bh-actions    { grid-area:actions; align-self:end; } /* extra safety */
+.bh-clear-link { grid-area:clear; margin:0; }
+
+/* tidy widths */
+.bh-date-from .govuk-input{ max-width:24rem; }
+.bh-period .govuk-select{ max-width:20rem; }
+#bh-apply-filters{ margin:0; white-space:nowrap; }
+
+/* responsive */
+@media (max-width: 980px){
+  .bh-filters-grid{
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "date date"
+      "time period"
+      "actions actions"
+      "clear clear";
+    align-items:end;
+  }
+}
+@media (max-width:600px){
+  .bh-filters-grid{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "date"
+      "time"
+      "period"
+      "actions"
+      "clear";
+  }
+}
+
+
+
+/* optional: debug – outlines each grid child 
+.bh-filters-grid > * { outline: 2px dashed rgba(0,0,0,.2); } */
 
 
 .no-wrap {
@@ -257,6 +412,27 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
   color: #555;
 }
 
+.app-area-notes,
+.app-area-notes p,
+.app-area-notes li {
+  color: #0b0c0c; /* GOV.UK text colour */
+}
+.app-area-when {
+  margin-top: 0.25rem;  /* tighten with the chip above */
+  margin-bottom: 0rem;
+}
+.app-area-notes {
+  margin: 0;
+}
+.app-area-notes p {
+  margin: 0 0 0.25rem 0;
+}
+.app-area-notes .govuk-list {
+  margin: 0 0 5px 0;
+  line-height: 1;
+}
+
+
 /* Optional: tighter popup chrome */
 .leaflet-popup-content {
   margin: 10px 12px;
@@ -307,6 +483,62 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
 
 .leaflet-popup-tip {
   background: white;
+}
+
+.app-popup-panel {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px;
+  background: #f3f2f1; /* GOV.UK light grey */
+  margin-top: 8px;
+}
+
+.app-popup-panel__icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.app-popup-panel__icon img {
+  width: 48px;
+  height: 48px;
+  display: block;
+}
+
+.app-popup-functions {
+  list-style: none; /* removes visible bullets */
+  padding-left: 0;  /* no indent */
+  margin: 0;
+}
+
+.app-popup-functions li {
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Fix misaligned Leaflet popup close buttons */
+.leaflet-container .leaflet-popup-close-button {
+  position: absolute !important;
+  top: 4px !important;
+  right: 6px !important;
+  z-index: 1000;
+  color: #0b0c0c;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.leaflet-container .leaflet-popup-close-button:hover,
+.leaflet-container .leaflet-popup-close-button:focus {
+  color: #1d70b8;
+  outline: 2px solid #1d70b8;
+  outline-offset: 1px;
 }
 
 
@@ -622,4 +854,124 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
     .app-summary-card__actions {
         display: none
     }
+}
+
+/* pds-footer.css – minimal styling for probation-common-footer in prototypes */
+
+.probation-common-footer {
+  background: #f3f2f1;            /* GOV.UK footer grey */
+  border-top: 1px solid #b1b4b6;  /* GOV.UK border grey */
+  padding: 30px 0;
+}
+
+.probation-common-footer__support-links {
+  margin: 0;
+}
+
+.probation-common-footer__inline-list {
+  list-style: none;   /* remove bullets */
+  margin: 0;
+  padding: 0;
+}
+
+.probation-common-footer__inline-list-item {
+  display: inline-block;
+  margin: 0 16px 0 0; /* space between links */
+}
+
+.probation-common-footer__link {
+  /* Use default GOV.UK link styles; nothing extra needed */
+}
+
+/* Keep the footer flush with page edge on small screens */
+.probation-common-footer .govuk-width-container {
+  box-sizing: border-box;
+}
+
+/* Optional: a little more breathing room on wide screens */
+@media (min-width: 40.0625em) {
+  .probation-common-footer {
+    padding: 36px 0;
+  }
+  .probation-common-footer__inline-list-item {
+    margin-right: 20px;
+  }
+}
+
+/* --- CURFEW GRAPHS AND TABLES --- */
+
+/* Dev flag: hide pending rows when class is present */
+.bh-hide-pending [data-status="pending"] { display: none; }
+
+
+/* Toolbar row: buttons on left, duration links flush-right */
+.bh-chart-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;          /* wrap cleanly on small screens */
+  margin-bottom: 8px;
+}
+
+/* Duration controls pinned to the right edge */
+#curfew-duration-controls {
+  margin-left: auto;        /* pushes this block to the far right */
+  display: flex;
+  align-items: center;
+  transform: translateY(-15px);;
+}
+#curfew-duration-controls p { margin: 0; }
+
+/* Active filter styling (supports both aria-current and legacy .is-active) */
+.bh-duration-link[aria-current="true"],
+.bh-duration-link.is-active {
+  color: #0b0c0c;           /* GOV.UK black */
+  text-decoration: none;
+  pointer-events: none;
+  cursor: default;
+  font-weight: 700;
+}
+
+/* Chart sizing: wrapper + canvas agree on height */
+#curfew-chart-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+}
+#curfew-chart-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* If you also use .bh-chart-area elsewhere, keep it consistent with 300px */
+.bh-chart-wrap .bh-chart-area { min-height: 300px; }
+
+/* Hide the graph-type button when JS requests it (table view) */
+.bh-hide { display: none !important; }
+
+/* Table emphasis for unacceptable rows */
+#bh-events-body tr td:last-child[data-sort-value="unacceptable"] {
+  font-weight: 700;
+  color: #d4351c;           /* GOV.UK red */
+}
+#bh-events-body tr[data-status="unacceptable"] {
+  color: #d4351c;
+  font-weight: 700;
+  background-color: #fef7f7; /* pale red */
+}
+#bh-events-body tr[data-status="unacceptable"]:hover,
+#bh-events-body tr[data-status="unacceptable"]:focus-within {
+  background-color: #f6d7d2; /* stronger tint on hover/focus */
+}
+
+/* Stack toolbar neatly on small screens */
+@media (max-width: 640px) {
+  .bh-chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  /* when stacked vertically, let the right-pinned block behave normally */
+  #curfew-duration-controls { margin-left: 0; }
 }

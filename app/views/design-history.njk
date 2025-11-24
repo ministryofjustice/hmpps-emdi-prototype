@@ -10,6 +10,325 @@
   <p class="govuk-body"><a href="/">Return to prototype</a></p>
 
   <dl class="govuk-summary-list govuk-!-margin-top-6">
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">24 November 2025</dt>
+  <dd class="govuk-summary-list__value">
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Added the date to the GPS ping popup summary card, a short-coming revealed in user testing</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">21 November 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Location report creation flow and mapping enhancements:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Added a new “Create location report” entry point to Richard Marks’ location page, using a link styled as a button in line with GDS recommendations.</li>
+      <li>Built a full report-definition page with GOV.UK date picker, time inputs and configurable report length / hours-per-map settings.</li>
+      <li>Implemented a two-step report generation flow (“Generating…” then “Ready to download”) to simulate PDF creation.</li>
+      <li>Introduced a dynamic file-naming system for generated reports, based on start date, report length and map-hour window.</li>
+      <li>Added date-formatting logic for both user-selected start date/time and the timestamp of when the report was requested.</li>
+      <li>Created a download section styled to mirror GOV.UK Publishing “attachment” components, including thumbnail icons and metadata.</li>
+      <li>Restored map popups for accuracy circles and point markers, preventing unwanted auto-scrolling and ensuring consistent styling.</li>
+      <li>Re-enabled LOI polygons on filtered traces and corrected the logic for showing only areas intersecting the current time window.</li>
+      <li>Ensured session-based data flows cleanly between form submission, generating state and ready-to-download summary pages.</li>
+      <li>Added the behavioural analysis example on rm-location,html for initial review.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">14 November 2025</dt>
+  <dd class="govuk-summary-list__value">
+    GPS trace realism and map behaviour improvements:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Replaced linear daily traces with a new “bearing-aware” route generator to create more realistic movement between anchor points.</li>
+      <li>Added curved path shaping so routes bend naturally instead of forming straight-line interpolations.</li>
+      <li>Introduced corner slowdown and junction dwell behaviour to mimic hesitations, turns and small stops.</li>
+      <li>Added controlled GPS noise, blips, and short “drift shadows” so signal behaviour feels closer to real monitoring data.</li>
+      <li>Implemented corner-cutting wobble and variable movement speeds to soften the overall path and reduce mechanical movement patterns.</li>
+      <li>Updated initial page load so the map uses the values from the search form, replacing the previous “mini trace” preview.</li>
+      <li>Ensured Billy and Penny pages both use the same filter + plot behaviour on load and on manual Update.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">13 November 2025</dt>
+  <dd class="govuk-summary-list__value">
+    GPS trace generation, search modes and data realism improvements:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Reworked the GPS test data generator to support multiple days of anchor-based routes for both Billy and Penny.</li>
+      <li>Introduced two co-existing search patterns: Billy’s “From / To” time window and Penny’s “From + period” mode with step-forward controls.</li>
+      <li>Fixed the “no points plotted” issue by regenerating daily traces across the full 24-hour window instead of clustering points near midnight.</li>
+      <li>Improved user experience in Penny’s search panel with a four-column layout and aligned inputs, including correct placement of clear and step-forward actions.</li>
+      <li>Upgraded the spline generation script to create more realistic movement: added positional jitter, varied accuracy, and stop-clusters to mimic real GPS drift and linger behaviour.</li>
+      <li>Confirmed map stability during updates and ensured LOI “View on map” links continue to scroll correctly to the map area.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">4 November 2025</dt>
+  <dd class="govuk-summary-list__value">
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Updated PDS header</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">27 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Curfew chart legibility and simplification:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Updated location type labels in json to the new label type.</li>
+      <li>Add "This is not a curfew" content to explain this is not related to any curfew LC.</li>
+      <li>Removed Home detail table with addresses and time</li>
+      <li>Added new "view on map" links for that time period in the blue section</li>
+      <li>Updated the “Manage” cta to include keywords “Add or remove” LOIs CTA</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">24 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Curfew chart legibility and simplification:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Added new Home section and made "Add new locations" more prominent.</li>
+      <li>Reordered the Add new address page</li>
+      <li><strong>Single visual mode:</strong> removed the mode switcher and standardised on grouped bars for a clearer day-by-day comparison.</li>
+      <li><strong>Background banding:</strong> introduced subtle alternating day bands to help users visually group data by day.</li>
+      <li><strong>Tick improvements:</strong> added minor tick marks for daily rhythm and adjusted spacing for stronger horizontal alignment.</li>
+      <li><strong>Data simplification:</strong> removed the unused <em>Pending</em> category; chart and table now show only Reasonable and Unreasonable data with recalculated totals.</li>
+      <li><strong>Visual balance:</strong> tuned bar proportions, spacing and contrast for improved readability in both light and dark display modes.</li>
+      <li><strong>Prototype stability:</strong> refined rendering order to prevent overlap between day bands and data bars; suitable for continued testing in the prototype.</li>
+    </ul>
+  </dd>
+</div>
+
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">20 October 2025</dt>
+    <dd class="govuk-summary-list__value">
+      Curfew chart clarity and motion accessibility:
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+        <li><strong>Terminology update:</strong> chart series renamed from <em>Acceptable / Unacceptable</em> to <em>Reasonable / Unreasonable</em> to align better with guidance; only visible labels changed, leaving underlying logic untouched.</li>
+        <li><strong>Colour refinement:</strong> replaced legacy green with GOV.UK green <code>#00703c</code> to align with the design system palette and improve contrast.</li>
+        <li><strong>Distinct line styles:</strong> added patterned and shaped markers so each dataset is recognisable without colour — solid circles (Reasonable), dotted squares (Unreasonable), dash-dot triangles (Pending), and long-dashed line (Total).</li>
+        <li><strong>Reduced-motion support:</strong> chart now respects the system’s <code>prefers-reduced-motion</code> setting, disabling line and tooltip animations for users who prefer a static experience.</li>
+        <li><strong>Accessibility statement extended:</strong> updated first section to record non-colour differentiation and reduced-motion handling; retained AA-level colour/contrast commitments.</li>
+        <li><strong>PDS header integration prep:</strong> established a static include pattern for the black PDS bar and began migrating from <code>mojPrimaryNavigation</code> to the GDS <code>govukServiceNavigation</code> component for consistent GOV.UK alignment.</li>
+        <li><strong>Dependency refresh:</strong> upgraded <code>@ministryofjustice/frontend</code> to v6 and <code>govuk-frontend</code> to 5.11.2 to maintain compatibility and access new components.</li>
+        <li><strong>HTTPS issue resolved:</strong> documented and corrected browser auto-upgrade behaviour that briefly blocked local prototype access; confirmed stable <code>http://localhost:3000</code> routing.</li>
+      </ul>
+    </dd>
+  </div>
+
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">13 October 2025</dt>
+    <dd class="govuk-summary-list__value">
+      Curfew stability pass and data/date freshness:
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+        <li><strong>Robust first-load behaviour:</strong> guaranteed default to <em>Line • Last 7 days • All durations</em> on initial visit (even with saved prefs present).</li>
+        <li><strong>State versioning uplift:</strong> migrated preferences to <code>curfew:v3</code> with safe first-run seeding; added a quick “reset curfew prefs” snippet for troubleshooting.</li>
+        <li><strong>Table mirrors JSON precisely:</strong> zero-minute events are suppressed; table re-renders immediately when filters change while in table view.</li>
+        <li><strong>Newest-first listing:</strong> event table now orders days <em>newest → oldest</em> (and, within each day, <em>latest time → earliest</em>) so the most recent data appears on page 1.</li>
+        <li><strong>No jump on range change:</strong> range/duration updates no longer yank focus; smooth, in-place refresh of chart/table content.</li>
+        <li><strong>Cache-busting of datasets:</strong> added a timestamp query to the JSON fetch to avoid stale data during rapid prototyping.</li>
+        <li><strong>Graph-type control fixed:</strong> cycling between line / stacked bars / grouped bars is reliable again; button text always describes the <em>next</em> mode.</li>
+        <li><strong>View toggle hardened:</strong> isolated logic in <code>curfew-view-toggle.js</code> with events (<code>bh:curfew:view-changed</code>, <code>bh:curfew:request-table</code>) and a simple <code>.bh-hide</code> utility to conceal the chart-mode button in table view.</li>
+        <li><strong>Live a11y feedback maintained:</strong> compact heading reflects view/range/duration; polite announcements confirm updates.</li>
+        <li><strong>Dataset refresh:</strong> updated <code>/public/data/violations-bh.json</code> so the series runs through Mon&nbsp;13&nbsp;Oct; auto-resolved policy applied — <em>Pending</em> totals set to zero for days older than five.</li>
+        <li><strong>Regressions removed:</strong> cleaned duplicate declarations and init-order issues that briefly blanked the chart on load.</li>
+      </ul>
+    </dd>
+  </div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">10 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Curfew charts & accessible table refinements:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li><strong>Single source of truth:</strong> chart and table now both read from <code>/public/data/violations-bh.json</code> with a safe synthetic fallback.</li>
+      <li><strong>Consistent time formatting:</strong> colons instead of periods and no “:00” on exact hours (for example, “8pm”).</li>
+      <li><strong>View toggle, rock-solid:</strong> chart/table switch works reliably; the graph-type button hides in table view and reappears in chart view.</li>
+      <li><strong>Remember my choices:</strong> versioned prefs (<code>curfew:v2</code>) for view, range (7/30/total), duration (All/Over 1/5/15), and chart mode (line/stacked/grouped).</li>
+      <li><strong>Chart polish:</strong> restored bar colours; fixed Chart.js recursion errors; mode button label now always describes the <em>next</em> mode; line thickness is configurable and persists across mode switches.</li>
+      <li><strong>First-load defaults:</strong> lands on “Line • Last 7 days” even if controls are initially hidden.</li>
+      <li><strong>Toolbar layout:</strong> “Show duration” links are right-aligned and vertically centred; duplicate CSS removed; heights standardised.</li>
+      <li><strong>Accessible by default:</strong> polite live-region announcements for chart/table updates; table caption kept for screen readers but visually hidden.</li>
+      <li><strong>Clear, compact heading:</strong> small sentence above controls reflects view, range, and duration (for example, “Graph showing curfew data for the last 7 days (All durations)”).</li>
+      <li><strong>Table hardening:</strong> numeric coercion for minutes; robust date parsing; pagination maintained; within each date, events sort by time (latest first).</li>
+      <li><strong>Demo date window refreshed:</strong> scenario keys and timestamps shifted from 25–29 Aug to 9–13 Oct in <code>/public/data/gps-traces-bh-demo.json</code> for quicker testing.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">7 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Map sync reliability and first-click bug fix:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Resolved long-standing issue where the first <strong>“View on map”</strong> click after page refresh failed to load GPS data.</li>
+      <li>Introduced event-driven <code>bh:map-ready</code> mechanism to coordinate map initialisation across scripts.</li>
+      <li>Ensured deferred script loading order (<code>bh-location-init.js</code> → <code>map-overlays.js</code> → <code>gps-map.js</code> → <code>bh-loi-to-map-sync.js</code>) for predictable startup.</li>
+      <li>Removed duplicate click handlers and conflicting “Apply filters” path that cleared overlays on load.</li>
+      <li>Refactored <code>bh-loi-to-map-sync.js</code> to call <code>window.plotTrace()</code> directly once the map is ready, guaranteeing first-click plotting.</li>
+      <li>Improved focus management: closing popups by Escape or the new button restores focus to the map without scroll jumps.</li>
+      <li>Added optional debug logging (<code>DEBUG = true</code>) for tracing event flow and readiness timing.</li>
+      <li>Verified persistence of user-chosen base layer (Street/Satellite) and overlay visibility across refreshes.</li>
+      <li>Accessibility maintained: popups act as lightweight dialogs with <code>aria-modal="false"</code> and polite live-region updates.</li>
+      <li>Prototype now achieves consistent, stable map behaviour on every interaction — first click included.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">6 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Curfew tab enhancements and improved map accessibility:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Introduced Chart.js integration to visualise daily curfew violation minutes.</li>
+      <li>Added range chooser for <strong>Last 7 days</strong>, <strong>Last 30 days</strong> and <strong>Since tag was fitted</strong> (43 days) views.</li>
+      <li>Implemented accessible graph/table toggle (“Change to accessible table view”) with synchronised data between views.</li>
+      <li>Added duration filter (<strong>All</strong>, <strong>Over 1 min</strong>, <strong>Over 5 mins</strong>, <strong>Over 15 mins</strong>) to highlight longer or repeated curfew breaches.</li>
+      <li>Generated realistic static demo dataset (<code>/public/data/violations-bh.json</code>) with <strong>acceptable</strong>, <strong>unacceptable</strong> and <strong>pending</strong> violation categories.</li>
+      <li>Supported multiple chart types — line, grouped bar and stacked bar — for testing comprehension and user preference.</li>
+      <li>Accessible design: added live announcements for chart updates, descriptive <code>aria-label</code>s, and non-colour cues in legends and data points.</li>
+      <li>Created sortable GOV.UK table view listing individual violation events, colour-coded by severity (unacceptable rows highlighted in red).</li>
+      <li>Improved map accessibility across GPS and LOI pages: popups now use <code>role="dialog"</code> semantics, move keyboard focus correctly, and announce opens/closes via live regions.</li>
+      <li>Added a <strong>North arrow</strong> with <code>aria-label</code>, retained polite live updates for map/filter changes, and ensured polygons sit in a dedicated pane for reliable interaction.</li>
+      <li>Refactored code: moved inline scripts to <code>/public/javascripts/curfew-charts.js</code> and <code>/public/javascripts/bh-location-init.js</code> for clarity and maintainability.</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">2 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    New <strong>Curfew</strong> tab and trail updates:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Added dedicated Curfew tab in the prototype, with first-pass UI for overnight compliance checks.</li>
+      <li>Reworked LOI trails: removed experimental densify code in favour of hard-coded points for full transparency and manual editing.</li>
+      <li>Standardised rule for trails: 10 points before, 10 points after, and 1 point per minute inside the LOI duration.</li>
+      <li>Created clean, one-line JSON point format (lat/lng/label/accuracy/time) to reduce file size and ease editing.</li>
+      <li>Corrected timespans: first/last times preserved from LOI record, with all intermediate points spread evenly across duration.</li>
+      <li>Improved map responsiveness by pruning excess randomised points and fixing “starburst” trail artefacts.</li>
+      <li>Fixed polygon click-through so designers can tap map polygons to log coordinates directly.</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">1 October 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Hard-coded LOI trail experiments:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Trialled full JSON export of densified trails (~10k points) to hard-code journeys, but reduced set proved more stable for the prototype.</li>
+      <li>Identified and removed “starburst” errors where trails jumped in/out of LOI polygons unrealistically.</li>
+      <li>Settled on workflow of manually recording entry/exit routes via map-click logging, then curating realistic point sets per LOI.</li>
+      <li>Confirmed that pre/after trails + inside polygon points are sufficient for research and responsive enough in the browser.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">30 September 2025</dt>
+  <dd class="govuk-summary-list__value">
+    State of Play – LOI / NDelius Prefill work:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Locations of Interest (LOI) system extended: custom/manual addresses flow into the LOI table and can be sent to NDelius.</li>
+      <li><code>/ndelius-record</code> route now pre-fills Notes for custom addresses (address, type, duration) while clearing Notes for built-ins to keep JS lookup intact.</li>
+      <li>Textarea attributes (<code>data-address</code>, <code>data-type</code>, <code>data-duration</code>) added as a safe fallback for JS prefill.</li>
+      <li>Clicking “View” in the LOI table now scrolls to the map, plots the trace, and syncs the search Date/Time fields with that LOI record.</li>
+      <li>Prototype deliberately avoids generating “before/after” trails — left open for discussion with the product team.</li>
+      <li>Footer added using static PDS component HTML + lightweight CSS shim, with Accessibility / Cookies / Privacy / Clear data links.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">30 September 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Improved integration between LOI table and map filters:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Clicking an LOI table “View” link now updates the map <em>and</em> syncs the search Date/Time fields with that LOI record.</li>
+      <li>This supports research prompts like “what happened before/after this visit?” without requiring extra user input.</li>
+      <li>Kept the implementation lightweight so we can simulate the behaviour without storing new pre/post trace data.</li>
+    </ul>
+  </dd>
+</div>
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">27 September 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Refined <strong>Send to NDelius</strong> prefill logic:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Added a server-side route (<code>/ndelius-record</code>) that pre-populates Notes only for custom addresses.</li>
+      <li>Built-in LOIs now clear the Notes field so <code>ndelius-prefill.js</code> lookup runs as before.</li>
+      <li>Updated <code>ndelius-record.html</code> to precompute safe textarea attributes (<code>data-address</code>, <code>data-type</code>, <code>data-duration</code>) avoiding Nunjucks parse errors.</li>
+      <li>Result: stable, predictable prefill behaviour for both built-in and custom LOIs during testing.</li>
+    </ul>
+  </dd>
+</div>
+
+
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">23 September 2025</dt>
+  <dd class="govuk-summary-list__value">
+    Iterated on LOI presentation and testing readiness:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Updated search date and time to align with user research scenarios.</li>
+      <li>Refined multi-use building terminology (from “multiple functions” to “multiple uses”).</li>
+      <li>Removed stray <strong>“Send to NDelius”</strong> text from map popups, keeping them clean.</li>
+      <li>Linked HTML prototype screens directly to Figma flows for smoother UR transitions.</li>
+      <li>Lightened the yellow highlight background colour for improved readability and accessibility.</li>
+    </ul>
+  </dd>
+</div>
+
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">19 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+          Extended the <strong>Send to NDelius</strong> workflow:
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-top-1">
+      <li>Enhanced LOI table links to pass <code>trace</code> and <code>date</code> query parameters.</li>
+      <li>New <strong>ndelius-record</strong> page pre-fills Notes, Date, and Time from LOI data.</li>
+      <li>Practitioner selections (contact type, suspected licence condition breach, outcome, alert, ViSOR, sensitive contact) are captured on record page and carried forward.</li>
+      <li>Added <strong>ndelius-confirmation</strong> page using GOV.UK confirmation pattern, playing back all captured data, with <strong>Duration</strong> broken out as a separate row.</li>
+      <li>Created a shared <code>loi-lookup.js</code> for consistent data across record and confirmation pages.</li>
+      <li>Updated LOI terms to "Pub" and "Betting shop" for familiarlity and ease of reading.</li>
+      <li>Updated the multi-use popup on the probation office to include new visual styling.</li>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">18 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        State of Play – GPS Mapping Prototype v2: removed all <strong>“Home”</strong> rows/polygons/JSON; LOI dataset refreshed (pubs, schools, probation offices, police stations, swimming pools, betting shops); LOI tables standardised across Billy, Penny, Richard (10 rows each). Popups for polygons now include optional <strong>building functions</strong>. Began exploring a <strong>centroid glyph</strong> to show multi-use buildings (non-blocking icon at polygon centroid), but will test visuals in Figma before coding. Accessibility improvements: ARIA live updates for filter state, accessible north arrow, consistent table sorting.
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">17 September 2025</dt>
+      <dd class="govuk-summary-list__value">
+        State of Play – GPS Mapping Prototype v2: removed all <strong>“Home”</strong> rows/polygons/JSON; LOI dataset refreshed (pubs, schools, probation offices, police stations, swimming pools, betting shops); LOI tables standardised across Billy, Penny, Richard (10 rows each). Popups for polygons now include optional <strong>building functions</strong>. Began exploring a <strong>centroid glyph</strong> to show multi-use buildings (non-blocking icon at polygon centroid), but will test visuals in Figma before coding. Accessibility improvements: ARIA live updates for filter state, accessible north arrow, consistent table sorting.
+      </dd>
+    </div>
+
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">4 September 2025</dt>
       <dd class="govuk-summary-list__value">
@@ -60,29 +379,39 @@
     </div>
   </dl>
 
-  <h2 class="govuk-heading-m govuk-!-margin-top-8">Accessibility considerations</h2>
-  <ul class="govuk-list govuk-list--bullet">
-    <li><strong>Map status updates:</strong> Added <code>aria-live="polite"</code> live regions so screen reader users are notified when the map updates without interruption.</li>
-    <li><strong>Clear filters:</strong> Ensures a predictable reset to the default map state to avoid confusing partial UI states.</li>
-    <li><strong>Point markers:</strong> Markers expose meaningful <code>title</code>/<code>aria-label</code> text (point #, accuracy, time, coordinates).</li>
-    <li><strong>Areas/polygons:</strong> Popups use semantic HTML with headings and concise labels; dates match the LOI table to reduce cognitive load.</li>
-    <li><strong>Overnight chart:</strong> Each bar has an <code>aria-label</code> giving the full overnight span (19:00→07:00) and compliance status; visible labels use compact date ranges.</li>
-    <li><strong>Colour and contrast:</strong> Red/green is always paired with text or ARIA descriptions (no colour-only cues).</li>
-    <li><strong>Tables:</strong> GOV.UK table macros with proper semantics and sortable headers; <code>aria-sort</code> attributes used where applicable.</li>
-    <li><strong>Structure:</strong> Consistent heading levels and GOV.UK component patterns to aid navigation by assistive tech.</li>
-  </ul>
+<h2 class="govuk-heading-m govuk-!-margin-top-8">Accessibility considerations</h2>
+<ul class="govuk-list govuk-list--bullet">
+  <li><strong>Map and popup accessibility:</strong> Popups are now treated as lightweight dialogs with <code>role="dialog"</code> and <code>aria-modal="false"</code>. When a popup opens, keyboard focus moves to its heading, and focus returns to the triggering element (usually a “View” link) when it closes. Screen readers are notified via the existing <code>#map-status</code> live region (for example, “Showing details for Kings Arms on the map”).</li>
+  <li><strong>Keyboard navigation:</strong> All “View on map” links are keyboard-accessible and trigger the same popup information as clicking the map marker. Leaflet’s built-in keyboard controls remain available, but every map feature also has a non-map route (via the LOI table) for full equivalence.</li>
+  <li><strong>Map live regions:</strong> The map and filter forms use polite <code>aria-live</code> regions (<code>#map-status</code>, <code>#bh-filter-status</code>, <code>#loi-filter-status</code>) to announce updates like “Map updated — 3 locations displayed” without moving focus.</li>
+  <li><strong>Pane layering and labels:</strong> LOI polygons sit in their own <code>loi-areas</code> pane (z-index 645), so they’re easy to click or navigate with assistive tech. All markers, lines and polygons include descriptive <code>title</code> or <code>aria-label</code> text (point number, accuracy, time, coordinates).</li>
+  <li><strong>Visual aids:</strong> Added a north arrow with <code>aria-label="North arrow"</code> and clear visible contrast. Base-layer choices (Street / Satellite) persist using <code>localStorage</code> so users aren’t forced to re-select after navigation.</li>
+  <li><strong>Chart accessibility:</strong> The canvas has <code>role="img"</code>, <code>tabindex="0"</code>, and an <code>aria-describedby</code> summary. Each series is visually distinct without relying on colour alone: “Reasonable” is solid with circle points, “Unreasonable” is dotted with square points, “Pending” is dash-dot with triangle points, and “Total” is long-dashed with no points. The legend shows these shapes via text labels.</li>
+  <li><strong>Non-colour differentiation:</strong> Line patterns (solid, dotted, dash-dot, dashed) and point shapes (circle, square, triangle) provide redundant cues so colour-vision–deficient users can reliably distinguish series.</li>
+  <li><strong>Reduced motion:</strong> We respect <code>prefers-reduced-motion</code> by disabling chart animations and tooltip motion when set. (We also avoid forced smooth scrolling in controls that change the chart.)</li>
+  <li><strong>Live announcements:</strong> A polite live region announces when the chart updates (range or duration changes) without stealing focus.</li>
+  <li><strong>Equivalent data view:</strong> “Change to accessible table view” toggles a full, sortable table that mirrors the chart data (daily totals and per-event table). The toggle is a real <code>&lt;button&gt;</code> with <code>aria-controls</code> and updates its text/state.</li>
+  <li><strong>Range &amp; duration controls:</strong> Links are true anchors with <code>aria-current</code> applied to the active option and data attributes for scripting (<code>data-range</code>, <code>data-min</code>). Heading text updates to match the selection.</li>
+  <li><strong>Focus management:</strong> After changing range/duration, focus isn’t hijacked; the page scrolls to the “Violation minutes” anchor for context only. The toggle preserves focus when switching views.</li>
+  <li><strong>Map status updates:</strong> Kept the polite live regions for map/filter changes so SR users are notified without interruption.</li>
+  <li><strong>Tables &amp; sorting:</strong> GOV.UK / MOJ sortable tables with correct <code>aria-sort</code> on headers and machine-readable <code>data-sort-value</code> for dates/times.</li>
+  <li><strong>Colour &amp; contrast:</strong> Red/green is paired with text labels and distinctive patterns; custom “warning/success” classes meet AA contrast on white. Unreasonable rows style the whole row without reducing contrast.</li>
+  <li><strong>Structure:</strong> Consistent GOV.UK headings, lists, and summary cards; polygon/marker popups use semantic HTML with concise labels and dates matched to the LOI table.</li>
+</ul>
 
-  <h2 class="govuk-heading-m govuk-!-margin-top-6">Accessibility – next steps</h2>
-  <ul class="govuk-list govuk-list--bullet">
-    <li><strong>Keyboard-only checks:</strong> Ensure all controls (filters, “View on map”, Clear filters, base-layer switch) are reachable and operable via keyboard with visible focus.</li>
-    <li><strong>Screen reader runs:</strong> Quick audits with NVDA + Firefox and VoiceOver + Safari; confirm live region announcements are timely and not verbose.</li>
-    <li><strong>Contrast testing:</strong> Validate bar colours, table text, and focus states against WCAG AA (including hover/focus states).</li>
-    <li><strong>Zoom & reflow:</strong> Test at 200%/400% zoom and on small screens for reflow with no horizontal scrolling of key content.</li>
-    <li><strong>Motion/animation preferences:</strong> Respect <code>prefers-reduced-motion</code> if any animated transitions are introduced later.</li>
-    <li><strong>Sortable tables:</strong> Verify <code>aria-sort</code> updates correctly when columns are sorted and that sort order is perceivable to SR users.</li>
-    <li><strong>Error & status messaging:</strong> Standardise error summaries and inline errors for filters; ensure programmatic focus is set on update.</li>
-    <li><strong>Map keyboard fallback:</strong> Provide non-map alternatives (table rows, summary text) for users who cannot or do not use the map.</li>
-    <li><strong>Colour-blind review:</strong> Check red/green bars with common colour-vision simulations; add a small legend if user research suggests it.</li>
-    <li><strong>User research:</strong> Include at least one session with AT users during alpha to validate assumptions about labels and interactions.</li>
-  </ul>
+
+
+<h2 class="govuk-heading-m govuk-!-margin-top-6">Accessibility – next steps</h2>
+<ul class="govuk-list govuk-list--bullet">
+  <li><strong>Keyboard-only audit:</strong> Confirm all controls (range/duration links, chart/table toggle, table sort headers) are reachable in a logical order with visible focus.</li>
+  <li><strong>Screen reader runs:</strong> NVDA + Firefox and VoiceOver + Safari to check: chart description is read when the canvas is focused; live region updates are concise; table view exposes the same info.</li>
+  <li><strong>Focus & announcement polish:</strong> Consider moving focus to the updated heading after range/duration changes and announcing the new period (“Chart updated: Last 7 days, Over 5 minutes”).</li>
+  <li><strong>Contrast testing:</strong> Re-verify unacceptable (red) row styling and dashed “Total” line against WCAG AA, including hover/focus states.</li>
+  <li><strong>Reduced motion:</strong> Respect <code>prefers-reduced-motion</code> by disabling chart animations and smooth scrolling when set.</li>
+  <li><strong>Sortable tables:</strong> Confirm <code>aria-sort</code> toggles correctly and that sort order is perceivable to SR users (announce in a live region if needed).</li>
+  <li><strong>Zoom & reflow:</strong> Test at 200%/400% and on small screens; ensure graph area collapses gracefully and the table remains horizontally scrollable only if genuinely necessary.</li>
+  <li><strong>Colour-vision checks:</strong> Run common colour-blind simulations; adjust palette or add markers/patterns to differentiate series if required.</li>
+  <li><strong>User research:</strong> Include at least one session with AT users to validate the chart/table switcher, the range/duration pattern, and the row-level “unacceptable” styling.</li>
+</ul>
+
 {% endblock %}

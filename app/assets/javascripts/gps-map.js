@@ -360,7 +360,7 @@
 
   function pointPopupHTML(pt, idx) {
   const label = (pt.label != null) ? String(pt.label) : String(idx + 1);
-  const acc   = (typeof pt.accuracy === 'number') ? `${fmtNum(pt.accuracy, 0)}m` : '—';
+  const acc   = (typeof pt.accuracy === 'number') ? `${fmtNum(pt.accuracy, 0)} metres` : '—';
 
   // --- NEW: date + short time formatter ---
   function formatDateTime(raw) {

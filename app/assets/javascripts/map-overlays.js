@@ -32,16 +32,65 @@
     }
     window.addConfidenceCircle = addConfidenceCircle;
 
-    // Layer control (MoJ/GDS default position top-right)
+    // ---- Layer control (MoJ/GDS default position top-right) ----
     const overlays = {
       'Direction info': directionInfo,
       'Confidence circles': accuracy,
       'Point numbers': numbers
     };
 
-    L.control.layers(baseLayers, overlays, {
+    // Start expanded (no default Leaflet "collapsed" behaviour)
+    const layersControl = L.control.layers(baseLayers, overlays, {
       position: 'topright',
-      collapsed: true
+      collapsed: false
     }).addTo(map);
+
+    // ---- Enhance it with our own open/close behaviour ----
+    const container = layersControl.getContainer();
+    if (!container) return;
+
+    // Mark this as our panel so we can style/override old hover CSS
+    container.classList.add('emdi-layers-panel');
+
+    // Close “X” button inside the panel
+    const closeBtn = L.DomUtil.create('button', 'emdi-layers-close', container);
+    closeBtn.type = 'button';
+    closeBtn.innerHTML = '×';
+    closeBtn.setAttribute('title', 'Close layer controls');
+    closeBtn.setAttribute('aria-label', 'Close layer controls');
+
+    // Floating reopen button over the map
+    // Use Leaflet's built-in layers icon sprite
+    const mapContainer = map.getContainer();
+    const opener = L.DomUtil.create(
+      'a',
+      'leaflet-control-layers-toggle emdi-layers-opener',
+      mapContainer
+    );
+    opener.href = '#';
+    opener.setAttribute('role', 'button');
+    opener.setAttribute('aria-label', 'Show layer controls');
+
+    // Start with the panel visible, opener hidden
+    container.classList.remove('emdi-collapsed');
+    opener.style.display = 'none';
+
+    // Stop clicks on these buttons from bubbling to the map
+    L.DomEvent.disableClickPropagation(closeBtn);
+    L.DomEvent.disableClickPropagation(opener);
+
+    closeBtn.onclick = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      container.classList.add('emdi-collapsed');
+      opener.style.display = 'block';
+    };
+
+    opener.onclick = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      container.classList.remove('emdi-collapsed');
+      opener.style.display = 'none';
+    };
   };
 })();

@@ -78,6 +78,91 @@
   flex: 1;
 }
 
+/* Layers control panel wrapper */
+.emdi-layers-panel {
+  position: relative;
+  padding-top: 2rem; /* space for close button */
+  /* In case any old hover CSS was hiding Leaflet controls: */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Close “X” button in top-right of the layers box */
+.emdi-layers-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0b0c0c;
+}
+
+/* When collapsed, hide the whole control */
+.emdi-layers-panel.emdi-collapsed {
+  display: none !important;
+}
+
+/* Floating "Layers" reopen button using Leaflet's control styling */
+.emdi-layers-opener {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10000;
+
+  width: 30px;
+  height: 30px;
+
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 4px;
+
+  box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+/* Make sure the icon uses Leaflet's sprite */
+.emdi-layers-opener.leaflet-control-layers-toggle {
+  background-image: url("images/layers.png");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+
+/* Ensure the panel itself is always visible when not collapsed */
+.emdi-layers-panel {
+  position: relative;
+  padding-top: 2rem; /* space for close button */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Close “X” button in top-right of the layers box */
+.emdi-layers-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0b0c0c;
+}
+
+/* When collapsed, hide the whole control */
+.emdi-layers-panel.emdi-collapsed {
+  display: none !important;
+}
+
+
 
 
 .curfew-forecast-break {

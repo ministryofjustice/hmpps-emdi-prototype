@@ -266,6 +266,28 @@ router.post('/add-location3', function (req, res) {
   return res.redirect('/bh-manage-locations');
 });
 
+// MVP routes for adding a new location
+// MVP Step 1 -> Step 2
+router.post('/mvp-add-location1', function (req, res) {
+  // postcode/searchString saved automatically in req.session.data
+  return res.redirect('/mvp-add-location2');
+});
+
+// Step 2 -> Step 3
+router.post('/mvp-add-location2', function (req, res) {
+  // selectedAddress saved automatically in req.session.data.selectedAddress
+  if (!req.session.data.selectedAddress) {
+    // No selection? stay here (later you can add an error)
+    return res.redirect('/mvp-add-location2');
+  }
+  return res.redirect('/mvp-add-location3');
+});
+
+// Step 3 -> Manage (or Location tab if you prefer)
+router.post('/mvp-add-location3', function (req, res) {
+  // loiName saved in req.session.data.loiName
+  return res.redirect('/mvp-location');
+});
 
 // Clear the current custom LOI (name + address) from session, then return to Manage Locations
 router.post('/loi/clear', function (req, res) {
@@ -346,6 +368,7 @@ router.get('/ndelius-record', function (req, res) {
 
   res.render('ndelius-record', { query: req.query });
 });
+
 
 
 module.exports = router;

@@ -38,6 +38,7 @@
   </div>
 </div>
 
+<!-- This is the banner that pops up once location is added -->
 {% if  data['successbanner'] == "loiName"  %}
  {{ mojAlert({
       variant: "success",
@@ -49,6 +50,7 @@
 
    {% endif %}
 
+<!-- This is the Subnavigation for the person -->
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
@@ -68,6 +70,7 @@
   }]
 }) }}
 
+<!-- This is the header for the page and start of page content -->
 <h2 class="govuk-heading-m" id="map-header">Location activity</h2>
 
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
@@ -241,7 +244,7 @@
     
       
       
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Ex-partners house</td>
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName'] }}</td>
       
     
       

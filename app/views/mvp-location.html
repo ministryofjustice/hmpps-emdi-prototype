@@ -38,6 +38,7 @@
   </div>
 </div>
 
+<!-- This is the banner that pops up once location is added -->
 {% if  data['successbanner'] == "loiName"  %}
  {{ mojAlert({
       variant: "success",
@@ -49,6 +50,7 @@
 
    {% endif %}
 
+<!-- This is the Subnavigation for the person -->
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
@@ -68,6 +70,7 @@
   }]
 }) }}
 
+<!-- This is the header for the page and start of page content -->
 <h2 class="govuk-heading-m" id="map-header">Location activity</h2>
 
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
@@ -85,7 +88,7 @@
           name: "dateFrom",
           label: { text: "Date from" },
           classes: "govuk-input--width-10",
-          value: "10/11/2025",
+          value: "",
           maxDate: "10/11/2025"
         }) }}
       </div>
@@ -96,7 +99,7 @@
           name: "dateTo",
           label: { text: "Date to" },
           classes: "govuk-input--width-10",
-          value: "10/11/2025",
+          value: "",
           maxDate: "10/11/2025"
         }) }}
       </div>
@@ -111,7 +114,7 @@
                 <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                        id="bh-time-from-hour" name="timeFromHour" type="number"
-                       inputmode="numeric" min="0" max="23" value="09">
+                       inputmode="numeric" min="0" max="23" value="">
               </div>
             </div>
             <div class="govuk-date-input__item">
@@ -119,7 +122,7 @@
                 <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                        id="bh-time-from-min" name="timeFromMin" type="number"
-                       inputmode="numeric" min="0" max="59" value="00">
+                       inputmode="numeric" min="0" max="59" value="">
               </div>
             </div>
           </div>
@@ -135,7 +138,7 @@
                 <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                        id="bh-time-to-hour" name="timeToHour" type="number"
-                       inputmode="numeric" min="0" max="23" value="09">
+                       inputmode="numeric" min="0" max="23" value="">
               </div>
             </div>
             <div class="govuk-date-input__item">
@@ -143,7 +146,7 @@
                 <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                        id="bh-time-to-min" name="timeToMin" type="number"
-                       inputmode="numeric" min="0" max="59" value="30">
+                       inputmode="numeric" min="0" max="59" value="">
               </div>
             </div>
           </div>
@@ -241,7 +244,7 @@
     
       
       
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Ex-partners house</td>
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName'] }}</td>
       
     
       

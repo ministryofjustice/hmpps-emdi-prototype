@@ -295,13 +295,41 @@ router.post('/loi/clear', function (req, res) {
   req.session.data.loiName = '';
   return res.redirect('/bh-manage-locations');
 });
-
 // NEW: allow GET for the prototype so the link works inside the main form
 router.get('/loi/clear', function (req, res) {
   req.session.data.selectedAddress = '';
   req.session.data.loiName = '';
   return res.redirect('/bh-manage-locations');
 });
+
+//MVP
+// Clear the current custom LOI (name + address) from session, then return to Manage Locations
+router.post('/loi/clear-mvp', function (req, res) {
+  req.session.data.selectedAddress = '';
+  req.session.data.loiName1 = '';
+  return res.redirect('/mvp-manage-locations');
+});
+
+// NEW: allow GET for the prototype so the link works inside the main form
+router.get('/loi/clear-mvp', function (req, res) {
+  req.session.data.selectedAddress = '';
+  req.session.data.loiName1 = '';
+  return res.redirect('/mvp-manage-locations');
+});
+
+// Manage Locations form submission
+router.post('/mvp-manage-locations', function (req, res) {
+  const raw = req.body['loiTypes[]'] ?? req.body.loiTypes;
+  const list = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+  req.session.data.loiTypes = list;
+
+  const outside = req.body['outsideUk[]'] ?? req.body.outsideUk;
+  req.session.data.outsideUk = Array.isArray(outside) ? outside : (outside ? [outside] : []);
+
+  // go back to the manage page (you can change to bh-location if preferred)
+  return res.redirect('/mvp-location');
+});
+
 
 // Manage Locations form submission
 router.post('/bh-manage-locations', function (req, res) {

@@ -15,6 +15,7 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
+<!--
 <div role="region" class="moj-alert moj-alert--information" aria-label="information: A section has moved" data-module="moj-alert">
       <div>
         <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
@@ -26,7 +27,7 @@
         <button class="moj-alert__dismiss" hidden>Dismiss</button>
       </div>
     </div>
-    
+ -->   
     
 
 <div class="govuk-width-container">
@@ -40,28 +41,33 @@
     html: (data.selectedAddress or "No address selected yet") | replace(", ", "<br>")
   }) }}
 
-  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName&">
+  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName1&">
 
     {{ govukInput({
-      id: "loiName",
-      name: "loiName",
+      id: "loiName1",
+      name: "loiName1",
       label: {
         text: "Name address",
         classes: "govuk-label-p"
       },
-      value: data.loiName
+      value: data.loiName1
     }) }}
 
-    {{ govukButton({
-      text: "Save this address",
-      type: "submit"
-    }) }}
+    <div class="govuk-button-group">
+  {{ govukButton({
+    text: "Save this address"
+  }) }}
+
+  <a class="govuk-link" href="mvp-add-location2">Cancel and go back</a>
+</div>
   
   </form>
 
 
-
+<!--
   <p class="govuk-body"><a href="mvp-add-location2" class="govuk-link">Use a different address</a></p>
   <p class="govuk-body govuk-!-margin-bottom-0"><a href="mvp-add-manually" class="govuk-link">Enter address manually</a></p>
 </div>
+
+-->
 {% endblock %}

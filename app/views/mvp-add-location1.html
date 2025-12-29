@@ -34,14 +34,32 @@
       name: "searchString",
       value: data.searchString
     }) }}
-
+<!--
     {{ govukButton({
       text: "Find address",
       type: "submit"
     }) }}
+
+  -->
+
+    {% from "govuk/components/button/macro.njk" import govukButton %}
+
+<div class="govuk-button-group">
+  {{ govukButton({
+    text: "Find address"
+  }) }}
+
+  <a class="govuk-link" href="mvp-location">Cancel and go back</a>
+</div>
+  
+
   </form>
 
+<!--
   <p class="govuk-body govuk-!-margin-bottom-10"><a href="mvp-add-manually" class="govuk-link">Enter address manually</a></p>
+
+
   <p class="govuk-body govuk-!-margin-bottom-0"><a href="mvp-location" class="govuk-link">Cancel and go back</a></p>
+  -->
 </div>
 {% endblock %}

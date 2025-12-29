@@ -47,13 +47,21 @@
       ]
     }) }}
 
-    {{ govukButton({
-      text: "Save this address",
-      type: "submit"
-    }) }}
+
+
+    <div class="govuk-button-group">
+  {{ govukButton({
+    text: "Save this address"
+  }) }}
+
+  <a class="govuk-link" href="mvp-add-location1">Cancel and go back</a>
+</div>
   </form>
 
+<!--
   <p class="govuk-body govuk-!-margin-bottom-10"><a href="mvp-add-manually" class="govuk-link">Enter address manually</a></p>
+
   <p class="govuk-body govuk-!-margin-bottom-0"><a href="mvp-add-location1" class="govuk-link">Cancel and go back</a></p>
+-->
 </div>
 {% endblock %}

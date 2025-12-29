@@ -42,7 +42,11 @@
 
 
 {% if  data['successbanner'] == "loiName1"  %}
-{% if data.loiName1 and (data.loiName1 | length) %}
+
+  {% if data.loiName1 and (data.loiName1 | length) %}
+    
+
+
 <div role="region" class="moj-alert moj-alert--information" aria-label="information: A section has moved" data-module="moj-alert">
       <div>
         <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
@@ -54,6 +58,7 @@
         <button class="moj-alert__dismiss">Dismiss</button>
       </div>
     </div>
+
 
    {% endif %}
    {% endif %}

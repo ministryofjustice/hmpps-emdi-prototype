@@ -3,7 +3,7 @@
 // First visit defaults: Line • 7 days • All durations
 (function () {
   'use strict';
-
+ 
   // ---------- tiny helpers ----------
   function onReady(fn) {
     if (document.readyState === 'loading') {
@@ -452,6 +452,8 @@ function ensureChart(canvas) {
     // DOM
     const headingEl  = document.getElementById('violation-heading');
     const chooserEl  = document.getElementById('range-chooser');
+    const curfewdropdownButton  = document.getElementById('curfewdropdownbutton');
+    const curfewDropdown  = document.getElementById('curfewdropdown');
     const canvas     = document.getElementById('violationsChart');
     const eventsBody = document.getElementById('bh-events-body');
     const captionEl  = document.getElementById('bh-table-caption');
@@ -564,6 +566,23 @@ function ensureChart(canvas) {
         // no auto scroll on range change
       });
     }
+
+    if (curfewdropdownButton) {
+      curfewdropdownButton.addEventListener('click', (e) => {
+        //const a = e.target.closest('a[data-range]'); if (!a) return;
+        //alert(curfewDropdown.value);
+        //console.log("curfewDropdown.value");
+        e.preventDefault();
+        rangeDays = Number(curfewDropdown.value);
+        setPref(key('rangeDays'), String(rangeDays));
+        const rowsOpen = !document.getElementById('curfew-table-wrap')?.hasAttribute('hidden');
+        renderChartAndUI();
+        if (rowsOpen) renderCurfewTableFromCurrent(1);
+        // no auto scroll on range change
+      });
+    }
+
+
 
     durationLinks.forEach(a => {
       a.addEventListener('click', (e) => {

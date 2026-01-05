@@ -80,24 +80,37 @@
 
 <h3 id="violation-minutes" class="govuk-heading-m">Violation minutes</h3>
 
-<div class="loi-filters govuk-!-margin-bottom-3">
-      <div class="curfew-filters__row">
-         <div class="curfewstuff">
+  <div class="loi-filters govuk-!-margin-bottom-3">
+    <div class="loi-filters__row" style="grid-template-columns: 1.3fr 1fr 1.1fr;">
+       <div class="loi-filters__group">
           <label class="govuk-label" for="filter-date">Date range</label>
           <select class="govuk-select" id="curfewdropdown" name="filter-date">
             <option value="43" id="all-dates-option" selected>All dates since tag fitting (43 days)</option>
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
-          
-
-          <button class="govuk-button" data-module="govuk-button" id="curfewdropdownbutton">
-            Update
-          </button>
         </div>
+
+
+          <div class="loi-filters__group">
+            <label class="govuk-label" for="filter-date">Duration</label>
+            <select class="govuk-select" id="curfewdurationdropdown" name="filter-date">
+              <option value="0" id="all-dates-option" selected>All</option>
+              <option value="1">Over 1 minute</option>
+              <option value="5">Over 5 minutes</option>
+              <option value="15">Over 15 minutes</option>
+            </select>
+          </div>
+
+          <div class="loi-filters__actions">
+            <button class="govuk-button" data-module="govuk-button" id="curfewdropdownbutton">
+              Update
+            </button>
+          </div>
+        
+      </div>
       <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
-  </div>
-</div>
+    </div>
 
 
 
@@ -124,6 +137,7 @@
         Change to accessible table view
       </button>
 
+<!--
       <div id="curfew-duration-controls">
         <p class="govuk-!-margin-bottom-0 govuk-!-font-size-16">
           Show duration:
@@ -136,6 +150,7 @@
     </div>
   </div>
   </div>
+-->
 
   
 

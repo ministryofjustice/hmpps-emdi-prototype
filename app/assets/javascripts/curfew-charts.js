@@ -3,7 +3,7 @@
 // First visit defaults: Line • 7 days • All durations
 (function () {
   'use strict';
-
+ 
   // ---------- tiny helpers ----------
   function onReady(fn) {
     if (document.readyState === 'loading') {
@@ -452,6 +452,9 @@ function ensureChart(canvas) {
     // DOM
     const headingEl  = document.getElementById('violation-heading');
     const chooserEl  = document.getElementById('range-chooser');
+    const curfewdropdownButton  = document.getElementById('curfewdropdownbutton');
+    const curfewDropdown  = document.getElementById('curfewdropdown');
+    const curfewDurationDropdown  = document.getElementById('curfewdurationdropdown');
     const canvas     = document.getElementById('violationsChart');
     const eventsBody = document.getElementById('bh-events-body');
     const captionEl  = document.getElementById('bh-table-caption');
@@ -463,6 +466,8 @@ function ensureChart(canvas) {
       if(!a.hasAttribute('data-min')) a.setAttribute('data-min', String([0,1,5,15][i] ?? 0));
       return a;
     });
+
+
 
     // seed defaults for first visit
     seedDefaultsOnce();
@@ -479,6 +484,7 @@ function ensureChart(canvas) {
     let rangeDays   = Math.min(Number(getPref(key('rangeDays'), 7)) || 7, DATA.totalDays || 7);
     let minDuration = Number(getPref(key('durationMin'), 0)) || 0;
     let currentView = 'chart'; // updated via bh:curfew:view-changed
+
 
     function buildSeries(dataset, rangeDays, minDuration) {
       const fmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
@@ -507,6 +513,12 @@ function ensureChart(canvas) {
       chart.data.datasets[0].data = s.acc;
       chart.data.datasets[1].data = s.unacc;
       chart.update('none');
+
+      curfewDropdown.value = rangeDays; 
+      curfewDurationDropdown.value= minDuration;
+
+
+
 
       setHeading(headingEl, currentView, rangeDays, DATA.totalDays, minDuration);
       setDurationUI(durationLinks, minDuration);
@@ -564,6 +576,25 @@ function ensureChart(canvas) {
         // no auto scroll on range change
       });
     }
+
+    if (curfewdropdownButton) {
+      curfewdropdownButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        rangeDays = Number(curfewDropdown.value);
+        setPref(key('rangeDays'), String(rangeDays));
+
+        minDuration = Number(curfewDurationDropdown.value) || 0;
+        setPref(key('durationMin'), String(minDuration));
+
+        const rowsOpen = !document.getElementById('curfew-table-wrap')?.hasAttribute('hidden');
+        renderChartAndUI();
+        if (rowsOpen) renderCurfewTableFromCurrent(1);
+        // no auto scroll on range change
+      });
+    }
+
+
 
     durationLinks.forEach(a => {
       a.addEventListener('click', (e) => {

@@ -39,9 +39,6 @@
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
-    text: "Overview",
-    href: "mike-vanpeebles"
-  }, {
     text: "Location activity",
     href: "mvp-location"
   },
@@ -49,10 +46,7 @@
     text: "Curfew activity",
     href: "",
     active: true
-  }, {
-    text: "Tag management",
-    href: "mvp-tag-breaches"
-  }]
+  }] 
 }) }}
 
   <div class="govuk-width-container">
@@ -63,43 +57,64 @@
 
       <h3 class="govuk-heading-s" id="map-header">Recent activity</h3>
       <p class="govuk-body">
-        Mike Van Peebles was <strong>out during curfew for 31 minutes</strong> from 1:05am to 1:36am on Sunday 12 October 2025.
-      </p>
+       Recent activity shows times when the person was away from their approved address.</p>
 
-      <p class="govuk-body">
-        They were also out during curfew from <strong>1am to 2am on Friday 10 October 2025</strong> and from <strong>4:30am to 6:30am on Saturday 11 October 2025</strong>.
-      </p>
-
-      <p class="govuk-body">
-        They <strong>arrived late</strong> at their approved address on 5 days for a total of <strong>33 minutes</strong>.
-      </p>
-
-      <p class="govuk-body">
-        They <strong>left early</strong> from their approved address on 1 day for a total of <strong>7 minutes</strong>. 
-      </p>
-
-      <p class="govuk-body">
-        Recent activity includes any times that the person has been out during curfew, even where there may be a reasonable excuse.
-      </p>
+       <p>There is no significant change or unusual pattern to report.</p>
       {% endcall %}
 
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
       <h3 class="govuk-heading-s govuk-!-margin-top-10" id="atvs">Accumulated time violations (ATV)</h3>
 
       <p class="govuk-body">
-        Mike has built up <strong>100 violation minutes</strong> since their home detention tag (HDC) was fitted on <strong>Wednesday 12 August 2025</strong>.
-      </p>
-      <p class="govuk-body">
-        These are known as ‘accumulated time violations’ (ATV) and only include ‘unreasonable’ violations.
-      </p>
-      <p class="govuk-body">
-        Mike is now 20 minutes away from breaching their curfew conditions.
-      </p>
+
+        Monitoring data indicates some time away from the approved address since the tag was fitted.</p>
+
+        <p>Overall, there is nothing exceptional or concerning in the activity.
+        </p>
+
+     
       {% endcall %}
   </div>
 
+
+
 <h3 id="violation-minutes" class="govuk-heading-m">Violation minutes</h3>
 
+  <div class="loi-filters govuk-!-margin-bottom-3">
+    <div class="loi-filters__row" style="grid-template-columns: 1.3fr 1fr 1.1fr;">
+       <div class="loi-filters__group">
+          <label class="govuk-label" for="filter-date">Date range</label>
+          <select class="govuk-select" id="curfewdropdown" name="filter-date">
+            <option value="43" id="all-dates-option" selected>All dates since tag fitting (43 days)</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+          </select>
+        </div>
+
+
+          <div class="loi-filters__group">
+            <label class="govuk-label" for="filter-date">Duration</label>
+            <select class="govuk-select" id="curfewdurationdropdown" name="filter-date">
+              <option value="0" id="all-dates-option" selected>All</option>
+              <option value="1">Over 1 minute</option>
+              <option value="5">Over 5 minutes</option>
+              <option value="15">Over 15 minutes</option>
+            </select>
+          </div>
+
+          <div class="loi-filters__actions">
+            <button class="govuk-button" data-module="govuk-button" id="curfewdropdownbutton">
+              Update
+            </button>
+          </div>
+        
+      </div>
+      <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+    </div>
+
+
+
+<!--
 {{ govukDetails({
   summaryText: "Choose date range",
   html: "
@@ -109,9 +124,10 @@
     <li class='govuk-!-margin-bottom-0'><a href='#' data-range='43'>Since tag was fitted (43 days)</a></li>
   </ul>"
 }) }}
+-->
+
 
 <h4 id="violation-heading" class="govuk-heading-s">Since tag was fitted (43 days)</h4>
-
 
 <div id="curfew-toolbar">
   <div class="bh-chart-wrap govuk-!-margin-bottom-4">
@@ -121,6 +137,7 @@
         Change to accessible table view
       </button>
 
+<!--
       <div id="curfew-duration-controls">
         <p class="govuk-!-margin-bottom-0 govuk-!-font-size-16">
           Show duration:
@@ -133,6 +150,8 @@
     </div>
   </div>
   </div>
+-->
+
   
 
   <div id="curfew-chart-wrap" role="img"

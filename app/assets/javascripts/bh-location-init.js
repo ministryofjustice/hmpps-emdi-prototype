@@ -11,7 +11,7 @@
 
   onReady(function () {
     // 1) Create the map
-    window.map = L.map('map').setView([51.889, 0.903], 13);
+    window.map = L.map('map').setView([54.00366, -2.54786], 5.5);
 
     // 2) Define base layers
     const streetLayer = L.tileLayer(
@@ -47,7 +47,7 @@
     }
 
     // 5) Restore previously chosen base (Street/Satellite)
-    try {
+    /*try {
       const last = (localStorage.getItem('loi-base') || 'street').toLowerCase();
       const wanted = (last === 'satellite') ? satelliteLayer : streetLayer;
       if (wanted && !window.map.hasLayer(wanted)) wanted.addTo(window.map);
@@ -56,7 +56,7 @@
       });
     } catch (e) {
       console.warn('[init] base layer persistence skipped:', e);
-    }
+    } */
 
     // 6) Ensure polygons sit above lines but below tooltips/popups (for easy click + logging)
     if (!window.map.getPane('loi-areas')) {

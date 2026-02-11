@@ -41,7 +41,18 @@
     html: (data.selectedAddress or "No address selected yet") | replace(", ", "<br>")
   }) }}
 
-  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName1&">
+{% if data.row2 %}
+  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName1&row3=true&">
+
+{% elif data.row1 %}
+  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName1&row2=true&selectedAddress2={{data.selectedAddress}}&addresstype1={{data.loiName1}}">
+
+{% else %}
+
+  <form method="post" action="/mvp-location?addaddress=true&successbanner=loiName1&row1=true&selectedAddress1={{data.selectedAddress}}">
+
+{% endif %}
+
 
     {{ govukInput({
       id: "loiName1",
@@ -49,8 +60,7 @@
       label: {
         text: "Name address",
         classes: "govuk-label-p"
-      },
-      value: data.loiName1
+      }
     }) }}
 
     <div class="govuk-button-group">

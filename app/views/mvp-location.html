@@ -123,7 +123,7 @@
           maxDate: "10/11/2025"
         }) }}
       </div>
-
+ 
       <!-- Row 2: Time inputs -->
       <div class="bh-slot bh-time-from">
         <div class="govuk-form-group">
@@ -264,13 +264,24 @@
 
   <tbody class="govuk-table__body">
 
+{% if data.row1 %}
   <tr class="govuk-table__row">
     
       <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
             
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">
 
-      <td class="govuk-table__cell">{{ data['selectedAddress'] }}</td>
+      {% if data.row2 %} 
+        {{ data['addresstype1'] }} 
+
+      {% else  %}
+      {{ data['loiName1'] }} 
+
+      {% endif  %}
+
+    </td>
+
+      <td class="govuk-table__cell">{{ data['selectedAddress1'] }}</td>
       
       <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm<br></td>
 
@@ -279,7 +290,30 @@
       <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
       
     
-    </tr></tbody>
+    </tr>
+    {% endif %}
+
+{% if data.row2 %}
+    <tr class="govuk-table__row">
+    
+      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
+            
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
+
+      <td class="govuk-table__cell">{{ data['selectedAddress2'] }}</td>
+      
+      <td class="govuk-table__cell" data-sort-value="364">1:55pm to 2:30pm<br></td>
+
+      <td class="govuk-table__cell" data-sort-value="364">(35 mins)</td>
+      
+      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+      
+    
+    </tr>
+{% endif %}
+
+
+  </tbody>
 </table>
 {% endif %}
    {% endif %}

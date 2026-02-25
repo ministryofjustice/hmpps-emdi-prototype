@@ -1,0 +1,51 @@
+{
+    "name": "Mike Knight",
+    "firstname": "Mike",
+    "crn": "B234567",
+    "dateOfBirth": "29 Jan 1990",
+    "age": "Age 31",
+    "tagType": "AAMT",
+    "sentence": "CJA - Community Order",
+    "recentTagActivity": "Alcohol measure updated",
+
+    "gender": "Male",
+    "contactNumber": "No contact number",
+    "currentCircumstances": "None",
+    "disabilities": "No disabilities",
+    "adjustments": "No adjustments",
+    "phoneNumber": "020 8888 4444",
+    "mobile": "07509 880 880",
+    "email": "KnightMike@email.com",
+
+    "popEmail": "KnightMike@email.com",
+    "popPhone": "020 7450 4000",
+    "popMobile": "07507 500 500",
+
+    "officername": "Martin Christmas",
+    "officeraddress": "31 High Street, Croydon",
+    "officerphoneNumber": "020 8550 9999",
+    "officermobile": "079456 880 880",
+    "officeremail": "info.hubcity@email.com",
+
+    "mainOffence": "Assault a person occasioning actual harm - GBD20",
+    "order": "Community Order (12 months)",
+
+    "sentenceStart": "Wednesday 5 May 2025",
+    "endDate": "Friday 5 September 2025",
+    "tagStart": "Wednesday 12 March 2025",
+    "daysRemaining": "89 days",
+    "released": "Tuesday 4 March 2025",
+    "releasedFrom": "HMP Swaleside",
+    "tagModel": "OM247-SOLO2",
+    "tagSerial": "GPSMT54321",
+    "tagStatus": "On",
+    "hmuModel": "OM247-MU",
+    "hmuStatus": "On",
+    "curfewmtf": "9pm to 7am",
+    "curfewsts": "7pm to 7am",
+    
+    "links": {
+      "profile": "#",
+      "activity": "#"
+    }
+  }

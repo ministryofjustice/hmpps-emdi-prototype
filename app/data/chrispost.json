@@ -1,0 +1,51 @@
+{
+    "name": "Chris Post",
+    "firstname": "Chris",
+    "crn": "B999234",
+    "dateOfBirth": "24 Aug 1989",
+    "age": "Age 36",
+    "tagType": "HDC and trail monitoring",
+    "sentence": "Community Order (12 months)",
+    "recentTagActivity": "New location of interest recorded",
+
+    "gender": "Male",
+    "contactNumber": "No contact number",
+    "currentCircumstances": "None",
+    "disabilities": "No disabilities",
+    "adjustments": "No adjustments",
+    "phoneNumber": "020 9465 8596",
+    "mobile": "07531 680 280",
+    "email": "PostieC@email.com",
+
+    "popEmail": "PostieC@email.com",
+    "popPhone": "020 7450 4000",
+    "popMobile": "07507 500 500",
+
+    "officername": "Simon Radcliffe",
+    "officeraddress": "31 High Street, Croydon",
+    "officerphoneNumber": "020 8500 9000",
+    "officermobile": "07771 900 900",
+    "officeremail": "info.probationhub@email.com",
+
+    "mainOffence": "Criminal damage to property - 05600",
+    "order": "  CJA - Std Determinate Custody",
+
+    "sentenceStart": "Wednesday 5 May 2025",
+    "endDate": "Friday 5 September 2025",
+    "tagStart": "Wednesday 12 March 2025",
+    "daysRemaining": "89 days",
+    "released": "Tuesday 4 March 2025",
+    "releasedFrom": "HMP Brixton",
+    "tagModel": "OM247-SOLO1",
+    "tagSerial": "GPSMT99999",
+    "tagStatus": "On",
+    "hmuModel": "OM247-MU",
+    "hmuStatus": "On",
+    
+
+
+    "links": {
+      "profile": "chris-post",
+      "activity": "#"
+    }
+  }

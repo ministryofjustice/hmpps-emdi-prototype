@@ -578,7 +578,7 @@ function ensureChart(canvas) {
     }
 
     if (curfewdropdownButton) {
-      curfewdropdownButton.addEventListener('click', (e) => {
+      curfewdropdownButton.addEventListener('click', (e) => { FG
         e.preventDefault();
 
         rangeDays = Number(curfewDropdown.value);

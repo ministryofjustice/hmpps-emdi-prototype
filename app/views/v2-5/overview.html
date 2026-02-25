@@ -1,0 +1,467 @@
+{% extends "layouts/main.html" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Overview" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: persondata.name, href: "/case/" + persondata.url }
+    ]
+  }) }}
+{% endblock %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: {{ persondata.sentence  }}
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      {{ persondata.name  }}
+    </h1>
+  </div>
+</div>
+
+<!-- 
+{{ mojAlert({
+  variant: "warning",
+  title: "Failure to charge battery",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="rm-location#tag-breaches">View Richard&apos;s tag breaches</a>.'
+}) }}
+
+{{ mojAlert({
+  variant: "warning",
+  title: "4 locations of interest visited in the last 7 days",
+  showTitleAsHeading: true,
+  dismissible: true,
+  html: '<a href="rm-location">View Richard&apos;s locations of interest</a>.'
+}) }}
+-->
+
+
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: "",
+    active: true
+  }, {
+    text: "Location activity",
+    href: "location-activity"
+  }, {
+    text: "Tag management",
+    href: "tag-management"
+  }]
+}) }}
+
+<h2 class="govuk-heading-m">Overview</h2>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="personalDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Personal details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all personal details</a>
+    </div-->
+  </header>
+
+ <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Name</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.name  }} </span>
+        </div>
+        
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Gender</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue">{{ persondata.gender  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="dateOfBirthAndAgeLabel">Date of birth</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="dateOfBirthAndAgeValue">
+            {{ persondata.dateOfBirth  }}
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="contactNumberLabel">Contact number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span class="app-!-font-family-tabular" data-qa="contactNumberValue">
+            {{ persondata.contactNumber  }}
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="currentCircumstancesLabel">Current circumstances</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="currentCircumstancesValue">{{ persondata.currentCircumstances  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="disabilitiesLabel">Disabilities</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="disabilitiesValue">{{ persondata.disabilities  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="adjustmentsLabel">Adjustments</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="adjustmentsValue">{{ persondata.adjustments  }}</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="contactDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Contact details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Approved address</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">
+            46-6 Rainsborowe Rd<br/>
+            Colchester<br/>
+            CO2 7JR
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Phone number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.popPhone  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Mobile telephone</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.popMobile  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Email</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue"><a href="mailto:billy.hoskins@gmail.com">{{ persondata.popEmail  }}</a></span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="RODetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Responsible officer (RO)</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Name</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.officername  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Address</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">
+            31 High Street<br/>
+            London<br/>
+            W1A 1AA
+          </span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Phone number</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.officerphoneNumber  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Mobile telephone</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.officermobile  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="preferredGenderLabel">Email</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="preferredGenderValue"><a href="mailto:billy.hoskins@gmail.com">{{ persondata.officeremail  }}</a></span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="sentenceDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Sentence details</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Main offence</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.mainOffence  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span data-qa="nameLabel">Order</span>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <span data-qa="nameValue">{{ persondata.order  }}</span>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">EM licence conditions</p>
+          <!--span class="govuk-!-font-weight-regular secondary-text">People on probation may have other licence conditions not related to EM. <a href="#">View all licence conditions</a></span-->
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <h4 class="govuk-!-margin-bottom-0">Home detention curfew (HDC)</h4>
+          Confine yourself to an address approved by your supervising officer between the hours of <strong>9pm and 7am, Monday to Friday</strong> and <strong>7pm and 7am, Saturday to Sunday</strong> unless otherwise authorised by your supervising officer. This condition will be reviewed by your supervising officer on a monthly basis and may be amended or removed if it is felt that the level of risk that you present has reduced appropriately.
+          <h4 class="govuk-!-margin-bottom-0">Trail monitoring (GPS)</h4>
+          Allow person(s) as designated by your supervising officer to install an electronic monitoring tag on you and access to install any associated equipment in your property, and for the purpose of ensuring that equipment is functioning correctly. You must not damage or tamper with these devices and must ensure that the tag is charged. You must report to your supervising officer immediately if the tag or the associated equipment are not working correctly. This will be for the purpose of monitoring your electronic whereabouts (trail monitoring only) licence condition unless otherwise authorised by your supervising officer.
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">Additional licence conditions</p>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <h4 class="govuk-!-margin-bottom-0">Financial responsibility requirement</h4>
+          You must notify your supervising officer of any change in financial circumstances (income, debt, employment). You must not engage in any work or activity involving the handling of cash, goods, or valuables without the prior approval of your supervising officer. This requirement may be reviewed monthly and adjusted or removed if it is felt that the level of risk has reduced appropriately.
+        </dd>
+        </div>
+    </dl>
+  </div>
+</section>
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: "Electronic monitoring tag details"
+    },
+    actions: { }
+  },
+  rows: [
+    {
+      key: {
+        text: "Start date"
+      },
+      value: { text: persondata.sentenceStart }
+    },
+    {
+      key: {
+        text: "End date"
+      },
+      value: { text: persondata.endDate }
+    },
+    {
+      key: {
+        text: "Tag fitted"
+      },
+      value: { text: persondata.tagStart }
+    },
+    {
+      key: {
+        text: "Days remaining"
+      },
+      value: { text: persondata.daysRemaining }
+    },
+    {
+      key: {
+        text: "Released"
+      },
+      value: { text: persondata.released }
+    },
+    {
+      key: {
+        text: "Released from"
+      },
+      value: { text: persondata.releasedFrom }
+    },
+    {
+      key: {
+        text: "Tag model"
+      },
+      value: { text: persondata.tagModel }
+    },
+    {
+      key: {
+        text: "Tag serial number"
+      },
+      value: { text: persondata.tagSerial }
+    },
+    {
+      key: {
+        text: "Tag status"
+      },
+      value: { text: persondata.tagStatus }
+    },
+    {
+      key: {
+        text: "HMU model"
+      },
+      value: { text: persondata.hmuModel }
+    },
+    {
+      key: {
+        text: "HMU status"
+      },
+      value: { text: persondata.hmuStatus }
+    },
+    {
+      key: {
+        text: "Curfew: Monday to Friday"
+      },
+      value: { text: persondata.curfewmtf }
+    },
+    {
+      key: {
+        text: "Curfew: Saturday to Sunday"
+      },
+      value: { text: persondata.curfewsts }
+    }
+  ]
+}) }}
+
+
+
+<section class="app-summary-card govuk-!-margin-bottom-6 app-summary-card--large-title" data-qa="helpDetailsCard">
+  <header class="app-summary-card__header">
+    <h3 class="app-summary-card__title">Help and support</h3>
+    <!--div class="app-summary-card__actions">
+      <a class="govuk-link plot-map" href="#">View all contact details</a>
+    </div -->
+  </header>
+
+  <div class="app-summary-card__body">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <h4 class="govuk-!-margin-bottom-0 govuk-!-margin-top-0">GPS location monitoring team</h4>
+          <span class="govuk-!-font-weight-regular">
+            Email: <a href="mailto:hdc@justice.gov.uk">gps@justice.gov.uk</a><br/>
+            Telephone: 0800 123 4567<br/>
+            Open 24 hours a day, 7 days a week</span>
+        </dt>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% endblock %}

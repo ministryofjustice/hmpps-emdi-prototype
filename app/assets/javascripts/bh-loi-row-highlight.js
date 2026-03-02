@@ -1,4 +1,4 @@
-f(function () {
+(function () {
   'use strict';
 
   var TABLE_ID       = 'bh-loi-table';   // your table id

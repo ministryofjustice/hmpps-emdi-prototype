@@ -398,25 +398,7 @@ router.get('/ndelius-record', function (req, res) {
   res.render('ndelius-record', { query: req.query });
 });
 
-/*
-const fs = require('fs');
-const path = require('path');
 
-module.exports = function (router) {
-
-  router.get('/tagged-people', function (req, res) {
-
-    const dataPath = path.join(__dirname, 'data', 'v1.json');
-    const people = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-
-    res.render('tagged-people', {
-      people
-    });
-
-  });
-
-};
-*/
 
 const fs = require('fs');
 const path = require('path');

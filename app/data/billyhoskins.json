@@ -1,0 +1,65 @@
+
+  {
+    "name": "Billy Hoskins",
+    "firstname": "Billy's",
+    "url": "overview",
+    "crn": "Y123456",
+    "dateOfBirth": "18 Nov 1995",
+    "age": "Age 29",
+    "tagType": "HDC and trail monitoring",
+    "sentence": "Community Order (12 months)",
+    "recentTagActivity": "New location of interest recorded",
+    "gender": "Male",
+    "contactNumber": "No contact number",
+    "currentCircumstances": "None",
+    "disabilities": "No disabilities",
+    "adjustments": "No adjustments",
+    "phoneNumber": "020 9460 4300",
+    "mobile": "07771 900 020",
+    "email": "bil.hoskins76@email.com",
+
+    "popEmail": "bil.hoskins76@email.com",
+    "popPhone": "020 7450 4000",
+    "popMobile": "07771 900 900",
+
+    "officername": "Simon Radcliffe",
+    "officeraddress": "31 High Street, Croydon",
+    "officerphoneNumber": "0207 9460 4300",
+    "officermobile": "07771 900 020",
+    "officeremail": "info.cityhub@email.com",
+
+
+    "mainOffence": "Assault a person occasioning actual harm - GBD20",
+    "order": "Community Order (12 months)",
+    "homeDetentionCurfew": "Must observe an electronically monitored curfew condition at their whereabouts between the hours of 19:00 and 07:00 at 46 Elveden Close. They must not be absent unless agreed in advance with their Responsible Officer. Failure to observe the condition may result in recall.",
+    "trailMonitoring": "Must wear and maintain an electronic monitoring device to track their location. Must not tamper with the device or attempt to obscure its monitoring features. They must comply with instructions to maintain proper functioning.",
+    "financialResponsibility": "Must attend appointments arranged by financial responsibility advisors and comply with guidance. Persistent failure may result in enforcement action.",
+
+
+    "sentenceStart": "Wednesday 8 August 2018",
+    "endDate": "Wednesday 7 August 2019",
+    "tagStart": "Wednesday 8 August 2018",
+    "daysRemaining": "89 days",
+    "released": "Tuesday 6 August 2019",
+    "releasedFrom": "HMP Thameside",
+    "tagModel": "OM247-SOLO3",
+    "tagSerial": "GPSMT12345",
+    "tagStatus": "On",
+    "hmuModel": "OM247-MU",
+    "hmuStatus": "On",
+    "curfewmtf": "9pm to 7am",
+    "curfewsts": "7pm to 7am",
+
+
+    "supportemail": "gps.support.team@justice.gov.uk",
+    "supportopeningHoursWeekdays": "09:00–17:00",
+    "supportopeningHoursWeekend": "Closed Saturday & Sunday",
+
+
+
+    "links": {
+      "profile": "billy-hoskins",
+      "activity": "bh-location#filter-by-loi"
+    }
+  }
+

@@ -1,0 +1,33 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "home" %}
+
+{% set navItems = [
+  { text: "Home", href: "#", active: true },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Home" %}
+
+{% block content %}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">
+      {{ serviceName }}
+    </h1>
+    <p class="govuk-body">
+      This is a prototype for the {{ serviceName }} service.
+    </p>
+    <p class="govuk-body">
+      It is not a live service and is not intended to be used by the public. In this prototype, you can explore the design and functionality of the GPS "Locations of Interest" service.</p>
+      <a href="cases" class="govuk-button" data-module="govuk-button">
+        Start now
+      </a>
+  </div>
+</div>
+
+{% endblock %}

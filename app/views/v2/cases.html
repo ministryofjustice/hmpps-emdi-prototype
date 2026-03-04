@@ -1,0 +1,109 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "#", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Cases" %}
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <h1 class="govuk-heading-l">Cases</h1>
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "My cases",
+    href: "#",
+    active: true
+  }, {
+    text: "Recently viewed cases",
+    href: "#"
+  }]
+}) }}
+
+
+
+<table class="govuk-table" data-module="moj-sortable-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      {# Column 1: Name / CRN #}
+      <th scope="col"
+          class="govuk-table__header"
+          aria-sort="ascending">
+        Name / CRN
+      </th>
+
+      {# Column 2: Date of birth / Age #}
+      <th scope="col"
+          class="govuk-table__header"
+          aria-sort="none">
+        Date of birth /<br>Age
+      </th>
+
+      {# Column 3: Tag type #}
+      <th scope="col"
+          class="govuk-table__header"
+          aria-sort="none">
+        Tag type
+      </th>
+
+      {# Column 4: Sentence #}
+      <th scope="col"
+          class="govuk-table__header"
+          aria-sort="none">
+        Sentence
+      </th>
+
+      {# Column 5: Recent tag activity #}
+      <th scope="col"
+          class="govuk-table__header"
+          aria-sort="none">
+        Recent tag activity
+      </th>
+    </tr>
+  </thead>
+
+  
+  <tbody class="govuk-table__body">
+    {% for tasksv2 in data['tasksv2'] %}
+    <tr class="govuk-table__row">
+
+
+      <td class="govuk-table__cell"
+          data-sort-value="{{ tasksv2.name | upper }}">
+        <a href="{{ tasksv2.url }}" class="govuk-link govuk-!-font-weight-bold">
+          {{ tasksv2.name }}
+        </a><br>
+        <span class="secondary-text govuk-!-font-weight-bold">{{ tasksv2.crn }}</span>
+      </td>
+    
+      <td class="govuk-table__cell">{{tasksv2.dateOfBirth }} 
+        <br>
+        <span class="secondary-text"> {{tasksv2.age }} </span>
+      </td>
+      <td class="govuk-table__cell">{{tasksv2.tagType }}  </td>
+      <td class="govuk-table__cell">{{tasksv2.sentence }}  </td>
+      <td class="govuk-table__cell">
+  <a href="{{ tasksv2.url }}" class="govuk-link">
+    {{tasksv2.recentTagActivity }}
+  </a>
+</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+
+    
+  </div>
+</div>
+
+{% endblock %}

@@ -3,6 +3,7 @@
 // https://prototype-kit.service.gov.uk/docs/create-routes
 //
 
+
 const govukPrototypeKit = require('govuk-prototype-kit')
 const router = govukPrototypeKit.requests.setupRouter()
 
@@ -130,7 +131,7 @@ router.post('/rm-create-report', function (req, res) {
   // Save and continue
   // -------------------------------
   req.session.data = data;
-  res.redirect('/rm-report-generating');
+  res.redirect('/v2-5/report-generating');
 });
 
 
@@ -245,25 +246,25 @@ router.get('/design-history', function (req, res) {
 });
 
 // Step 1 -> Step 2
-router.post('/add-location1', function (req, res) {
+router.post('add-location1', function (req, res) {
   // postcode/searchString saved automatically in req.session.data
-  return res.redirect('/add-location2');
+  return res.redirect('add-location2');
 });
 
 // Step 2 -> Step 3
-router.post('/add-location2', function (req, res) {
+router.post('add-location2', function (req, res) {
   // selectedAddress saved automatically in req.session.data.selectedAddress
   if (!req.session.data.selectedAddress) {
     // No selection? stay here (later you can add an error)
-    return res.redirect('/add-location2');
+    return res.redirect('add-location2');
   }
-  return res.redirect('/add-location3');
+  return res.redirect('add-location3');
 });
 
 // Step 3 -> Manage (or Location tab if you prefer)
-router.post('/add-location3', function (req, res) {
+router.post('add-location3', function (req, res) {
   // loiName saved in req.session.data.loiName
-  return res.redirect('/bh-manage-locations');
+  return res.redirect('manage-locations');
 });
 
 // MVP routes for adding a new location
@@ -307,14 +308,14 @@ router.get('/loi/clear', function (req, res) {
 router.post('/loi/clear-mvp', function (req, res) {
   req.session.data.selectedAddress = '';
   req.session.data.loiName1 = '';
-  return res.redirect('/mvp-manage-locations');
+  return res.redirect('/v3/mvp-manage-locations');
 });
 
 // NEW: allow GET for the prototype so the link works inside the main form
 router.get('/loi/clear-mvp', function (req, res) {
   req.session.data.selectedAddress = '';
   req.session.data.loiName1 = '';
-  return res.redirect('/mvp-manage-locations');
+  return res.redirect('/v3/mvp-manage-locations');
 });
 
 // Manage Locations form submission
@@ -341,7 +342,7 @@ router.post('/bh-manage-locations', function (req, res) {
   req.session.data.outsideUk = Array.isArray(outside) ? outside : (outside ? [outside] : []);
 
   // go back to the manage page (you can change to bh-location if preferred)
-  return res.redirect('/bh-location');
+  return res.redirect('/location-activity');
 });
 
 
@@ -397,6 +398,33 @@ router.get('/ndelius-record', function (req, res) {
   res.render('ndelius-record', { query: req.query });
 });
 
+
+
+const fs = require('fs');
+const path = require('path');
+
+module.exports = function (router) {
+
+  // Load all people once
+  const dataPath = path.join(__dirname, 'data', 'tasks.json');  
+  const people = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+
+  router.get('/case/:slug', function (req, res) {
+    const slug = req.params.slug;
+
+    // Find the person with that URL field
+    const person = people.find(p => p.url === slug);
+
+    if (!person) {
+      return res.status(404).send("Person not found");
+    }
+
+    res.render('case-detail', {
+      person
+    });
+  });
+
+};
 
 
 module.exports = router;

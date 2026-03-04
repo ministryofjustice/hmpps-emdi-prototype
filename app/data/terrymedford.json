@@ -1,0 +1,52 @@
+{
+    "name": "Terry Medford",
+    "firstname": "Terry",
+    "crn": "X778127",
+    "dateOfBirth": "8 Nov 1996",
+    "age": "Age 27",
+    "tagType": "HDC curfew",
+    "sentence": "Adult Custody > 12m",
+    "recentTagActivity": "Compliance forecast updated",
+
+    "gender": "Male",
+    "contactNumber": "No contact number",
+    "currentCircumstances": "None",
+    "disabilities": "No disabilities",
+    "adjustments": "No adjustments",
+    "phoneNumber": "0191 424 4444",
+    "mobile": "07509 880 880",
+    "email": "MarksMarks@email.com",
+
+    "popEmail": "Tmedford@email.com",
+    "popPhone": "0191 424 4444",
+    "popMobile": "07599 999 329",
+
+    "officername": "Hugh Smith",
+    "officeraddress": "31 High Street, Croydon",
+    "officerphoneNumber": "020 8550 9999",
+    "officermobile": "079456 880 880",
+    "officeremail": "info.hubcity@email.com",
+
+    "mainOffence": "Criminal damage to property - 05600",
+    "order": "  CJA - Std Determinate Custody",
+
+    "sentenceStart": "Monday 10 July 2023",
+    "endDate": " Tuesday 9 July 2024",
+    "tagStart": "Monday 10 July 2023",
+    "daysRemaining": "89 days",
+    "released": "Monday 8 July 2023",
+    "releasedFrom": "HMP Brixton",
+    "tagModel": "OM247-SOLO6",
+    "tagSerial": "GPSMT12222",
+    "tagStatus": "On",
+    "hmuModel": "OM247-MU",
+    "hmuStatus": "On",
+    "curfewmtf": "9pm to 7am",
+    "curfewsts": "7pm to 7am",
+
+
+    "links": {
+      "profile": "#",
+      "activity": "#"
+    }
+  }

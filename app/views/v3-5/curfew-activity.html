@@ -75,9 +75,13 @@
   },
   {
     text: "Curfew activity",
-    href: "",
+    href: "curfew-activity",
     active: true
-  }] 
+  },
+  {
+    text: "Tag management",
+    href: "tag-management"
+  }]
 }) }}
 
   <div class="govuk-width-container">
@@ -88,11 +92,9 @@
 
       <h3 class="govuk-heading-s" id="map-header">Recent activity</h3>
       <p class="govuk-body">
-       {{ persondata.firstname  }} has remained at their approved address during curfew in the last 7 days.</p>
+       Recent activity shows times when the person was away from their approved address.</p>
 
-       <p>Recent activity shows any times that the person on probation was out during curfew in the last 7 days.
-       </p>
-
+       <p>There is no significant change or unusual pattern to report.</p>
       {% endcall %}
 
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
@@ -100,9 +102,9 @@
 
       <p class="govuk-body">
 
-         {{ persondata.firstname  }} has had no time violations recorded since their Home Detention Curfew (HDC) tag was fitted on Wednesday 12 August 2025.</p>
+        Monitoring data indicates some time away from the approved address since the tag was fitted.</p>
 
-        <p>Accumulated time violations (ATVs) are the total number of minutes that a person on probation has been out during curfew within that monitoring period.
+        <p>Overall, there is nothing exceptional or concerning in the activity.
         </p>
 
      

@@ -90,16 +90,23 @@
 
 
 
-<!-- This is the Subnavigation for the person 
+<!-- This is the Subnavigation for the person -->
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
     text: "Location activity",
     href: "",
     active: true
+  },
+  {
+    text: "Curfew activity",
+    href: "curfew-activity"
+  },
+  {
+    text: "Tag management",
+    href: "tag-management"
   }]
 }) }}
--->
 
 <!-- This is the header for the page and start of page content -->
 <h2 class="govuk-heading-m" id="map-header">Location activity</h2>
@@ -206,8 +213,6 @@
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 
-<!--
-
 <h3 class="govuk-heading-m govuk-!-margin-bottom-2" id="filter-by-loi">Overnight activity</h3>
 
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
@@ -224,11 +229,10 @@
         </a>
         </li>
       </ul>
-   
+    -->
       <p class="govuk-body">Overnight activity shows any times the person on probation left home between midnight and 6am in the last 7 days.</p>
       <p class="govuk-body"></p>It does not show activity in relation to any curfew licence conditions.</p>
       {% endcall %}
-     
 
       
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
@@ -335,7 +339,7 @@
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 
-  -->
+
 
 <!-- Leaflet core -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>

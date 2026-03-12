@@ -48,7 +48,7 @@
   {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
   {{ govukBreadcrumbs({
     items: [
-      { text: "Cases", href: "/cases" },
+      { text: "Cases", href: "cases" },
       { text: persondata.name, href: "/case/" + persondata.url }
     ]
   }) }}

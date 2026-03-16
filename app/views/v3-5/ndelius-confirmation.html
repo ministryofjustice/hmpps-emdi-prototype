@@ -1,0 +1,191 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Confirmation – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Record sent to NDelius
+        </h1>
+        <div class="govuk-panel__body">
+          {{ persondata.name  }}<br>
+          {{ persondata.crn  }}
+        </div>
+      </div>
+
+      <p class="govuk-body">
+        The location activity has been saved to NDelius.
+      </p>
+
+      <h2 class="govuk-heading-m">What you recorded</h2>
+
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+
+      <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Contact type</dt>
+          <dd class="govuk-summary-list__value" id="contacttype">{{ data['contacttype'] }}</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Description</dt>
+          <dd class="govuk-summary-list__value" id="description">{{ data['description'] }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Notes</dt>
+          <dd class="govuk-summary-list__value" id="notes">
+          {{ data['notes'] }}
+          </dd>
+        </div>
+
+         <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Alert</dt>
+          <dd class="govuk-summary-list__value" id="alert">
+            {{ data['alert'] }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Include in ViSOR extract</dt>
+          <dd class="govuk-summary-list__value" id="">
+          {{ data['visor'] }}</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Sensitive contact</dt>
+          <dd class="govuk-summary-list__value" id="">{{ data['sensitive'] }}</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Date</dt>
+          <dd class="govuk-summary-list__value" id="">
+            {{ data['breachDate-day']}} 
+
+
+            {% if data['breachDate-month'] == 1 %}
+              January
+            {% elif data['breachDate-month'] == 2 %}
+              February
+            {% elif data['breachDate-month'] == 3 %}
+              March
+            {% elif data['breachDate-month'] == 4 %}
+              April
+            {% elif data['breachDate-month'] == 5 %}
+              May
+            {% elif data['breachDate-month'] == 6 %}
+              June
+            {% elif data['breachDate-month'] == 7 %}
+              July
+            {% elif data['breachDate-month'] == 8 %}
+              August
+            {% elif data['breachDate-month'] == 9 %}
+              September
+            {% elif data['breachDate-month'] == 10 %}
+              October
+            {% elif data['breachDate-month'] == 11 %}
+              November
+            {% elif data['breachDate-month'] == 12 %}
+              December
+            {% else %}
+              Invalid Month
+            {% endif %} 
+
+            {{data['breachDate-year']}}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Start time</dt>
+          <dd class="govuk-summary-list__value" id="">
+            {{ data['breachHour']}}: {{data['breachMin']}}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key" style="vertical-align: top;">Map report</dt>
+          <dd class="govuk-summary-list__value" id="">
+            <img src="/public/images/map-report.png" style="width: 80%" class="" alt="Preview of PDF report showing map and location details">
+          </dd>
+        </div>
+
+
+
+
+<!--
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Duration</dt>
+          <dd class="govuk-summary-list__value" id="conf-duration">—</dd>
+        </div>
+
+        
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Suspected licence condition breach</dt>
+          <dd class="govuk-summary-list__value" id="conf-licence">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Contact outcome</dt>
+          <dd class="govuk-summary-list__value" id="conf-outcome">—</dd>
+        </div>
+
+       
+        -->
+        
+      </dl>
+
+     
+        
+
+      <h2 class="govuk-heading-m">What you want to do next</h2>
+      <p class="govuk-body">
+        <a href="location-activity" class="govuk-link">Return to location activity</a>
+      </p>
+      <p class="govuk-body">
+        <a href="cases" class="govuk-link">View all cases</a>
+      </p>
+
+    </div>
+  </div>
+
+  {# JS: shared lookup + confirmation filler #}
+  <script src="/public/javascripts/loi-lookup.js"></script>
+  <script src="/public/javascripts/ndelius-confirm-fill.js"></script>
+{% endblock %}

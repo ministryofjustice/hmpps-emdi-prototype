@@ -67,7 +67,7 @@
         const visorVal = (document.querySelector('input[name="visor"]:checked') || {}).value || "";
         const sensVal  = (document.querySelector('input[name="sensitive"]:checked') || {}).value || "";
 
-        const url = new URL(window.location.origin + '/ndelius-confirmation');
+        const url = new URL(window.location.origin + 'ndelius-confirmation');
         const src = new URL(window.location.href);
         ['trace','date'].forEach(p => {
           const v = src.searchParams.get(p);

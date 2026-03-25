@@ -49,29 +49,34 @@
 
 
 {# --- Precompute attribute values --- #}
-{% set addrAttr = (data.selectedAddress or "") | replace(", ", "\n") %}
+{% set addrAttr = (data.selectedAddress1 or "") | replace(", ", "\n") %}
 {% if data.loiName and (data.loiName | length) %}
   {% set typeAttr = data.loiName %}
 {% else %}
   {% set typeAttr = "Custom" %}
 {% endif %}
 
-{# --- Build a clean params object, then call the macro --- #}
-{% set notesParams = {
-  id: "notes",
-  name: "notes",
-  label: { text: "Notes" },
-  hint:  { text: "Record any notes that you think would be useful" },
-  value: data.notes or "",
-  rows: 8,
-  attributes: {
-    "data-address": addrAttr,
-    "data-type": typeAttr,
-    "data-duration": "6 hours 4 mins"
-  }
-} %}
 
-        {{ govukTextarea(notesParams) }}
+        <div class="govuk-form-group">
+  <h1 class="govuk-label-wrapper">
+    <label class="govuk-label " for="more-detail">
+      Notes
+    </label>
+  </h1>
+  <div id="more-detail-hint" class="govuk-hint">
+   Record any notes that you think would be useful
+  </div>
+{% set newline %}
+{% endset %}
+  <textarea class="govuk-textarea" id="more-detail" name="moreDetail" rows="8" aria-describedby="more-detail-hint">
+{{ data['addressnotes'] | replace(r/, /g, newline) }}
+
+Location type: {{ data['locationtypenotes'] }}
+
+Duration:{{ data['durationnotes'] }}
+
+  </textarea>
+</div>
 
 
         

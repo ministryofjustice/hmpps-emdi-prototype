@@ -68,10 +68,22 @@
           </dd>
         </div>
 
+        {% set newline %}
+        {% endset %}
+
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Notes</dt>
           <dd class="govuk-summary-list__value" id="notes">
-          {{ data['notes'] }}
+
+          {{ data['addressnotes'] | replace(', ', '<br>') | safe }}
+          
+
+          <br> <br>
+          Location type: {{ data['locationtypenotes'] }}
+         
+          <br> <br>
+          Duration: {{ data['durationnotes'] }}
+          
           </dd>
         </div>
 

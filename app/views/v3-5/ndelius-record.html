@@ -49,29 +49,34 @@
 
 
 {# --- Precompute attribute values --- #}
-{% set addrAttr = (data.selectedAddress or "") | replace(", ", "\n") %}
+{% set addrAttr = (data.selectedAddress1 or "") | replace(", ", "\n") %}
 {% if data.loiName and (data.loiName | length) %}
   {% set typeAttr = data.loiName %}
 {% else %}
   {% set typeAttr = "Custom" %}
 {% endif %}
 
-{# --- Build a clean params object, then call the macro --- #}
-{% set notesParams = {
-  id: "notes",
-  name: "notes",
-  label: { text: "Notes" },
-  hint:  { text: "Record any notes that you think would be useful" },
-  value: data.notes or "",
-  rows: 8,
-  attributes: {
-    "data-address": addrAttr,
-    "data-type": typeAttr,
-    "data-duration": "6 hours 4 mins"
-  }
-} %}
 
-        {{ govukTextarea(notesParams) }}
+        <div class="govuk-form-group">
+  <h1 class="govuk-label-wrapper">
+    <label class="govuk-label " for="more-detail">
+      Notes
+    </label>
+  </h1>
+  <div id="more-detail-hint" class="govuk-hint">
+   Record any notes that you think would be useful
+  </div>
+{% set newline %}
+{% endset %}
+  <textarea class="govuk-textarea" id="more-detail" name="moreDetail" rows="8" aria-describedby="more-detail-hint">
+{{ data['addressnotes'] | replace(r/, /g, newline) }}
+
+Location type: {{ data['locationtypenotes'] }}
+
+Duration: {{ data['durationnotes'] }}
+
+  </textarea>
+</div>
 
 
         
@@ -120,8 +125,8 @@
           fieldset: { legend: { text: "Date", classes: "govuk-fieldset__legend--s" } },
           hint: { text: "Enter the date of the suspected breach" },
           items: [
-            { name: "day", classes: "govuk-input--width-2", value: "24" },
-            { name: "month", classes: "govuk-input--width-2", value: "7" },
+            { name: "day", classes: "govuk-input--width-2", value: "3" },
+            { name: "month", classes: "govuk-input--width-2", value: "12" },
             { name: "year", classes: "govuk-input--width-4", value: "2025" }
           ]
         }) }}
@@ -135,13 +140,13 @@
               <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
                   <label class="govuk-label govuk-date-input__label" for="breach-hour">Hours</label>
-                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-hour" name="breachHour" type="number" inputmode="numeric" min="0" max="23" value="19">
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-hour" name="breachHour" type="number" inputmode="numeric" min="0" max="23" value="13">
                 </div>
               </div>
               <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
                   <label class="govuk-label govuk-date-input__label" for="breach-min">Minutes</label>
-                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-min" name="breachMin" type="number" inputmode="numeric" min="0" max="59" value="56">
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-min" name="breachMin" type="number" inputmode="numeric" min="0" max="59" value="55">
                 </div>
               </div>
             </div>

@@ -208,7 +208,8 @@
 <div class="govuk-!-margin-bottom-6">
   <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
   <div id="map" style="height: 600px;"></div>
-  <p class="govuk-body-s"><a href="map-help">Help with the map</a></p>
+  <br>
+  <p class="govuk-body-m"><a href="map-help">Help with the map</a></p>
 </div>
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
@@ -285,9 +286,16 @@
 {% if data.row1 %}
   <tr class="govuk-table__row">
     
-      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
+    {% if data.row2 %} 
+        <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress1'] }}&locationtypenotes={{ data['addresstype1'] }}&durationnotes=6 hours 4 mins ">Send to NDelius</a></td>
+
+      {% else  %}
+      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress1']}}&locationtypenotes={{ data['loiName1'] }}&durationnotes=6 hours 4 mins ">Send to NDelius</a></td>
+
+      {% endif  %}
+
             
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">
+      <td class="govuk-table__cell"  data-sort-value="custom" data-loi-type="custom">
 
       {% if data.row2 %} 
         {{ data['addresstype1'] }} 
@@ -299,13 +307,13 @@
 
     </td>
 
-      <td class="govuk-table__cell">{{ data['selectedAddress1'] }}</td>
+      <td class="govuk-table__cell">{{ data['selectedAddress1'] | replace(', ', '<br>') | safe }} </td>
       
       <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm<br></td>
 
       <td class="govuk-table__cell" data-sort-value="364">(6 hours 4 mins)</td>
       
-      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+      <td class="govuk-table__cell"><a href="" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
       
     
     </tr>
@@ -314,11 +322,11 @@
 {% if data.row2 %}
     <tr class="govuk-table__row">
     
-      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
+      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress2']}}&locationtypenotes={{ data['loiName1'] }}&durationnotes=35 mins ">Send to NDelius</a></td>
             
       <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
 
-      <td class="govuk-table__cell">{{ data['selectedAddress2'] }}</td>
+      <td class="govuk-table__cell">{{ data['selectedAddress2']| replace(', ', '<br>') | safe }}</td>
       
       <td class="govuk-table__cell" data-sort-value="364">1:55pm to 2:30pm<br></td>
 

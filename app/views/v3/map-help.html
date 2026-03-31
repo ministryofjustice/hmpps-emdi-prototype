@@ -14,93 +14,134 @@
 
 <a href="javascript:history.back()" class="govuk-back-link">Back</a>
 
-
-<h2 class="govuk-heading-l">Help with the map</h2>
+<h2 class="govuk-heading-l">Guide to the map</h2>
 
 <div class="govuk-!-margin-bottom-6">
-  <h2 class="govuk-heading-m">GPS delay</h2>
 
   <div style="overflow: hidden;">
     <div style="float: right; width: 200px; height: 200px;" aria-hidden="true"></div>
 
     <p class="govuk-body">
-      The information shown on maps is based on the GPS data received from tags which is usually subject to delays of around 10 to 15 minutes. 
-      </p>
+      The map shows where the person on probation has been, using signals (‘pings’) sent from their GPS tag.
+    </p>
+    
     <p class="govuk-body">
-      Delays vary depending on network coverage and how often tags upload GPS data.
-      </p>
+     The tag uses satellite signals to record its location. It pings around once a minute, sending this location information to the Electronic Monitoring Service.
+    </p>
     <p class="govuk-body">
-      Use timestamps to find out when and how long a person on probation visited a location.
-      </p>
+      Each ping appears as a point on the map that indicates the person’s most likely location. 
+    </p>
+
+     <div class="govuk-inset-text">
+    Map data is around 95% accurate. The map may sometimes show a ping in the wrong location.
+  </div>
+
+    <p class="govuk-body">
+      You can filter the map to view the person’s movements for specific dates and times. The most recent activity shown is about 5 minutes behind real time.
+    </p>
   </div>
 </div>
 
-
-<div class="govuk-!-margin-bottom-6">
-  <h2 class="govuk-heading-m">Locations of interest</h2>
-
-  <div style="overflow: hidden;">
-    <img src="/public/images/help-loi.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
-
-    <p class="govuk-body">
-      As a person on probation enters or leaves a location of interest this movement is recorded in their location history and on their map.
-      </p>
-    <p class="govuk-body">
-      Locations of interest have defined boundaries which reflect the real-world and include:
-      </p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>places of interest - for example, pubs</li>
-      <li>required locations - for example, places of work and training providers</li>
-    </ul>
-    <p class="govuk-body">When you view a location of interest on the map, you’ll be able to check where the person was before and after they visited the location.</p>
-    <p class="govuk-body">The map will include the person’s GPS trail from around 10 minutes before to around 10 minutes after they were detected at that location.</p>
-    <p class="govuk-body">If you want to view more of their GPS trail, you can adjust the timings using the filter above the map.</p>
-  </div>
-
   <div class="govuk-!-margin-bottom-6">
-  <h2 class="govuk-heading-m">Confidence circles</h2>
+  <h2 class="govuk-heading-m">Location accuracy</h2>
 
   <div style="overflow: hidden;">
     <img src="/public/images/help-coc.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
 
     <p class="govuk-body">
-      The centre of a circle shows a person on probation’s most likely location.
+      Location accuracy can vary, and may be reduced if, for example, satellite signals are blocked or the tag battery is low.
     </p>
     <p class="govuk-body">
-      Circle size reflects the accuracy of GPS data and our level of confidence about the person on probation’s exact location. For example:
+      Map points are surrounded by ‘confidence circles’ that show how confident the system is that the tag pinged at or near to each location.
     </p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>smaller circles = more confidence about a location</li>
-      <li>larger circles = less confidence about a location</li>
-    </ul>
     <p class="govuk-body">
-      Various factors affect the accuracy of GPS data and the size of confidence circles including:
-      </p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>building density</li>
-      <li>GPS drift</li>
-      <li>GPS satellite availability</li>
-      <li>signal obstruction</li>
-    </ul>
+      Confidence circles cover the area the person may have been in when their tag pinged. The smaller the circle, the more confidence there is about the location.
+    </p>
+    <p class="govuk-body">
+      To check a circle’s exact size, select its point to open a ‘ping card’ (pop-up box). This shows the distance from the centre to the edge of the circle in metres.
+    </p>
+    <p class="govuk-body">
+      You can turn confidence circles off using the option in the top-right menu.
+    </p>
     
   </div>
 </div>
 
 
 <div class="govuk-!-margin-bottom-6">
-  <h2 class="govuk-heading-m">Lines and arrows</h2>
+  <h2 class="govuk-heading-m">Time and date of activity</h2>
 
   <div style="overflow: hidden;">
     <img src="/public/images/help-lines.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
 
     <p class="govuk-body">
-      The lines on maps show the likely path a person on probation took between locations and do not represent a confirmed route.
-      </p>
+      Each point has a timestamp that shows when the tag pinged in that location.
+    </p>
     <p class="govuk-body">
-      They only estimate and give a general sense of the person on probation's movement over time.
-      </p>
+      To check the timestamp, select the point and open its ping card.
+    </p>
     <p class="govuk-body">
-      The arrows on lines show a person on probation's direction of travel.
+      To work out how long the person spent at the location, compare the point’s timestamp with that of the next point in the sequence.
+    </p>
+     <p class="govuk-body">
+      You can check the order of location points by turning on ‘point numbers’ in the top right-hand menu.
+    </p>
+  </div>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Direction of travel</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/help-lines.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Each point is joined to the next point in the sequence by a line to form a trail.
+    </p>
+
+     <p class="govuk-body">
+      The trail shown may not reflect the actual route taken.
+    </p>
+
+     <p class="govuk-body">
+      Arrows along the trail show the estimated direction of travel, based on the order of the points.
+    </p>
+    <p class="govuk-body">
+      You can hide the arrows using the option in the top right-hand menu. 
+    </p>
+  </div>
+</div>
+    
+
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Missing trail data</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/help-lines.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Each point is joined to the next point in the sequence by a line to form a trail. 
+    </p>
+      <p class="govuk-body">
+      This could be because:
+      </p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>the person has gone somewhere with no signal, for example, in a lift or on the underground</li>
+      <li>the tag has been damaged or removed</li>
+      <li>the tag battery has run out</li>
+    </ul>
+
+    <p class="govuk-body">
+     Missing data will result in either:
+    </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+      <li>few or no location points on the map</li>
+      <li>a gap of more than 5 minutes between two location points in a sequence</li>
+    </ul>
+
     </p>
   </div>
 </div>

@@ -1,3 +1,4 @@
+
 {
   "kings-arms-1": {
     "meta": {
@@ -2554,6 +2555,63 @@
     {
       "label": "The Fusilier Bar & Restaurant, Aingers Green Rd, Great Bentley, Colchester, CO7 8NH",
       "type": "Pubs, bars and clubs",
+      "timeanddate": "Monday 22 September 2025, 11:12am to 1:27pm (2 hours 15 mins)",
+      "coordinates": [
+        { "lat": 51.84213239738854, "lng": 1.0743725387308236 },
+        { "lat": 51.84230995203009, "lng": 1.074483071312025 },
+        { "lat": 51.84227766942007, "lng": 1.0746780105915985 },
+        { "lat": 51.84209390642983, "lng": 1.0745976232598156 }
+      ]
+    }
+  ]
+},
+"fusilier-2": {
+  "meta": {
+    "description": "The Fusilier lunchtime",
+    "point_count": 36
+  },
+  "points": [
+    { "lat": 51.849294, "lng": 1.075695, "label": "1",  "accuracy": 20, "time": "11:12" },
+    { "lat": 51.848618, "lng": 1.076038, "label": "2",  "accuracy": 22, "time": "11:16" },
+    { "lat": 51.847929, "lng": 1.076188, "label": "3",  "accuracy": 18, "time": "11:20" },
+    { "lat": 51.847545, "lng": 1.076274, "label": "4",  "accuracy": 25, "time": "11:24" },
+    { "lat": 51.845954, "lng": 1.076124, "label": "5",  "accuracy": 19, "time": "11:28" },
+    { "lat": 51.844323, "lng": 1.074772, "label": "6",  "accuracy": 21, "time": "11:32" },
+    { "lat": 51.843422, "lng": 1.074278, "label": "7",  "accuracy": 24, "time": "11:36" },
+    { "lat": 51.842295, "lng": 1.073656, "label": "8",  "accuracy": 15, "time": "11:40" },
+    { "lat": 51.842064, "lng": 1.074402, "label": "9",  "accuracy": 18, "time": "11:44" },
+    { "lat": 51.842193, "lng": 1.074815, "label": "10", "accuracy": 22, "time": "11:48" },
+    { "lat": 51.842140, "lng": 1.074756, "label": "11", "accuracy": 16, "time": "11:52" },
+    { "lat": 51.842120, "lng": 1.074724, "label": "12", "accuracy": 19, "time": "11:56" },
+    { "lat": 51.842180, "lng": 1.074793, "label": "13", "accuracy": 21, "time": "12:00" },
+    { "lat": 51.842240, "lng": 1.074777, "label": "14", "accuracy": 20, "time": "12:04" },
+    { "lat": 51.842176, "lng": 1.074311, "label": "15", "accuracy": 23, "time": "12:08" },
+    { "lat": 51.842086, "lng": 1.074614, "label": "16", "accuracy": 25, "time": "12:12" },
+    { "lat": 51.842068, "lng": 1.074643, "label": "17", "accuracy": 19, "time": "12:16" },
+    { "lat": 51.842038, "lng": 1.074681, "label": "18", "accuracy": 17, "time": "12:20" },
+    { "lat": 51.841917, "lng": 1.075287, "label": "19", "accuracy": 22, "time": "12:24" },
+    { "lat": 51.841745, "lng": 1.076041, "label": "20", "accuracy": 20, "time": "12:28" },
+    { "lat": 51.841940, "lng": 1.076177, "label": "21", "accuracy": 24, "time": "12:32" },
+    { "lat": 51.841987, "lng": 1.076421, "label": "22", "accuracy": 19, "time": "12:36" },
+    { "lat": 51.842030, "lng": 1.076596, "label": "23", "accuracy": 18, "time": "12:40" },
+    { "lat": 51.842131, "lng": 1.076657, "label": "24", "accuracy": 20, "time": "12:44" },
+    { "lat": 51.842200, "lng": 1.076647, "label": "25", "accuracy": 17, "time": "12:48" },
+    { "lat": 51.842179, "lng": 1.076797, "label": "26", "accuracy": 21, "time": "12:52" },
+    { "lat": 51.842166, "lng": 1.076716, "label": "27", "accuracy": 22, "time": "12:56" },
+    { "lat": 51.842159, "lng": 1.076861, "label": "28", "accuracy": 25, "time": "13:00" },
+    { "lat": 51.842202, "lng": 1.076848, "label": "29", "accuracy": 18, "time": "13:04" },
+    { "lat": 51.842194, "lng": 1.076786, "label": "30", "accuracy": 19, "time": "13:08" },
+    { "lat": 51.842240, "lng": 1.076843, "label": "31", "accuracy": 21, "time": "13:12" },
+    { "lat": 51.842187, "lng": 1.076923, "label": "32", "accuracy": 23, "time": "13:16" },
+    { "lat": 51.842146, "lng": 1.076845, "label": "33", "accuracy": 19, "time": "13:20" },
+    { "lat": 51.842197, "lng": 1.076899, "label": "34", "accuracy": 22, "time": "13:24" },
+    { "lat": 51.842161, "lng": 1.076864, "label": "35", "accuracy": 20, "time": "13:27" },
+    { "lat": 51.842162, "lng": 1.076859, "label": "36", "accuracy": 18, "time": "13:27" }
+  ],
+  "areas": [
+    {
+      "label": "The Fusilier Bar & Restaurant, Aingers Green Rd, Great Bentley, Colchester, CO7 8NH",
+      "type": "Custom",
       "timeanddate": "Monday 22 September 2025, 11:12am to 1:27pm (2 hours 15 mins)",
       "coordinates": [
         { "lat": 51.84213239738854, "lng": 1.0743725387308236 },

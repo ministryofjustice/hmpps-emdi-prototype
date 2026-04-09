@@ -18,6 +18,12 @@ window.LOI_LOOKUP = {
     duration: "2 hours 15 mins",
     time: { hour: "11", min: "12" }
   },
+   "fusilier-2": {
+    address: ["The Fusilier Bar & Restaurant","Aingers Green Rd","Aingers Green","Great Bentley","Colchester","CO7 8NH"],
+    type: "Custom",
+    duration: "2 hours 15 mins",
+    time: { hour: "11", min: "12" }
+  },
   "probation-office": {
     address: ["Colchester Probation Service","Portal House","27 Southway","Colchester","CO2 7BA"],
     type: "Probation office",

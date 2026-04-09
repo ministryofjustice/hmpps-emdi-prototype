@@ -180,7 +180,7 @@
     <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
   </form>
 </div>
-
+ 
 <div class="govuk-!-margin-bottom-6">
   <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
   <div id="map" style="height: 600px;"></div>
@@ -208,85 +208,6 @@
       <p class="govuk-body"></p>It does not show activity in relation to any curfew licence conditions.</p>
       {% endcall %}
 
-      <!--
-{{ govukTable({
-  attributes: {
-    id: "bh-overnight-table",
-    "data-module": "moj-sortable-table"
-  },
-  caption: "Time spent away from home during the night (midnight to 6am)",
-  head: [
-    {
-      text: "Date"
-    },
-    {
-      text: "Location type"
-    },
-    {
-      text: "Address"
-    },
-    {
-      text: "Time"
-    },
-    {
-      text: "View on map"
-    }
-  ],
-  rows: [
-    [
-      {
-        html: "Friday 17 Oct 2025<br/><a href='#' class='govuk-link'>Send to NDelius</a>"
-      },
-      {
-        text: "Unknown"
-      },
-      {
-        html: "42 Turnstile Square<br/>ColchesterCO2 7HQ"
-      },
-      {
-        html: "1:05am to 1:36am<br/>(31 mins)"
-      },
-      {
-       html: '<a href="#" class="plot-link govuk-link">View</a>'
-      }
-    ],
-    [
-      {
-        html: "Saturday 18 Oct 2025<br/><a href='#' class='govuk-link'>Send to NDelius</a>"
-      },
-      {
-        text: "Partner's house"
-      },
-      {
-        html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR"
-      },
-      {
-        html: "1am to 2am<br/>(1 hour)"
-      },
-      {
-       html: '<a href="#" class="plot-link govuk-link">View</a>'
-      }
-    ],
-    [
-      {
-        html: "Sunday 19 Oct 2025<br/><a href='#' class='govuk-link'>Send to NDelius</a>"
-      },
-      {
-        text: "Partner's house"
-      },
-      {
-        html: "46-6 Rainsborowe Rd<br/>Colchester<br/>CO2 7JR"
-      },
-      {
-        html: "4:30am to 6:31am<br/>(2 hours 1 min)"
-      },
-      {
-       html: '<a href="#" class="plot-link govuk-link">View</a>'
-      }
-    ]
-  ]
-}) }}
--->
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 

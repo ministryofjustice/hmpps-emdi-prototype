@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var JSON_URL = '/public/data/gps-traces-bh.json';
+  var JSON_URL = '/public/data/gps-test-data.json';
   var traces = null, keys = [], idx = -1, layerGroup = null;
 
   function $(sel) { return document.querySelector(sel); }

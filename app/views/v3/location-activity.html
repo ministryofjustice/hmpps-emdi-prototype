@@ -44,7 +44,7 @@
 
 {% block content %}
 
-<a href="#" class="govuk-back-link">Back to MPoP</a>
+<a href="#" class="govuk-back-link">Back to Manage people on probation</a>
 
 {% block breadcrumb %}
   {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
@@ -72,40 +72,7 @@
     </h1>
   </div>
 </div>
-
-<!-- This is the banner that pops up once location is added -->
-
-
-{% if  data['successbanner'] == "loiName1"  %}
-
-  {% if data.loiName1 and (data.loiName1 | length) %}
-    
-{%- from "moj/components/alert/macro.njk" import mojAlert -%}
-    
-    {{ mojAlert({
-      variant: "information",
-      title: "A section has moved",
-      dismissible: true,
-      html: 'It can take up to 24 hours for a new location to appear on the map</a>.'
-    }) }}
-    
-   {% endif %}
-   {% endif %}
-
-
-
-
-<!-- This is the Subnavigation for the person 
-{{ mojSubNavigation({
-  label: "Sub navigation",
-  items: [{
-    text: "Location activity",
-    href: "",
-    active: true
-  }]
-}) }}
--->
-
+ 
 <!-- This is the header for the page and start of page content -->
 <h2 class="govuk-heading-m" id="map-header">Location activity</h2>
 
@@ -124,8 +91,7 @@
           name: "dateFrom",
           label: { text: "Date from" },
           classes: "govuk-input--width-10",
-          value: "",
-          maxDate: "10/11/2025"
+          value: ""
         }) }}
       </div>
 
@@ -135,8 +101,7 @@
           name: "dateTo",
           label: { text: "Date to" },
           classes: "govuk-input--width-10",
-          value: "",
-          maxDate: "10/11/2025"
+          value: ""
         }) }}
       </div>
  
@@ -212,139 +177,9 @@
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 
-<!--
-
-<h3 class="govuk-heading-m govuk-!-margin-bottom-2" id="filter-by-loi">Overnight activity</h3>
-
-      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
-      <!--
-      <p class="govuk-body">Mike left home during the night 1 time in the last 7 days:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>From 1:05am to 1:36am on Friday 7 November 2025. 
-        <a href="#"
-          class="plot-link govuk-link"
-          data-trace="overnight-2025-10-25"
-          data-date="2025-10-25"
-          data-start="01:05"
-          data-end="01:36">View activity on map
-        </a>
-        </li>
-      </ul>
-   
-      <p class="govuk-body">Overnight activity shows any times the person on probation left home between midnight and 6am in the last 7 days.</p>
-      <p class="govuk-body"></p>It does not show activity in relation to any curfew licence conditions.</p>
-      {% endcall %}
-     
-
-      
-<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
-
-<h3 class="govuk-heading-m govuk-!-margin-bottom-0" id="filter-by-loi">Check for visits to specific locations</h3>
-
-
-<br>
-
-<p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
-
-{% if  data['successbanner'] == "loiName1"  %}
-{% if data.loiName1 and (data.loiName1 | length) %}
-<p><a href='mvp-manage-locations' class='govuk-link'>Manage addresses</a></p>
-
-
-
-<table class="govuk-table" id="bh-loi-table" data-module="moj-sortable-table" data-moj-sortable-table-init="">
-
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-    
-      <th scope="col" class="govuk-table__header" aria-sort="descending"><button type="button" data-index="0">Date<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-      
-      <path d="M15.4375 7L11 15.8687L6.5625 7L15.4375 7Z" fill="currentColor"></path>
-      </svg></button></th>
-    
-      <th scope="col" class="govuk-table__header" aria-sort="none"><button type="button" data-index="1">Location type<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
-<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
-</svg></button></th>
-    
-      <th scope="col" class="govuk-table__header">Address</th>
-    
-      <th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Time<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
-<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
-</svg></button></th>
-<th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Duration<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
-<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
-</svg></button></th>
-      <th scope="col" class="govuk-table__header">View on map</th>    
-    </tr>
-  </thead>
-
-
-  <tbody class="govuk-table__body">
-
-{% if data.row1 %}
-  <tr class="govuk-table__row">
-    
-      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
-            
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">
-
-      {% if data.row2 %} 
-        {{ data['addresstype1'] }} 
-
-      {% else  %}
-      {{ data['loiName1'] }} 
-
-      {% endif  %}
-
-    </td>
-
-      <td class="govuk-table__cell">{{ data['selectedAddress1'] }}</td>
-      
-      <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm<br></td>
-
-      <td class="govuk-table__cell" data-sort-value="364">(6 hours 4 mins)</td>
-      
-      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
-      
-    
-    </tr>
-    {% endif %}
-
-{% if data.row2 %}
-    <tr class="govuk-table__row">
-    
-      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
-            
-      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
-
-      <td class="govuk-table__cell">{{ data['selectedAddress2'] }}</td>
-      
-      <td class="govuk-table__cell" data-sort-value="364">1:55pm to 2:30pm<br></td>
-
-      <td class="govuk-table__cell" data-sort-value="364">(35 mins)</td>
-      
-      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
-      
-    
-    </tr>
-{% endif %}
-
-
-  </tbody>
-</table>
-{% endif %}
-   {% endif %}
-
-
-<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
-
-  -->
 
 <!-- Leaflet core -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="/public/sass/leaflet.css" rel="stylesheet" type="text/css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- PolylineDecorator -->
@@ -363,7 +198,7 @@
 
 <script src="/public/javascripts/bh-location-init.js"></script>
 <script src="/public/javascripts/map-overlays.js"></script>
-<script src="/public/javascripts/gps-map.js"></script>
+<script src="/public/javascripts/gps-map-mvp.js"></script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
 

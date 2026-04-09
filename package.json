@@ -9,7 +9,8 @@
     "@ministryofjustice/frontend": "7.1.0",
     "govuk-frontend": "5.11.2",
     "govuk-prototype-kit": "13.18.0",
-    "jquery": "3.7.1"
+    "jquery": "3.7.1",
+    "ol": "^10.8.0"
   },
   "overrides": {
     "govuk-frontend": "5.11.2"

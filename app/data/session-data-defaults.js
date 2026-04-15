@@ -12,6 +12,7 @@ let mikeknight  = require('./mikeknight.json')
 let chrispost  = require('./chrispost.json')
 let terrymedford  = require('./terrymedford.json')
 let mikevanpeebles  = require('./mikevanpeebles.json')
+let jasonscott  = require('./jasonscott.json')
 
 module.exports = {
 
@@ -27,8 +28,7 @@ mikevanpeebles,
 mikeknight,
 richardmarks,
 chrispost,
-
-
+jasonscott,
 }
 
 

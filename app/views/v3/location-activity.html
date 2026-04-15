@@ -32,6 +32,10 @@
 
         {% set persondata=data['chrispost'] %}
 
+    {% elif data['personselected']=='jasonscott' %}
+
+        {% set persondata=data['jasonscott'] %}
+
     {% elif data['personselected']=='mikevanpeebles' %}
 
         {% set persondata=data['mikevanpeebles'] %}
@@ -86,22 +90,34 @@
 
       <!-- Row 1: Date pickers -->
       <div class="bh-slot bh-date-from">
+        {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+    
         {{ mojDatePicker({
           id: "bh-date-from",
           name: "dateFrom",
-          label: { text: "Date from" },
-          classes: "govuk-input--width-10",
-          value: ""
+          label: {
+            text: "Date from"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          }
         }) }}
       </div>
 
+
+
       <div class="bh-slot bh-date-to">
+         {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+    
         {{ mojDatePicker({
           id: "bh-date-to",
           name: "dateTo",
-          label: { text: "Date to" },
-          classes: "govuk-input--width-10",
-          value: ""
+          label: {
+            text: "Date to"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          }
         }) }}
       </div>
  
@@ -110,6 +126,7 @@
         <div class="govuk-form-group">
           <label class="govuk-label">Time from</label>
           <div class="govuk-date-input" id="bh-time-from">
+            <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
                 <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
@@ -134,7 +151,9 @@
         <div class="govuk-form-group">
           <label class="govuk-label">Time to</label>
           <div class="govuk-date-input" id="bh-time-to">
+           <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
             <div class="govuk-date-input__item">
+              
               <div class="govuk-form-group">
                 <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2"
@@ -418,6 +437,7 @@ $(".app-c-option-select__button").click(function(){
   });
 
 
+
   // Clear all the task filters
   $("#clear-filters").click(function (){
     // delete the tags
@@ -459,13 +479,194 @@ $(document).on("click", "a.moj-filter__tag",function() {
   return false;
   // alert (deleteThisCorrect);
 });
-
+xf
 </script>
 
 <style>
 
+/* Hide the existing × character */
+.emdi-layers-close {
+  font-size: 0;               /* hides the character */
+}
+
+/* Add replacement text */
+.emdi-layers-close::after {
+  content: "Close map controls ▾";
+  font-size: 16px;
+  line-height: 1.4;
+  color: #0b0c0c;
+  margin-top: 10px;
+}
+
+
+/* Optional GOV.UK hover/focus polish */
+.emdi-layers-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.emdi-layers-close:hover::after {
+  text-decoration: underline;
+}
+
+.emdi-layers-close:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+
+/* Add replacement text */
+.emdi-layers-opener::after {
+  content: "Open map controls ▸";
+  font-size: 16px;
+  line-height: 1.4;
+  color: #0b0c0c;
+  margin-left: 5px;
+  margin-top: 5px;
+  position: absolute;
+  font-family: GDS Transport,arial,sans-serif;
+}
+
+.emdi-layers-opener:hover::after {
+  text-decoration: underline;
+}
+
+
+
 .leaflet-interactive {
   fill-opacity: 0;
+  stroke: black;
+  color: white;
+}
+
+path[stroke-width="1"]
+ {
+  stroke: #1d70b8 !important;
+}
+
+
+
+/* Remove the browser's checkbox/radio entirely */
+.leaflet-control-layers-selector {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+
+}
+
+
+
+
+/* Checkbox label */
+.leaflet-control-layers-selector[type="checkbox"] + span {
+  position: relative;
+  padding-left: 34px;
+  cursor: pointer;
+  display: inline-block;
+  padding-top: 4px;
+  padding-bottom: 12px;
+
+}
+
+/* Checkbox box */
+.leaflet-control-layers-selector[type="checkbox"] + span::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: 1px;
+  box-sizing: border-box;
+
+
+}
+
+/* Checkbox tick */
+.leaflet-control-layers-selector[type="checkbox"]:checked + span::after {
+  content: "";
+    position: absolute;
+    left: 7px;
+    top: 2px;
+    width: 4px;
+    height: 12px;
+    margin-left: 2px;
+    margin-top: 2.3px;
+    border: solid #0b0c0c;
+    border-width: 0px 3.5px 3.5px 0;
+    transform: rotate(45deg);
+}
+
+
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="checkbox"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline-offset: 0px;
+}
+
+
+
+/* Radio label */
+.leaflet-control-layers-selector[type="radio"] + span {
+  position: relative;
+  padding-left: 34px;
+  padding-top: 4px;
+  padding-bottom: 12px;
+  cursor: pointer;
+  display: inline-block;
+
+
+}
+
+
+/* Only affect the FIRST RADIO OPTION */
+.leaflet-control-layers-base label:first-child {
+    padding-top: 40px;
+}
+
+
+/* Radio outer circle */
+.leaflet-control-layers-selector[type="radio"] + span::before {
+  content: "";
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: -2px;
+  box-sizing: border-box;
+}
+
+/* Radio inner dot */
+.leaflet-control-layers-selector[type="radio"]:checked + span::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0b0c0c;
+  position: absolute;
+  left: 7px;
+  top: 5px;
+}
+
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="radio"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline-offset: 0px;
+}
+
+
+
+.leaflet-container {
+ font-family: "GDS Transport", arial, sans-serif;
 }
   
 .filters-accordion {

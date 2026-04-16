@@ -404,10 +404,7 @@
           <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
         </div>
 
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Location</dt>
-          <dd class="govuk-summary-list__value"><a href="#">Save this location</a></dd>
-        </div>
+        
       </dl>
     </div>
   `;

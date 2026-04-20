@@ -1,0 +1,361 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Location activity" %}
+
+{% block pageTitle %}
+  Map prototype - GOV.UK
+{% endblock %}
+
+{% block head %}
+
+
+  {{ super() }}
+
+  <link rel="stylesheet" href="/public/stylesheets/ol.css" type="text/css">
+  <style>
+    /* You MUST give the map a height, otherwise it will collapse to 0 pixels and be invisible */
+    .map {
+      width: 100%;
+      height: 600px;
+      background-color: #f3f2f1; /* GOV.UK grey background to show while loading */
+      margin-bottom: 30px;
+    }
+
+    .ol-control {
+      font-family: "GDS Transport", Arial, sans-serif;
+    }
+
+    .ol-rotate {
+      position: absolute !important;
+      top: 0rem !important;
+      left: auto !important;
+      right: 0.5rem !important;
+      bottom: auto !important;
+      background: #ffffff !important;
+      border: 1px solid #b1b4b6 !important;
+      border-radius: 0.3rem !important;
+      margin: 0 !important;
+    }
+
+    .ol-rotate button {
+      width: 2.4rem !important;
+      height: 2.4rem !important;
+      border: none !important;
+      background: #ffffff !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+
+    
+   
+
+    .ol-full-screen button:hover {
+      background: #f8f8f8 !important;
+    }
+
+    .ol-scale-line {
+      position: absolute !important;
+      left: 0.75rem !important;
+      bottom: 0.75rem !important;
+      width: auto !important;
+      min-width: 6rem !important;
+      max-width: 10rem !important;
+      padding: 0.35rem 0.65rem !important;
+      font-size: 0.75rem !important;
+      line-height: 1.4 !important;
+      z-index: 1000 !important;
+    }
+
+    .ol-control {
+    position: absolute;
+    background-color: var(--ol-subtle-background-color);
+    border-radius: 4px;
+    }
+
+    .ol-control button {
+    font-family: "GDS Transport", arial, sans-serif;
+    line-height: 1;
+    background-color: #ffffff;
+    color: #0b0c0c;
+    border: 1px solid #0b0c0c;
+    border-radius: 0;
+    width: 2em;
+    height: 2em;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out, border-color 0.1s ease-in-out;
+}
+  </style>
+{% endblock %}
+
+
+
+{% block content %}
+  <a href="#" class="govuk-back-link">Back to Manage people on probation</a>
+
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "cases" },
+      { text: persondata.name, href: "/case/" + persondata.url }
+    ]
+  }) }}
+{% endblock %}
+
+ 
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: {{ persondata.sentence  }}
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      {{ persondata.name  }}
+    </h1>
+  </div>
+</div>
+
+<!-- This is the header for the page and start of page content -->
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+<h3 class="govuk-heading-s">Search map by date and time</h3>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="bh-map-filters" class="loi-filters__form" novalidate>
+    <div class="bh-filters-grid">
+
+      <!-- Row 1: Date pickers -->
+      <div class="bh-slot bh-date-from">
+        {{ mojDatePicker({
+          id: "bh-date-from",
+          name: "dateFrom",
+          label: { text: "Date from" },
+          classes: "govuk-input--width-10",
+          value: ""
+        }) }}
+      </div>
+
+      <div class="bh-slot bh-date-to">
+        {{ mojDatePicker({
+          id: "bh-date-to",
+          name: "dateTo",
+          label: { text: "Date to" },
+          classes: "govuk-input--width-10",
+          value: ""
+        }) }}
+      </div>
+ 
+      <!-- Row 2: Time inputs -->
+      <div class="bh-slot bh-time-from">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time from</label>
+          <div class="govuk-date-input" id="bh-time-from">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-hour" name="timeFromHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-min" name="timeFromMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bh-slot bh-time-to">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time to</label>
+          <div class="govuk-date-input" id="bh-time-to">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-hour" name="timeToHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-min" name="timeToMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="bh-slot bh-actions">
+        <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
+          Update map
+        </button>
+        <a href="/bh-location?clear=1" id="bh-clear-filters" class="govuk-link" data-turbo="false">Clear filters</a>
+      </div>
+
+    </div>
+
+    <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+ 
+
+<div class="govuk-!-margin-bottom-6">
+  <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
+      <div id="map" class="map"></div>
+      <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
+    </div>
+  </div>
+
+ 
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/ol.js"></script>
+  
+  <script>
+    const positions = [
+      { lat: 51.5074, lon: -0.1278, label: 'London', radius: 6000 },
+      { lat: 53.4808, lon: -2.2426, label: 'Manchester', radius: 4500 },
+      { lat: 55.9533, lon: -3.1883, label: 'Edinburgh', radius: 4000 }
+    ];
+
+    const positionCoords = positions.map((pos) => ol.proj.fromLonLat([pos.lon, pos.lat]));
+
+    const locationFeatures = positions.map((pos) => {
+      return new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([pos.lon, pos.lat])),
+        label: pos.label,
+        radius: pos.radius
+      });
+    });
+
+    const trackFeature = new ol.Feature({
+      geometry: new ol.geom.LineString(positionCoords)
+    });
+
+    const circleFeatures = positions.map((pos, index) => {
+      const coord = positionCoords[index];
+      return new ol.Feature({
+        geometry: new ol.geom.Circle(coord, pos.radius)
+      });
+    });
+
+    const locationLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({ features: locationFeatures }),
+      style: (feature) => new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 8,
+          fill: new ol.style.Fill({ color: '#d4351c' }),
+          stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+        }),
+        text: new ol.style.Text({
+          text: feature.get('label'),
+          offsetY: -18,
+          font: '600 12px Arial, sans-serif',
+          fill: new ol.style.Fill({ color: '#0b0c0c' }),
+          stroke: new ol.style.Stroke({ color: '#ffffff', width: 3 })
+        })
+      })
+    });
+
+    const trackLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({ features: [trackFeature] }),
+      style: new ol.style.Style({
+        stroke: new ol.style.Stroke({ color: '#1d70b8', width: 3 })
+      })
+    });
+
+    const circleLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({ features: circleFeatures }),
+      style: new ol.style.Style({
+        fill: new ol.style.Fill({ color: 'rgba(27, 112, 205, 0.12)' }),
+        stroke: new ol.style.Stroke({ color: 'rgba(27, 112, 205, 0.75)', width: 2 })
+      })
+    });
+
+    const map = new ol.Map({
+      target: 'map',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.XYZ({
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+            attributions: ''
+          })
+        }),
+        circleLayer,
+        trackLayer,
+        locationLayer
+      ],
+      view: new ol.View({
+        center: ol.proj.fromLonLat([-3.5, 54.5]),
+        zoom: 6
+      }),
+      controls: [
+        new ol.control.Zoom(),
+        new ol.control.Rotate(),
+        new ol.control.ScaleLine()
+      ]
+    });
+  </script>
+{% endblock %}
+

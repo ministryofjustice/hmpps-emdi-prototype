@@ -7,6 +7,7 @@
   "dependencies": {
     "@govuk-prototype-kit/common-templates": "2.0.1",
     "@ministryofjustice/frontend": "7.1.0",
+    "@ministryofjustice/hmpps-electronic-monitoring-components": "^0.2.8-beta.1",
     "govuk-frontend": "5.11.2",
     "govuk-prototype-kit": "13.18.0",
     "jquery": "3.7.1",

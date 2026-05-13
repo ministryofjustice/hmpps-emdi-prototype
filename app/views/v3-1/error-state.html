@@ -1,0 +1,827 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Location activity" %}
+
+{% block content %}
+
+<a href="#" class="govuk-back-link">Back to MPoP</a>
+
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "cases" },
+      { text: persondata.name, href: "/case/" + persondata.url }
+    ]
+  }) }}
+{% endblock %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{{ govukErrorSummary({
+  titleText: "There is a problem",
+  errorList: [
+    {
+      text: "Error message one",
+      href: "#"
+    },
+    {
+      text: "Error message two",
+      href: "#"
+    },
+    {
+      text: "Error message three",
+      href: "#"
+    },
+    {
+      text: "Error message four",
+      href: "#"
+    }
+  ]
+}) }}
+
+ 
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: {{ persondata.sentence  }}
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      {{ persondata.name  }}
+    </h1>
+  </div>
+</div>
+
+<!-- This is the banner that pops up once location is added -->
+
+
+{% if  data['successbanner'] == "loiName1"  %}
+
+  {% if data.loiName1 and (data.loiName1 | length) %}
+    
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+    
+    {{ mojAlert({
+      variant: "information",
+      title: "A section has moved",
+      dismissible: true,
+      html: 'It can take up to 24 hours for a new location to appear on the map</a>.'
+    }) }}
+    
+   {% endif %}
+   {% endif %}
+
+
+
+<!-- This is the header for the page and start of page content -->
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+<h3 class="govuk-heading-s">Search map by date and time</h3>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="bh-map-filters" class="loi-filters__form" novalidate>
+    <div class="bh-filters-grid">
+
+      <!-- Row 1: Date pickers -->
+      <div class="bh-slot bh-date-from">
+        {{ mojDatePicker({
+          id: "bh-date-from",
+          name: "dateFrom",
+          errorMessage: {text: "Error message one"},
+          label: { text: "Date from" },
+          classes: "govuk-input--width-10",
+          value: "",
+          maxDate: "10/11/2025"
+        }) }}
+      </div>
+
+      <div class="bh-slot bh-date-to">
+        {{ mojDatePicker({
+          id: "bh-date-to",
+          name: "dateTo",
+          errorMessage: {text: "Error message two"},
+          label: { text: "Date to" },
+          classes: "govuk-input--width-10",
+          value: "",
+          maxDate: "10/11/2025"
+        }) }}
+      </div>
+ 
+      <!-- Row 2: Time inputs -->
+      <div class="bh-slot bh-time-from">
+        <div class="govuk-form-group govuk-form-group--error">
+
+          <label class="govuk-label">Time from</label>
+           <p id="passport-issued-error" class="govuk-error-message">
+           <span class="govuk-visually-hidden">Error:</span> 
+           Error message three
+           </p>
+          <div class="govuk-date-input" id="bh-time-from">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-hour" name="timeFromHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-min" name="timeFromMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bh-slot bh-time-to">
+        <div class="govuk-form-group govuk-form-group--error">
+          <label class="govuk-label">Time to</label>
+           <p id="passport-issued-error" class="govuk-error-message">
+           <span class="govuk-visually-hidden">Error:</span> 
+           Error message three
+           </p>
+          <div class="govuk-date-input" id="bh-time-to">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-hour" name="timeToHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-min" name="timeToMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="bh-slot bh-actions">
+        <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
+          Update map
+        </button>
+        <a href="/bh-location?clear=1" id="bh-clear-filters" class="govuk-link" data-turbo="false">Clear filters</a>
+      </div>
+
+    </div>
+
+    <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  <div id="map" style="height: 600px;"></div>
+  <p class="govuk-body-s"><a href="map-help">Help with the map</a></p>
+</div>
+
+<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+
+<!--
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-2" id="filter-by-loi">Overnight activity</h3>
+
+      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+      <!--
+      <p class="govuk-body">Mike left home during the night 1 time in the last 7 days:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>From 1:05am to 1:36am on Friday 7 November 2025. 
+        <a href="#"
+          class="plot-link govuk-link"
+          data-trace="overnight-2025-10-25"
+          data-date="2025-10-25"
+          data-start="01:05"
+          data-end="01:36">View activity on map
+        </a>
+        </li>
+      </ul>
+   
+      <p class="govuk-body">Overnight activity shows any times the person on probation left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body"></p>It does not show activity in relation to any curfew licence conditions.</p>
+      {% endcall %}
+     
+
+      
+<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+
+<h3 class="govuk-heading-m govuk-!-margin-bottom-0" id="filter-by-loi">Check for visits to specific locations</h3>
+
+
+<br>
+
+<p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
+
+{% if  data['successbanner'] == "loiName1"  %}
+{% if data.loiName1 and (data.loiName1 | length) %}
+<p><a href='mvp-manage-locations' class='govuk-link'>Manage addresses</a></p>
+
+
+
+<table class="govuk-table" id="bh-loi-table" data-module="moj-sortable-table" data-moj-sortable-table-init="">
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+    
+      <th scope="col" class="govuk-table__header" aria-sort="descending"><button type="button" data-index="0">Date<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      
+      <path d="M15.4375 7L11 15.8687L6.5625 7L15.4375 7Z" fill="currentColor"></path>
+      </svg></button></th>
+    
+      <th scope="col" class="govuk-table__header" aria-sort="none"><button type="button" data-index="1">Location type<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+</svg></button></th>
+    
+      <th scope="col" class="govuk-table__header">Address</th>
+    
+      <th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Time<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+</svg></button></th>
+<th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Duration<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+<path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+</svg></button></th>
+      <th scope="col" class="govuk-table__header">View on map</th>    
+    </tr>
+  </thead>
+
+
+  <tbody class="govuk-table__body">
+
+{% if data.row1 %}
+  <tr class="govuk-table__row">
+    
+      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
+            
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">
+
+      {% if data.row2 %} 
+        {{ data['addresstype1'] }} 
+
+      {% else  %}
+      {{ data['loiName1'] }} 
+
+      {% endif  %}
+
+    </td>
+
+      <td class="govuk-table__cell">{{ data['selectedAddress1'] }}</td>
+      
+      <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm<br></td>
+
+      <td class="govuk-table__cell" data-sort-value="364">(6 hours 4 mins)</td>
+      
+      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+      
+    
+    </tr>
+    {% endif %}
+
+{% if data.row2 %}
+    <tr class="govuk-table__row">
+    
+      <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?trace=finch-road&amp;date=2025-12-03">Send to NDelius</a></td>
+            
+      <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
+
+      <td class="govuk-table__cell">{{ data['selectedAddress2'] }}</td>
+      
+      <td class="govuk-table__cell" data-sort-value="364">1:55pm to 2:30pm<br></td>
+
+      <td class="govuk-table__cell" data-sort-value="364">(35 mins)</td>
+      
+      <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+      
+    
+    </tr>
+{% endif %}
+
+
+  </tbody>
+</table>
+{% endif %}
+   {% endif %}
+
+
+<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+
+  -->
+
+<!-- Leaflet core -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- PolylineDecorator -->
+<script src="/public/javascripts/leaflet.polylineDecorator.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Duration calculator -->
+<script src="/public/javascripts/duration-helper.js"></script>
+
+<script src="/public/javascripts/bh-filters-align.js"></script>
+<script src="/public/javascripts/bh-map-filters.js"></script>
+<script src="/public/javascripts/bh-date-sync.js"></script>
+<script src="/public/javascripts/bh-loi-row-highlight.js"></script>
+
+<script src="/public/javascripts/bh-location-init.js"></script>
+<script src="/public/javascripts/map-overlays.js"></script>
+<script src="/public/javascripts/gps-map.js"></script>
+<script src="/public/javascripts/bh-update-map.js"></script>
+<script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
+
+<!-- Table filtering -->
+<script src="/public/javascripts/loi-filters.js"></script>
+
+<script>
+
+
+// routes.js (or app.js)
+
+// Handle the form POST
+app.post('/mvp-add-location3', (req, res) => {
+  const { loiName1 } = req.body;
+
+  // TODO: persist loiName + selected address (e.g. req.session or DB)
+  // Example using session:
+  req.session.loi = {
+    name: loiName1,
+    selectedAddress: req.session.selectedAddress // wherever you stored it from prior step
+  };
+
+  // On success, redirect using PRG to avoid resubmission
+  res.redirect('/mvp-location?saved=1');
+});
+
+// Render the destination page
+app.get('/mvp-location', (req, res) => {
+  const saved = req.query.saved === '1';
+  res.render('mvp-location.njk', {
+    saved,
+    data: {
+      loiName1: req.session?.loi?.name,
+      selectedAddress: req.session?.loi?.selectedAddress
+    }
+   });
+
+
+  // Enhancements only — map is created in /public/javascripts/bh-location-init.js
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.map) return;
+
+    // Give LOI areas their own pane above lines/circles but under tooltips/popups
+if (!window.map.getPane('loi-areas')) {
+  const pane = window.map.createPane('loi-areas');
+  // Leaflet default z-indexes: overlayPane=400, markerPane=600, tooltip=650, popup=700
+  // Put polygons above lines/circles (400) but just under tooltips (650)
+  pane.style.zIndex = 645;
+}
+
+    // Restore previously chosen base (Street/Satellite)
+    try {
+      var lastBase = (localStorage.getItem('loi-base') || 'street').toLowerCase();
+      var base = (lastBase === 'satellite') ? window.satelliteLayer : window.streetLayer;
+      if (base && !window.map.hasLayer(base)) base.addTo(window.map);
+
+      // Persist choice when user switches base layers
+      window.map.on('baselayerchange', function (e) {
+        if (e && e.name) localStorage.setItem('loi-base', e.name.toLowerCase());
+      });
+    } catch (e) {
+      console.warn('[bh] base layer restore skipped:', e);
+    }
+
+    // IMPORTANT: do NOT call setupMapOverlays() here — it’s already called in bh-location-init.js
+  });
+
+
+// Open and close the filters panel
+
+jQuery(document).ready(function($) {
+
+  // Open / close the accordions.
+
+  $(".filters-accordion__button").click(function(){
+    if ($(this).attr('aria-expanded') === "false") {
+      $(this).attr('aria-expanded', 'true');
+      $(this).closest(".filters-accordion").toggleClass("js-closed");
+    } else {
+      // alert ("it's closed");
+      $(this).attr('aria-expanded', 'false');
+      $(this).closest(".filters-accordion").toggleClass("js-closed");
+    }
+  })
+
+
+  // Show and hide the filters column
+
+  $('#toggle-filters').on('click', function() {
+    if ($(this).attr('data-click-state') == 1) {
+      $(this).attr('data-click-state', 0);
+      $(this).html("Hide filters");
+      $('#filters-column').show();
+      $('#table-column').removeClass('govuk-grid-column-full');
+      $('#table-column').addClass('govuk-grid-column-three-quarters');
+    } else {
+      $(this).attr('data-click-state', 1);
+      $(this).html("Open filters");
+      $('#filters-column').hide();
+      $('#table-column').removeClass('govuk-grid-column-three-quarters');
+      $('#table-column').addClass('govuk-grid-column-full');
+    }
+  });
+
+
+
+// open and close the accordion panels
+
+$(".app-c-option-select__button").click(function(){
+  if ($(this).attr('aria-expanded') === "false") {
+    $(this).attr('aria-expanded', 'true');
+    $(this).closest(".app-c-option-select").toggleClass("js-closed");
+  } else {
+    // alert ("it's closed");
+    $(this).attr('aria-expanded', 'false');
+    $(this).closest(".app-c-option-select").toggleClass("js-closed");
+  }
+})
+
+  // filter the checkboxes by the input
+
+    $(".filterCheckboxes").keyup(function () {
+        var re = new RegExp($(this).val(), "i")
+        $(this).closest(".app-c-option-select").find('.filter__checkbox .govuk-checkboxes__label').each(function () {
+            var text = $(this).text(),
+                matches = !! text.match(re);
+            $(this).parent().toggle(matches)
+        })
+    })
+
+  // Create the tags
+
+  $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section, #date-range-tags-section").hide()
+
+
+  // When you click the green filter button
+
+  $("button#actionFilter").click(function(){
+
+    // Reset any hidden rows
+    var filterSelected = "";
+    $("tbody tr").show()
+
+    // Set the variables
+    var $tasksChecked = $("input[name='taskType']");
+    var countTasksChecked = $tasksChecked.filter(':checked').length;
+
+    var $assignedChecked = $("input[name='assigedTo']");
+    var countAssignedChecked = $assignedChecked.filter(':checked').length;
+
+    $('ul.task-type-filter-tags, ul.assigned-filter-tags, ul.case-owner-filter-tags').html("");
+
+    // Check if any of the filters are selected
+    if (countTasksChecked <= 0) {
+      $('#task-type-tags-section').hide();
+    } else {
+      $('#task-type-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if (countAssignedChecked <= 0) {
+      $('#assigned-tags-section').hide();
+    } else {
+      $('#assigned-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if (countcaseOwnerChecked <= 0) {
+      $('#case-owner-tags-section').hide();
+    } else {
+      $('#case-owner-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if ($('#dateRangeFrom').val() != '' || ($('#dateRangeTo').val() != '')) {
+      $('#date-range-tags-section').show();
+      $("#none-selected").hide();
+    };
+
+    // Add the task type tags to the list
+    $('input.task-type:checkbox:checked').each(function () {
+      var task = $(this).val();
+      $('ul.task-type-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+task+'</a></li>');
+    });
+
+    // Add the assigned to tags to the list
+    $("input.assigned:checkbox:checked").each(function(){
+      var assigned = $(this).val();
+        $('ul.assigned-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+assigned+'</a></li>')
+    });
+
+    // Add the case owner tags to the list
+    $("input.case-owner:checkbox:checked").each(function(){
+      var caseOwner = $(this).val();
+        $('ul.case-owner-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+caseOwner+'</a></li>')
+    });
+
+    // Add the date range tags to the list
+    if ($('#dateRangeFrom').val() != '') {
+        $('ul.date-range-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>From:'+ $('#dateRangeFrom').val() +'</a></li>')
+    };
+    if ($('#dateRangeTo').val() != '') {
+        $('ul.date-range-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>To:'+ $('#dateRangeTo').val() +'</a></li>')
+    };
+
+    // Hide the table rows
+    $("input.govuk-checkboxes__input:checkbox:checked").each(function(){
+      $("tbody tr").hide()
+      var filterSelected = $(this).val();
+      $("tbody td:contains("+filterSelected+")").closest('tr').show();
+
+      if (filterSelected == "Not assigned") {
+        $("tbody td:contains(–)").closest('tr').show();
+        //alert ('working');
+      }
+
+
+    });
+
+  });
+
+
+  // Clear all the task filters
+  $("#clear-filters").click(function (){
+    // delete the tags
+    $('ul.task-type-filter-tags, ul.assigned-filter-tags, ul.case-owner-filter-tags, ul.date-range-filter-tags').html("");
+    // deselect all the checboxes
+    $('.moj-filter__options input:checkbox').each(function() {
+        this.checked = false;
+    })
+    $('#dateRangeFrom').val(null);
+    $('#dateRangeTo').val(null);
+    // hide the tags sections
+    $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section").hide()
+    // Display the no filters selected message
+    $("#none-selected").show();
+    // Show all the table rows
+    $("tbody tr").show()
+    return false;
+  })
+});
+
+// Delete an individual filter when you click a tag
+
+$(document).on("click", "a.moj-filter__tag",function() {
+  $(this).closest('li').remove()
+  var deleteThisTag = $(this).text();
+  var deleteThisCorrect = deleteThisTag.replace('Remove this filter', '');
+  $('.moj-filter__options input[value="' + deleteThisCorrect +'"]:checkbox').each(function() {
+      this.checked = false;
+  })
+
+  if ($('.moj-filter__options input:checkbox:checked').length === 0){
+    $("tbody tr").show();
+    // Display the no filters selected message
+    $("#none-selected").show();
+    $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section").hide()
+  }
+
+
+  return false;
+  // alert (deleteThisCorrect);
+});
+
+</script>
+
+<style>
+  
+.filters-accordion {
+    position: relative;
+    padding: 0 0 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #b1b4b6;
+}
+
+.filters-accordion__heading {
+    position: relative;
+    padding: 10px 8px 5px 30px;
+    margin: 0;
+}
+
+.filters-accordion__button {
+    z-index: 1;
+    background: none;
+    border: 0;
+    text-align: left;
+    padding: 0;
+    cursor: pointer;
+    color: #1d70b8;
+}
+.filters-accordion__title {
+    font-size: 19px;
+    line-height: 1.3157894737;
+}
+.filters-accordion__icon {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 2px;
+    width: 20px;
+    fill: #0b0c0c;
+}
+
+[aria-expanded="true"]~.filters-accordion__icon--up {
+    display: block;
+}
+
+[aria-expanded="false"]~.filters-accordion__icon--down {
+    display: block;
+}
+
+.filters-accordion__selected-counter {
+    font-size: 14px;
+    line-height: 1.4285714286;
+}
+
+.filters-accordion__filter {
+    position: relative;
+    background: #fff;
+    padding: 13px 0px 10px 0px;
+}
+
+.filters-accordion__search {
+  padding-bottom: 10px;
+}
+
+.filters-accordion__filter-input {
+    font-family: "nta",arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.25;
+    padding-left: 33px;
+    background: url("/public/images/icon-search.svg") #fff no-repeat -5px -3px;
+}
+
+.filters-accordion__container-inner {
+    padding: 5px 13px;
+}
+
+.filters-accordion__container {
+    position: relative;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+}
+
+.filters-accordion.js-closed .filters-accordion__filter,
+.filters-accordion.js-closed .filters-accordion__container {
+  display: none;
+}
+
+.govuk-checkboxes .govuk-checkboxes--small {
+  background-color: white;
+}
+
+.moj-filter .govuk-grid-column-one-third {
+  background: #ffffff;
+  background-color: white;
+  border: none;
+
+}
+
+/* Header spacing (optional refinement) */
+.moj-filter__header {
+  padding: 16px 16px 0;
+}
+
+/* Content area */
+.moj-filter__content {
+  padding: 0 16px 16px;
+}
+
+.moj-filter__options {
+    margin-top: -1px;
+    padding: 20px;
+    box-shadow: none;
+    }
+
+/* Keep grid spacing tight inside the white inner panel */
+.moj-filter .govuk-grid-row {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Provide a visual card effect to each group (optional) */
+.moj-filter .govuk-grid-column-one-third {
+  padding: 8px 12px;
+  background: #f8f8f8;            /* very light grey */
+  border-radius: 3px;
+}
+
+/* Headings and hints spacing inside each group */
+.moj-filter .govuk-heading-s {
+  margin-bottom: 4px;
+}
+.moj-filter .govuk-hint {
+  margin-bottom: 8px;
+}
+
+/* Scrollable list specifically for checkbox stacks (per group) */
+.moj-filter .govuk-checkboxes {
+  max-height: 200px;              /* set per-group scroll area */
+  overflow-y: auto;
+  padding-right: 4px;             /* space for scrollbar */
+}
+
+/* Keep small checkboxes compact */
+.moj-filter .govuk-checkboxes--small .govuk-checkboxes__item {
+  margin-bottom: 8px;
+  margin-left: 10px;
+}
+
+/* Button group on a pale grey “footer” strip, like screenshot */
+.moj-filter__actions {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f3f2f1;
+  border-top: 1px solid #b1b4b6;
+}
+
+/* Ensure link and button align nicely */
+.moj-filter__actions .govuk-button-group {
+  margin-bottom: 0;
+}
+
+/* High-contrast/focus refinement: keep GOV.UK focus ring visible
+   when focus moves inside scrollable lists */
+.moj-filter .govuk-checkboxes__input:focus + .govuk-label {
+  outline: 3px solid transparent; /* allow default GDS focus styles to show  outline: 3px solid transparent; /* allow default GDS focus styles to show */
+}
+
+.govuk-hint { 
+  margin-bottom: 10px;
+
+ }
+
+</style>
+
+
+
+{% endblock %}

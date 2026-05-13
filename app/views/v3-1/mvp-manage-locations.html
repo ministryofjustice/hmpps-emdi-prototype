@@ -1,0 +1,169 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Manage locations" %}
+
+{% block content %}
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "/cases" },
+      { text: persondata.name, href: "/case/" + persondata.url }
+    ]
+  }) }}
+{% endblock %}
+
+<form method="post" action="location-activity" novalidate>
+ 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>:  {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth:  {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        <a href="https://www.figma.com/proto/vlCrUVrP6fuq59QzUg9lyy/GPS-Alpha-2.0?page-id=6722%3A15258&node-id=6936-6250&p=f&viewport=-4249%2C-4220%2C0.21&t=gk748NC1vQvFiqZc-8&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=6722%3A16450&hide-ui=1" style="color:#505a5f; text-decoration: none;">Sentence:  {{ persondata.sentence  }}</a>
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+       {{ persondata.name  }}
+    </h1>
+ 
+
+    {{ mojSubNavigation({
+      label: "Sub navigation",
+      items: [{
+        text: "Location activity",
+        href: "bh-location"
+      },
+      {
+        text: "Curfew activity",
+        href: "bh-curfew"
+      }
+      ]
+    }) }}
+  </div>
+
+  <div class="govuk-grid-column-full">
+
+<!--
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Manage addresses</h2>
+
+
+
+      {% if data.selectedAddress %}
+        {% set _inset = "" %}
+        {% if data.loiName1 and (data.loiName1 | length) %}
+          {% set _inset = _inset ~ "<strong>" ~ (data.loiName1 | escape) ~ "</strong><br>" %}
+        {% endif %}
+        {% set _inset = _inset ~ (data.selectedAddress | replace(", ", "<br>")) %}
+        {% set _inset = _inset ~ "<p class='govuk-!-margin-top-4'>
+          <a href='/loi/clear' class='govuk-link'>Delete</a></p>" %}
+
+        <div id="loi-inset">
+          {{ govukInsetText({ html: _inset }) }}
+        </div>
+      {% else %}
+        <div id="loi-inset">
+          {{ govukInsetText({
+            html: "No custom locations have been added."
+          }) }}
+        </div>
+      {% endif %}
+
+
+      <p class="govuk-body" style="margin-bottom: 60px;">
+        <a href="mvp-add-location1" class="govuk-link">Add new custom location</a>
+      </p>
+
+-->
+
+
+{% if data.selectedAddress %}
+  <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Manage addresses</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Address</th>
+        <th scope="col" class="govuk-table__header">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {% if data.loiName1 and (data.loiName1 | length) %}
+            <strong>{{ data.loiName1 | escape }}</strong><br>
+          {% endif %}
+          {{ (data.selectedAddress | escape) | replace(", ", "<br>") | safe }}
+        </td>
+        <td class="govuk-table__cell"> <a href="/loi/clear-mvp" class="govuk-link"> Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% else %}
+  <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Manage addresses</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Address</th>
+        <th scope="col" class="govuk-table__header">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">No custom locations have been added.</td>
+        <td class="govuk-table__cell"></td>
+      </tr>
+    </tbody>
+  </table>
+{% endif %}
+
+
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save changes", type: "submit" }) }}
+        <a class="govuk-link" href="mvp-location">Cancel and go back</a>
+      </div>
+
+    </form>
+  </div> <!-- /govuk-grid-column-full -->
+</div> <!-- /govuk-grid-row -->
+{% endblock %}

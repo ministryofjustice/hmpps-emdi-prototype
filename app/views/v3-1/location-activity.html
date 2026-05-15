@@ -1,11 +1,12 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/main2.html" %}
 
 {% set currentNav = "cases" %}
 
 {% set navItems = [
   { text: "Home", href: "index", active: false },
   { text: "Cases", href: "cases", active: true },
-  { text: "Search", href: "#", active: false }
+  { text: "Search", href: "#", active: false },
+  { text: "Alerts", href: "#", active: false }
 ] %}
 
 {% if data['personselected']=='billyhoskins' %}
@@ -45,21 +46,21 @@
 {% set pageName="Location activity" %}
 
 
-
 {% block content %}
 
-<a href="#" class="govuk-back-link">Back to Manage people on probation</a>
-
-{% block breadcrumb %}
-  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-  {{ govukBreadcrumbs({
-    items: [
-      { text: "Cases", href: "cases" },
-      { text: persondata.name, href: "/case/" + persondata.url }
-    ]
-  }) }}
-{% endblock %}
-
+<nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+  <ol class="govuk-breadcrumbs__list">
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="cases">Cases</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="#">{{ persondata.name }}</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item" aria-current="page">
+      Electronic monitoring - Location activity
+    </li>
+  </ol>
+</nav>
  
 
 <div class="govuk-grid-row">
@@ -488,6 +489,18 @@ xf
 </script>
 
 <style>
+
+  .govuk-service-navigation__link {
+    font-weight: bold;
+  }
+
+  .govuk-grid-column-full {
+    padding-top: 40px ;
+  }
+
+  .govuk-main-wrapper {
+    padding-top: 10px;
+  }
 
 /* Hide the existing × character */
 .emdi-layers-close {

@@ -291,27 +291,82 @@
     return merged;
   }
 
+  function createNumberMarkerIcon(label) {
+    return L.divIcon({
+      className: 'gps-number-marker',
+      html: `<span>${label}</span>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+      popupAnchor: [0, -16]
+    });
+  }
+
   // Build arrowed polyline; BOTH line and arrows go into "directionInfo"
-  function addPolylineWithArrows(map, latlngs, groups) {
+  // If points array provided, uses time gaps to create dotted lines for >5 min gaps
+  function addPolylineWithArrows(map, latlngs, groups, points) {
     const targetGroup = groups.directionInfo || L.layerGroup().addTo(map);
 
-    const line = L.polyline(latlngs, { color: '#1d70b8', weight: 3, opacity: 0.9 });
-    targetGroup.addLayer(line);
-
-    if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
-      const arrows = L.polylineDecorator(line, {
-        patterns: [{
-          offset: 12,
-          repeat: 80,
-          symbol: L.Symbol.arrowHead({
-            pixelSize: 8,
-            pathOptions: { weight: 2, opacity: 0.9, color: '#1d70b8' }
-          })
-        }]
-      });
-      targetGroup.addLayer(arrows);
+    // If no points array, fall back to single solid line (legacy)
+    if (!points || !Array.isArray(points) || points.length < 2) {
+      const line = L.polyline(latlngs, { color: 'black', weight: 3, opacity: 0.9 });
+      targetGroup.addLayer(line);
+      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+        const arrows = L.polylineDecorator(line, {
+          patterns: [{
+            offset: 12,
+            repeat: 80,
+            symbol: L.Symbol.arrowHead({
+              pixelSize: 8,
+              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+            })
+          }]
+        });
+        targetGroup.addLayer(arrows);
+      }
+      return line;
     }
-    return line;
+
+    // Draw segment-by-segment, checking time gaps
+    const GAP_THRESHOLD_MINS = 5;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const curr = points[i];
+      const next = points[i + 1];
+      const segment = [[curr.lat, curr.lng], [next.lat, next.lng]];
+
+      // Calculate time gap in minutes
+      const currTime = new Date(curr.time);
+      const nextTime = new Date(next.time);
+      const gapMins = (nextTime - currTime) / 60000;
+
+      // Dotted line for large gaps, solid for small gaps
+      const isDottedSegment = gapMins > GAP_THRESHOLD_MINS;
+      const line = L.polyline(segment, {
+        color: 'black',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap > 5 mins
+        interactive: false
+      });
+      targetGroup.addLayer(line);
+
+      // Add arrows to each segment
+      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+        const arrows = L.polylineDecorator(line, {
+          patterns: [{
+            offset: 12,
+            repeat: 80,
+            symbol: L.Symbol.arrowHead({
+              pixelSize: 8,
+              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+            })
+          }]
+        });
+        targetGroup.addLayer(arrows);
+      }
+    }
+
+    return null;
   }
 
   // ------- formatting helpers for point popups --------
@@ -645,14 +700,9 @@
         title: `Point ${idx + 1}`,
         interactive: true,
         riseOnHover: true,
-        zIndexOffset: 1000
-      })
-        .bindTooltip(String(pt.label || idx + 1), {
-          permanent: true,
-          direction: 'center',
-          className: 'gps-point-label'
-        })
-        .addTo(groups.numbers);
+        zIndexOffset: 1000,
+        icon: createNumberMarkerIcon(String(pt.label || idx + 1))
+      }).addTo(groups.numbers);
 
       marker.bindPopup(pointPopupHTML(pt, idx), markerPopupOptions);
 
@@ -672,7 +722,7 @@
 
     // ---- polyline with arrows (Direction info) ----
     if (latlngs.length >= 2) {
-      addPolylineWithArrows(map, latlngs, groups);
+      addPolylineWithArrows(map, latlngs, groups, traceObj.points);
     }
 
         // ---- polygons / areas + always-visible info card ----
@@ -720,7 +770,11 @@
       firstPoly.openPopup();
     }
 
-
+    // ---- dwell time heatmap ----
+    if (window.createDwellHeatmapData && window.addHeatmapLayer && (traceObj.points || []).length > 1) {
+      const heatData = window.createDwellHeatmapData(traceObj.points);
+      window.addHeatmapLayer(heatData);
+    }
 
     if (allBounds.isValid()) {
       groups.areas.eachLayer(l => { if (l.bringToFront) l.bringToFront(); });
@@ -814,5 +868,7 @@
       });
     }
   });
+
+
 
 })();

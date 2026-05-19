@@ -207,6 +207,9 @@
 <link href="/public/sass/leaflet.css" rel="stylesheet" type="text/css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Leaflet Heatmap -->
+<script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+
 <!-- PolylineDecorator -->
 <script src="/public/javascripts/leaflet.polylineDecorator.js"></script>
 
@@ -557,6 +560,7 @@ xf
   fill-opacity: 0;
   stroke: black;
   color: white;
+
 }
 
 path[stroke-width="1"]
@@ -795,6 +799,13 @@ path[stroke-width="1"]
   margin-bottom: 10px;
 
  }
+
+.gps-number-marker span {
+  color: #000 !important;
+  font-weight: 700 !important;
+  -webkit-text-stroke: 1px white; /* width and color */
+  font-size: 19px;
+}
 
 </style>
 

@@ -292,14 +292,62 @@
   }
 
   // Build arrowed polyline; BOTH line and arrows go into "directionInfo"
-  function addPolylineWithArrows(map, latlngs, groups) {
+  // If points array provided, uses time gaps to create dotted lines for >5 min gaps
+  function addPolylineWithArrows(map, latlngs, groups, points) {
     const targetGroup = groups.directionInfo || L.layerGroup().addTo(map);
 
-    const line = L.polyline(latlngs, { color: '#1d70b8', weight: 3, opacity: 0.9 });
-    targetGroup.addLayer(line);
+    // If no points array, fall back to single solid line (legacy)
+    if (!points || !Array.isArray(points) || points.length < 2) {
+      const line = L.polyline(latlngs, { color: '#1d70b8', weight: 3, opacity: 0.9 });
+      targetGroup.addLayer(line);
+      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+        const arrows = L.polylineDecorator(line, {
+          patterns: [{
+            offset: 12,
+            repeat: 80,
+            symbol: L.Symbol.arrowHead({
+              pixelSize: 8,
+              pathOptions: { weight: 2, opacity: 0.9, color: '#1d70b8' }
+            })
+          }]
+        });
+        targetGroup.addLayer(arrows);
+      }
+      return line;
+    }
 
-    if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
-      const arrows = L.polylineDecorator(line, {
+    // Draw segment-by-segment, checking time gaps
+    const GAP_THRESHOLD_MINS = 5;
+    let mainLine = null;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const curr = points[i];
+      const next = points[i + 1];
+      const segment = [[curr.lat, curr.lng], [next.lat, next.lng]];
+
+      // Calculate time gap in minutes
+      const currTime = new Date(curr.time);
+      const nextTime = new Date(next.time);
+      const gapMins = (nextTime - currTime) / 60000;
+
+      // Dotted line for large gaps, solid for small gaps
+      const isDottedSegment = gapMins > GAP_THRESHOLD_MINS;
+      const line = L.polyline(segment, {
+        color: '#1d70b8',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap > 5 mins
+        interactive: false
+      });
+      targetGroup.addLayer(line);
+
+      // Keep first segment for arrow decoration
+      if (i === 0) mainLine = line;
+    }
+
+    // Add arrows only to first segment (keeps decoration clean)
+    if (mainLine && L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+      const arrows = L.polylineDecorator(mainLine, {
         patterns: [{
           offset: 12,
           repeat: 80,
@@ -311,7 +359,8 @@
       });
       targetGroup.addLayer(arrows);
     }
-    return line;
+
+    return mainLine;
   }
 
   // ------- formatting helpers for point popups --------

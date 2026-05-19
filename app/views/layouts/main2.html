@@ -53,7 +53,8 @@ https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
     { href: "/",      text: "Home",  active: currentNav == "home" },
     { href: "/",  text: "Cases",  active: currentNav == "cases" },
     { href: "/", text: "Search", active: currentNav == "search" },
-    { href: "/", text: "Alerts", active: currentNav == "alerts" }
+    { href: "/", html: 'Alerts <span class="moj-notification-badge"><span aria-hidden="true">4</span><span class="govuk-visually-hidden">(4 unread)</span></span>', active: currentNav == "alerts" }
+    
   ]
 }) }}
 

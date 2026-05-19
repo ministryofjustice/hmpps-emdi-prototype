@@ -2463,7 +2463,7 @@
       },
       {
         "positionId": 29180659,
-        "time": "2026-02-12T13:16:38Z",
+        "time": "2026-02-12T13:12:38Z",
         "speed": 0,
         "direction": 0,
         "accuracy": 10,
@@ -2471,19 +2471,10 @@
         "lng": -0.134848,
         "geolocationMechanism": "LBS"
       },
-      {
-        "positionId": 29180660,
-        "time": "2026-02-12T13:19:14Z",
-        "speed": 4,
-        "direction": 256,
-        "accuracy": 3,
-        "lat": 51.5099431,
-        "lng": -0.1356353,
-        "geolocationMechanism": "GPS"
-      },
+   
       {
         "positionId": 29180663,
-        "time": "2026-02-12T13:20:14Z",
+        "time": "2026-02-12T13:20:1:14Z",
         "speed": 3,
         "direction": 258,
         "accuracy": 4,

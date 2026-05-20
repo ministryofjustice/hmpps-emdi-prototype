@@ -435,17 +435,28 @@
   function onClear(ev) {
     ev.preventDefault();
     const form = $('#bh-map-filters');
-    if (form) form.reset();
+    if (form) {
+      if (typeof form.reset === 'function') form.reset();
+      form.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.matches('input[type="hidden"]')) return;
+        if (el.tagName === 'SELECT') {
+          el.selectedIndex = 0;
+          return;
+        }
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          el.checked = false;
+          return;
+        }
+        el.value = '';
+      });
+    }
 
-    // After clear, default back to the “latest 5 mins” mini-trace on scenarios
-    const defaultKey = (window.CFG?.DEFAULT_SCENARIO_KEY) || 'bh_20251113';
-    window.plotTrace(defaultKey, {
-      scrollToMap: false,
-      highlightRowEl: null,
-      dataUrl: window.CFG?.SCENARIOS_URL || '/public/data/gps-traces-bh-demo-nov01.json'
-    });
+    // After clear, remove any trace overlays and restore the original empty map state.
+    if (typeof window.clearMapTrace === 'function') {
+      window.clearMapTrace();
+    }
 
     const msg = $('#bh-filter-status');
-    if (msg) msg.textContent = 'Filters cleared.';
+    if (msg) msg.textContent = 'Filters cleared. Map reset to original state.';
   }
 })();

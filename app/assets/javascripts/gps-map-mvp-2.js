@@ -85,6 +85,19 @@
     groups.areas.clearLayers();
   }
 
+  window.clearMapTrace = function () {
+    const map = window.map;
+    if (!map || typeof map.addLayer !== 'function') return;
+    const groups = getGroups(map);
+    clearGroups(groups);
+    if (typeof map.closePopup === 'function') map.closePopup();
+    if (highlightedRow && highlightedRow.classList) {
+      highlightedRow.classList.remove('highlighted-row');
+    }
+    highlightedRow = null;
+    map.setView([54.00366, -2.54786], 5.5);
+  };
+
   async function loadGpsData(url) {
     const key = url;
     if (dataCache.has(key)) return dataCache.get(key);

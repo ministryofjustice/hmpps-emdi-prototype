@@ -520,12 +520,12 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
 }
 
 .gps-point-popup .leaflet-popup-content {
-  min-width: 240px;
-  max-width: 300px;
+  min-width: 246px;
+  max-width: 306px;
   white-space: normal; /* allow wrapping instead of squishing */
 }
 .leaflet-popup.gps-point-popup.leaflet-zoom-animated {
-  max-width: 320px;
+  max-width: 326px;
 }
 .gps-point-popup .govuk-heading-s {
   font-size: 14px;

@@ -427,7 +427,7 @@
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                         "Jul","Aug","Sep","Oct","Nov","Dec"];
     const mon = monthNames[d.getMonth()];
-    const yr  = String(d.getFullYear()).slice(-2);
+    const yr  = String(d.getFullYear());
 
     const hh = String(d.getHours()).padStart(2,'0');
     const mm = String(d.getMinutes()).padStart(2,'0');
@@ -439,7 +439,7 @@
 
   const lat = fmtCoord(pt.lat);
   const lng = fmtCoord(pt.lng);
-  const speed = (pt.speed != null) ? `${pt.speed} km/h` : '—';
+  const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
 
   return `
@@ -452,12 +452,12 @@
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Date / time</dt>
+          <dt class="govuk-summary-list__key">Date, time</dt>
           <dd class="govuk-summary-list__value">${dateTime}</dd>
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Lat / Lng</dt>
+          <dt class="govuk-summary-list__key">Lat, long</dt>
           <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
         </div>
 
@@ -467,8 +467,8 @@
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Signal type </dt>
-          <dd class="govuk-summary-list__value">${geolocationMechanism}</dd>
+          <dt class="govuk-summary-list__key">Signal type</dt>
+          <dd class="govuk-summary-list__value" style="margin-left: 1rem;">${geolocationMechanism}</dd>
         </div>
 
         

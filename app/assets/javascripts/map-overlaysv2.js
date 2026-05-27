@@ -14,22 +14,42 @@
     // Toggleable overlays
     const directionInfo = L.layerGroup().addTo(map); // tracks + arrows
     const accuracy      = L.layerGroup().addTo(map); // confidence circles (big) + centre dots
+    const pointDots     = L.layerGroup().addTo(map); // always-on centre dots
     const numbers       = L.layerGroup();            // point numbers (off by default)
     const heatmap       = L.layerGroup();            // dwell time heatmap (off by default)
 
     // Expose for other scripts (gps-map.js, etc.)
-    window.mapLayers = { areas, directionInfo, accuracy, numbers, heatmap };
+    window.mapLayers = { areas, directionInfo, accuracy, pointDots, numbers, heatmap };
 
     // ---- Centre dot helper (no zoom gate; big circle stays in gps-map.js)
+    function getPointDotRadius(zoom) {
+      const z = Number.isFinite(zoom) ? zoom : map.getZoom();
+      if (z <= 6) return 4;
+      if (z <= 9) return 5;
+      if (z <= 12) return 6;
+      return 7;
+    }
+
+    function updatePointDotRadii() {
+      const radius = getPointDotRadius(map.getZoom());
+      pointDots.eachLayer(function (layer) {
+        if (layer && typeof layer.setRadius === 'function') {
+          layer.setRadius(radius);
+        }
+      });
+    }
+
+    map.on('zoomend', updatePointDotRadii);
+
     function addConfidenceCircle(lat, lng /* radius not needed here */) {
       return L.circleMarker([lat, lng], {
-        radius: 3,
+        radius: getPointDotRadius(map.getZoom()),
         color: '#1d70b8',
         weight: 0,
         fillColor: '#1d70b8',
         fillOpacity: 1,
         interactive: false
-      }).addTo(accuracy);
+      }).addTo(pointDots);
     }
     window.addConfidenceCircle = addConfidenceCircle;
 

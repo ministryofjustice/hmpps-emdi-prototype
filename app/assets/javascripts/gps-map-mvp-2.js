@@ -21,7 +21,10 @@
   const CFG = Object.assign({
     DEFAULT_LOI_URL: '/public/data/gps-traces-bh.json',
     SCENARIOS_URL:   '/public/data/gps-traces-bh-demo-nov03.json',
-    DEFAULT_SCENARIO_KEY: 'bh_20260212'   // safe fallback string
+    DEFAULT_SCENARIO_KEY: 'bh_20260212',  // safe fallback string
+    USE_POINT_CLUSTERING: false,
+    USE_START_FINISH_FLAGS: false,
+    COLORIZE_ENDPOINTS: false
   }, (window.GPS_CONFIG || {}));
 
   // DEBUG: surface the config we actually ended up with
@@ -56,8 +59,18 @@
   // fallback single group (when overlay groups aren’t present)
   let plotGroup = null;
 
+  // point markers and current index for navigation
+  let pointMarkers = [];
+  let currentPointIndex = null;
+
   // keep last highlighted row
   let highlightedRow = null;
+
+  // OverlappingMarkerSpiderfier instance (re-created each trace load)
+  let oms = null;
+
+  // MarkerCluster group for numbered points (enabled per-page via CFG)
+  let pointClusters = null;
 
   // ---------- overlay group helpers ----------
   function getGroups(map) {
@@ -65,6 +78,7 @@
       return {
         directionInfo: window.mapLayers.directionInfo || L.layerGroup().addTo(map), // track + arrows together
         accuracy:      window.mapLayers.accuracy      || L.layerGroup(),
+        pointDots:     window.mapLayers.pointDots     || L.layerGroup().addTo(map),
         numbers:       window.mapLayers.numbers       || L.layerGroup().addTo(map),
         areas:         window.mapLayers.areas         || L.layerGroup().addTo(map)
       };
@@ -73,6 +87,7 @@
     return {
       directionInfo: plotGroup,
       accuracy:      plotGroup,
+      pointDots:     plotGroup,
       numbers:       plotGroup,
       areas:         plotGroup
     };
@@ -81,8 +96,11 @@
   function clearGroups(groups) {
     groups.directionInfo.clearLayers();
     groups.accuracy.clearLayers();
+    groups.pointDots.clearLayers();
     groups.numbers.clearLayers();
     groups.areas.clearLayers();
+    if (oms) { oms.clearMarkers(); }
+    pointClusters = null;
   }
 
   window.clearMapTrace = function () {
@@ -304,13 +322,39 @@
     return merged;
   }
 
-  function createNumberMarkerIcon(label) {
+  function createNumberMarkerIcon(label, color) {
+    let className = 'gps-number-marker';
+    let style = '';
+    if (color) {
+      style = ` style="color: ${color};"` ;
+    }
     return L.divIcon({
-      className: 'gps-number-marker',
-      html: `<span>${label}</span>`,
+      className: className,
+      html: `<span${style}>${label}</span>`,
       iconSize: [28, 28],
       iconAnchor: [14, 14],
       popupAnchor: [0, -16]
+    });
+  }
+
+  function createEndpointMarkerIcon(kind) {
+    let markerClass = 'gps-endpoint-marker gps-endpoint-marker--start';
+    let label = 'Start';
+
+    if (kind === 'finish') {
+      markerClass = 'gps-endpoint-marker gps-endpoint-marker--finish';
+      label = 'Finish';
+    } else if (kind === 'both') {
+      markerClass = 'gps-endpoint-marker gps-endpoint-marker--both';
+      label = 'Start/finish';
+    }
+
+    return L.divIcon({
+      className: markerClass,
+      html: '<span class="gps-endpoint-marker__wrap"><span class="gps-endpoint-marker__flag" aria-hidden="true"></span><span class="gps-endpoint-marker__text">' + label + '</span></span>',
+      iconSize: [62, 30],
+      iconAnchor: [8, 22],
+      popupAnchor: [18, -20]
     });
   }
 
@@ -426,9 +470,11 @@
     return '—';
   }
 
-  function pointPopupHTML(pt, idx) {
-  const label = (pt.label != null) ? String(pt.label) : String(idx + 1);
+  function pointPopupHTML(pt, idx, totalPoints) {
+  const pointNumber = idx + 1;
   const acc   = (typeof pt.accuracy === 'number') ? `${fmtNum(pt.accuracy, 0)} metres` : '—';
+  const hasPrev = idx > 0;
+  const hasNext = idx < (totalPoints - 1);
 
   // --- NEW: date + short time formatter ---
   function formatDateTime(raw) {
@@ -454,10 +500,17 @@
   const lng = fmtCoord(pt.lng);
   const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
+  const navLinks = [];
+  if (hasPrev) {
+    navLinks.push(`<a href="#" class="gps-point-popup__nav-button" data-nav="prev" data-point-index="${idx}">Previous point</a>`);
+  }
+  if (hasNext) {
+    navLinks.push(`<a href="#" class="gps-point-popup__nav-button" data-nav="next" data-point-index="${idx}">Next point</a>`);
+  }
 
   return `
     <div class="gps-point-card">
-      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${label}</h4>
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${pointNumber} of ${totalPoints}</h4>
       <dl class="govuk-summary-list govuk-!-margin-bottom-0">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Accuracy</dt>
@@ -486,9 +539,35 @@
 
         
       </dl>
+      <div class="gps-point-popup__nav govuk-body-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+        ${navLinks.join('')}
+      </div>
     </div>
   `;
 }
+
+  function showPointPopup(targetIndex) {
+    if (!Array.isArray(pointMarkers) || pointMarkers.length === 0) return;
+    if (!Number.isFinite(targetIndex)) return;
+    if (targetIndex < 0 || targetIndex >= pointMarkers.length) return;
+
+    const marker = pointMarkers[targetIndex];
+    if (!marker) return;
+
+    currentPointIndex = targetIndex;
+    if (pointClusters && typeof pointClusters.zoomToShowLayer === 'function') {
+      pointClusters.zoomToShowLayer(marker, function () {
+        marker.openPopup();
+      });
+    } else {
+      marker.openPopup();
+    }
+
+    const map = window.map;
+    if (map && typeof marker.getLatLng === 'function') {
+      map.panTo(marker.getLatLng(), { animate: true });
+    }
+  }
 
 
   // Build the "when" line for an Area card using an override date (from the LOI table) if provided.
@@ -640,6 +719,42 @@
 
     const groups = getGroups(map);
     clearGroups(groups);
+    pointMarkers = [];
+    currentPointIndex = null;
+
+    // (Re-)initialise marker clusters for numbered points when enabled for this page
+    pointClusters = null;
+    if (CFG.USE_POINT_CLUSTERING && typeof L.markerClusterGroup === 'function') {
+      pointClusters = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          const label = count === 1 ? '1 point' : `${count} points`;
+          return L.divIcon({
+            html: `<span>${label}</span>`,
+            className: 'marker-cluster marker-cluster-small gps-point-cluster',
+            iconSize: L.point(68, 68)
+          });
+        }
+      });
+      groups.numbers.addLayer(pointClusters);
+    }
+
+    // (Re-)initialise spiderfy — replaces per-marker click listeners
+    if (typeof OverlappingMarkerSpiderfier !== 'undefined') {
+      oms = new OverlappingMarkerSpiderfier(map, {
+        keepSpiderfied: true,
+        nearbyDistance: 20
+      });
+      oms.addListener('click', function (m) {
+        currentPointIndex = m._pointIndex;
+        m.openPopup();
+      });
+    } else {
+      oms = null;
+    }
 
     const allBounds = L.latLngBounds([]);
 
@@ -656,7 +771,10 @@
           autoClose: true,
           closeOnClick: true,
           className: 'gps-point-popup',
-          autoPan: false
+          autoPan: true,
+          autoPanPadding: [20, 20],
+          autoPanPaddingTopLeft: [20, 20],
+          autoPanPaddingBottomRight: [20, 20]
         };
 
         // Large translucent circle
@@ -667,7 +785,7 @@
           fillOpacity: 0.1
         }).addTo(groups.accuracy);
 
-        accCircle.bindPopup(pointPopupHTML(pt, idx), popupOptions);
+        accCircle.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
         accCircle.on('click', function (e) {
           if (e && e.originalEvent) {
             e.originalEvent.preventDefault();
@@ -681,15 +799,15 @@
           window.addConfidenceCircle(pt.lat, pt.lng, pt.accuracy);
         } else {
           const dot = L.circleMarker(ll, {
-            radius: 2.5,
+            radius: 5,
             color: '#1d70b8',
             weight: 0,
             fillColor: '#1d70b8',
             fillOpacity: 1,
             interactive: true
-          }).addTo(groups.accuracy);
+          }).addTo(groups.pointDots);
 
-          dot.bindPopup(pointPopupHTML(pt, idx), popupOptions);
+          dot.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
           dot.on('click', function (e) {
             if (e && e.originalEvent) {
               e.originalEvent.preventDefault();
@@ -706,26 +824,71 @@
         autoClose: true,
         closeOnClick: true,
         className: 'gps-point-popup',
-        autoPan: false
+        autoPan: true,
+        autoPanPadding: [20, 20],
+        autoPanPaddingTopLeft: [20, 20],
+        autoPanPaddingBottomRight: [20, 20]
       };
+
+      const isFirstPoint = idx === 0;
+      const isLastPoint = idx === (traceObj.points.length - 1);
+      let markerIcon = null;
+      let markerColor = null;
+
+      if (CFG.COLORIZE_ENDPOINTS) {
+        if (isFirstPoint) {
+          markerColor = '#00703c';
+        } else if (isLastPoint) {
+          markerColor = '#d4351c';
+        }
+      }
+
+      if (CFG.USE_START_FINISH_FLAGS) {
+        if (traceObj.points.length === 1) {
+          markerIcon = createEndpointMarkerIcon('both');
+        } else if (isFirstPoint) {
+          markerIcon = createEndpointMarkerIcon('start');
+        } else if (isLastPoint) {
+          markerIcon = createEndpointMarkerIcon('finish');
+        }
+      }
+
+      if (!markerIcon) {
+        markerIcon = createNumberMarkerIcon(String(pt.label || idx + 1), markerColor);
+      }
 
       const marker = L.marker(ll, {
         title: `Point ${idx + 1}`,
         interactive: true,
         riseOnHover: true,
         zIndexOffset: 1000,
-        icon: createNumberMarkerIcon(String(pt.label || idx + 1))
-      }).addTo(groups.numbers);
-
-      marker.bindPopup(pointPopupHTML(pt, idx), markerPopupOptions);
-
-      marker.on('click', function (e) {
-        if (e && e.originalEvent) {
-          e.originalEvent.preventDefault();
-          e.originalEvent.stopPropagation();
-        }
-        this.openPopup();
+        icon: markerIcon
       });
+
+      if (pointClusters) {
+        pointClusters.addLayer(marker);
+      } else {
+        marker.addTo(groups.numbers);
+      }
+
+      marker._pointIndex = idx;
+      pointMarkers.push(marker);
+
+      marker.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), markerPopupOptions);
+
+      if (oms) {
+        // OMS intercepts overlapping clicks and spiderfies; click fires via oms listener
+        oms.addMarker(marker);
+      } else {
+        marker.on('click', function (e) {
+          if (e && e.originalEvent) {
+            e.originalEvent.preventDefault();
+            e.originalEvent.stopPropagation();
+          }
+          currentPointIndex = this._pointIndex;
+          this.openPopup();
+        });
+      }
     }); // <-- THIS WAS MISSING
 
     if (latlngs.length) {
@@ -832,7 +995,25 @@
       });
     });
 
-    // 2) Preload scenarios JSON, then simulate a click on "Update map"
+    // 2) Delegated navigation for GPS point popups.
+    document.addEventListener('click', function (e) {
+      const button = e.target.closest('.gps-point-popup__nav-button');
+      if (!button) return;
+      if (button.getAttribute('aria-disabled') === 'true') return;
+      e.preventDefault();
+
+      const nav = button.dataset.nav;
+      const idx = Number(button.dataset.pointIndex);
+      if (!Number.isFinite(idx) || idx < 0) return;
+
+      if (nav === 'prev') {
+        showPointPopup(idx - 1);
+      } else if (nav === 'next') {
+        showPointPopup(idx + 1);
+      }
+    });
+
+    // 3) Preload scenarios JSON, then simulate a click on "Update map"
     whenMapReady(async () => {
       try {
         const scenariosUrl = CFG.SCENARIOS_URL;

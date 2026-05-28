@@ -226,6 +226,11 @@
 
 <script src="/public/javascripts/bh-location-init.js"></script>
 <script src="/public/javascripts/map-overlaysv2.js"></script>
+<script>
+  window.GPS_CONFIG = Object.assign({}, window.GPS_CONFIG || {}, {
+    USE_START_FINISH_FLAGS: true
+  });
+</script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
@@ -807,6 +812,66 @@ path[stroke-width="1"]
   -webkit-text-stroke: 1px white; /* width and color */
   font-size: 19px;
   padding-left: 20px;
+}
+
+.gps-endpoint-marker {
+  pointer-events: none;
+}
+
+.gps-endpoint-marker__wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-2px, -6px);
+}
+
+.gps-endpoint-marker__flag {
+  position: relative;
+  width: 12px;
+  height: 22px;
+}
+
+.gps-endpoint-marker__flag::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: #0b0c0c;
+}
+
+.gps-endpoint-marker__flag::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 10px solid #1d70b8;
+}
+
+.gps-endpoint-marker--finish .gps-endpoint-marker__flag::after {
+  border-left-color: #d4351c;
+}
+
+.gps-endpoint-marker--both .gps-endpoint-marker__flag::after {
+  border-left-color: #00703c;
+}
+
+.gps-endpoint-marker__text {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid #0b0c0c;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0b0c0c;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .gps-point-popup .leaflet-popup-content-wrapper {

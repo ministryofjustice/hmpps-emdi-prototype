@@ -20,9 +20,18 @@
   // ---------- per-page config with sensible defaults ----------
   const CFG = Object.assign({
     DEFAULT_LOI_URL: '/public/data/gps-traces-bh.json',
-    SCENARIOS_URL:   '/public/data/gps-traces-bh-demo-nov01.json',
-    DEFAULT_SCENARIO_KEY: 'bh_20251113'   // safe fallback string
+    SCENARIOS_URL:   '/public/data/gps-traces-bh-demo-nov03.json',
+    DEFAULT_SCENARIO_KEY: 'bh_20260212',  // safe fallback string
+    USE_POINT_CLUSTERING: false,
+    USE_START_FINISH_FLAGS: false,
+    COLORIZE_ENDPOINTS: false,
+    LARGE_MARKERS: false,
+    ENABLE_MISSING_DATA_TABLE: false,
+    MISSING_DATA_TABLE_BODY_ID: 'missing-data-table-body',
+    MISSING_DATA_GAP_MINS: 5,
+    MISSING_DATA_TABLE_GAPS_AND_EXCLUSION_ONLY: false
   }, (window.GPS_CONFIG || {}));
+
 
   // DEBUG: surface the config we actually ended up with
   window.CFG = CFG;
@@ -56,8 +65,19 @@
   // fallback single group (when overlay groups aren’t present)
   let plotGroup = null;
 
+  // point markers and current index for navigation
+  let pointMarkers = [];
+  let currentTracePoints = [];
+  let currentPointIndex = null;
+
   // keep last highlighted row
   let highlightedRow = null;
+
+  // OverlappingMarkerSpiderfier instance (re-created each trace load)
+  let oms = null;
+
+  // MarkerCluster group for numbered points (enabled per-page via CFG)
+  let pointClusters = null;
 
   // ---------- overlay group helpers ----------
   function getGroups(map) {
@@ -65,6 +85,7 @@
       return {
         directionInfo: window.mapLayers.directionInfo || L.layerGroup().addTo(map), // track + arrows together
         accuracy:      window.mapLayers.accuracy      || L.layerGroup(),
+        pointDots:     window.mapLayers.pointDots     || L.layerGroup().addTo(map),
         numbers:       window.mapLayers.numbers       || L.layerGroup().addTo(map),
         areas:         window.mapLayers.areas         || L.layerGroup().addTo(map)
       };
@@ -73,6 +94,7 @@
     return {
       directionInfo: plotGroup,
       accuracy:      plotGroup,
+      pointDots:     plotGroup,
       numbers:       plotGroup,
       areas:         plotGroup
     };
@@ -81,9 +103,26 @@
   function clearGroups(groups) {
     groups.directionInfo.clearLayers();
     groups.accuracy.clearLayers();
+    groups.pointDots.clearLayers();
     groups.numbers.clearLayers();
     groups.areas.clearLayers();
+    if (oms) { oms.clearMarkers(); }
+    pointClusters = null;
   }
+
+  window.clearMapTrace = function () {
+    const map = window.map;
+    if (!map || typeof map.addLayer !== 'function') return;
+    const groups = getGroups(map);
+    clearGroups(groups);
+    if (typeof map.closePopup === 'function') map.closePopup();
+    if (highlightedRow && highlightedRow.classList) {
+      highlightedRow.classList.remove('highlighted-row');
+    }
+    highlightedRow = null;
+    currentTracePoints = [];
+    map.setView([54.00366, -2.54786], 5.5);
+  };
 
   async function loadGpsData(url) {
     const key = url;
@@ -291,27 +330,109 @@
     return merged;
   }
 
+  function createNumberMarkerIcon(label, color, large) {
+    const size = large ? 40 : 28;
+    const anchor = large ? 20 : 14;
+    let style = '';
+    if (color) {
+      style = ` style="color: ${color};"` ;
+    }
+    return L.divIcon({
+      className: 'gps-number-marker' + (large ? ' gps-number-marker--large' : ''),
+      html: `<span${style}>${label}</span>`,
+      iconSize: [size, size],
+      iconAnchor: [anchor, anchor],
+      popupAnchor: [0, -22]
+    });
+  }
+
+  function createEndpointMarkerIcon(kind) {
+    let markerClass = 'gps-endpoint-marker gps-endpoint-marker--start';
+    let label = 'Start';
+
+    if (kind === 'finish') {
+      markerClass = 'gps-endpoint-marker gps-endpoint-marker--finish';
+      label = 'Finish';
+    } else if (kind === 'both') {
+      markerClass = 'gps-endpoint-marker gps-endpoint-marker--both';
+      label = 'Start/finish';
+    }
+
+    return L.divIcon({
+      className: markerClass,
+      html: '<span class="gps-endpoint-marker__wrap"><span class="gps-endpoint-marker__flag" aria-hidden="true"></span><span class="gps-endpoint-marker__text">' + label + '</span></span>',
+      iconSize: [62, 30],
+      iconAnchor: [8, 22],
+      popupAnchor: [18, -20]
+    });
+  }
+
   // Build arrowed polyline; BOTH line and arrows go into "directionInfo"
-  function addPolylineWithArrows(map, latlngs, groups) {
+  // If points array provided, uses time gaps to create dotted lines for >5 min gaps
+  function addPolylineWithArrows(map, latlngs, groups, points) {
     const targetGroup = groups.directionInfo || L.layerGroup().addTo(map);
 
-    const line = L.polyline(latlngs, { color: '#1d70b8', weight: 3, opacity: 0.9 });
-    targetGroup.addLayer(line);
-
-    if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
-      const arrows = L.polylineDecorator(line, {
-        patterns: [{
-          offset: 12,
-          repeat: 80,
-          symbol: L.Symbol.arrowHead({
-            pixelSize: 8,
-            pathOptions: { weight: 2, opacity: 0.9, color: '#1d70b8' }
-          })
-        }]
-      });
-      targetGroup.addLayer(arrows);
+    // If no points array, fall back to single solid line (legacy)
+    if (!points || !Array.isArray(points) || points.length < 2) {
+      const line = L.polyline(latlngs, { color: 'black', weight: 3, opacity: 0.9 });
+      targetGroup.addLayer(line);
+      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+        const arrows = L.polylineDecorator(line, {
+          patterns: [{
+            offset: 12,
+            repeat: 80,
+            symbol: L.Symbol.arrowHead({
+              pixelSize: 8,
+              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+            })
+          }]
+        });
+        targetGroup.addLayer(arrows);
+      }
+      return line;
     }
-    return line;
+
+    // Draw segment-by-segment, checking time gaps
+    const GAP_THRESHOLD_MINS = 5;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const curr = points[i];
+      const next = points[i + 1];
+      const segment = [[curr.lat, curr.lng], [next.lat, next.lng]];
+
+      // Calculate time gap in minutes
+      const currTime = new Date(curr.time);
+      const nextTime = new Date(next.time);
+      const gapMins = (nextTime - currTime) / 60000;
+
+      // Dotted line for large gaps, solid for small gaps
+      const isDottedSegment = gapMins > GAP_THRESHOLD_MINS;
+      const line = L.polyline(segment, {
+        color: 'black',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap > 5 mins
+        interactive: false
+      });
+      targetGroup.addLayer(line);
+
+      // Add arrows to each segment
+      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+        const arrows = L.polylineDecorator(line, {
+          patterns: [{
+            offset: 12,
+            repeat: 80,
+            symbol: L.Symbol.arrowHead({
+              pixelSize: 8,
+              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+            })
+          }]
+        });
+        targetGroup.addLayer(arrows);
+      }
+    }
+
+    return null;
   }
 
   // ------- formatting helpers for point popups --------
@@ -320,6 +441,94 @@
   }
   function fmtCoord(n) {
     return (typeof n === 'number') ? n.toFixed(6) : '—';
+  }
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function buildMissingDataRows(points) {
+    const byPoint = new Map();
+    const gapThreshold = Number(CFG.MISSING_DATA_GAP_MINS) || 5;
+
+    function addIssue(pointIndex, message) {
+      if (!Number.isFinite(pointIndex) || pointIndex < 0) return;
+      if (!byPoint.has(pointIndex)) byPoint.set(pointIndex, []);
+      byPoint.get(pointIndex).push(message);
+    }
+
+    for (let i = 0; i < points.length; i++) {
+      const pt = points[i] || {};
+
+      if (!Number.isFinite(pt.lat) || !Number.isFinite(pt.lng)) {
+        addIssue(i, 'Location coordinates are missing or invalid.');
+      }
+
+      if (!Number.isFinite(pt.accuracy) || pt.accuracy <= 0) {
+        addIssue(i, 'Accuracy value is missing.');
+      }
+
+      if (!pt.geolocationMechanism) {
+        addIssue(i, 'Signal type is missing.');
+      }
+
+      if (!pt.time || Number.isNaN(new Date(pt.time).getTime())) {
+        addIssue(i, 'Date/time is missing or invalid.');
+      }
+
+      if (i > 0) {
+        const prev = points[i - 1] || {};
+        const prevTime = new Date(prev.time);
+        const currTime = new Date(pt.time);
+        if (!Number.isNaN(prevTime.getTime()) && !Number.isNaN(currTime.getTime())) {
+          const gapMins = (currTime - prevTime) / 60000;
+          if (gapMins > gapThreshold) {
+            addIssue(i, `Gap of ${Math.round(gapMins)} minutes since previous point.`);
+          }
+        }
+      }
+    }
+
+    return Array.from(byPoint.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([pointIndex, issues]) => ({
+        pointIndex,
+        pointLabel: `Point ${pointIndex + 1}`,
+        issues
+      }));
+  }
+
+  function renderMissingDataTable(points) {
+    if (!CFG.ENABLE_MISSING_DATA_TABLE) return;
+    const bodyId = CFG.MISSING_DATA_TABLE_BODY_ID || 'missing-data-table-body';
+    const tbody = document.getElementById(bodyId);
+    if (!tbody) return;
+
+    const rows = buildMissingDataRows(Array.isArray(points) ? points : []);
+    if (!rows.length) {
+      tbody.innerHTML = [
+        '<tr class="govuk-table__row">',
+        '<th scope="row" class="govuk-table__header">None</th>',
+        '<td class="govuk-table__cell">No missing data found for current map view.</td>',
+        '</tr>'
+      ].join('');
+      return;
+    }
+
+    tbody.innerHTML = rows.map((row) => {
+      const issuesHtml = row.issues.map(issue => escapeHtml(issue)).join('<br>');
+      return [
+        '<tr class="govuk-table__row">',
+        `<th scope="row" class="govuk-table__header"><a class="govuk-link js-missing-point-link" href="#" data-point-index="${row.pointIndex}">${escapeHtml(row.pointLabel)}</a></th>`,
+        `<td class="govuk-table__cell">${issuesHtml}</td>`,
+        '</tr>'
+      ].join('');
+    }).join('');
   }
   function fmtTimeHHMM(val) {
     if (!val) return '—';
@@ -358,9 +567,11 @@
     return '—';
   }
 
-  function pointPopupHTML(pt, idx) {
-  const label = (pt.label != null) ? String(pt.label) : String(idx + 1);
+  function pointPopupHTML(pt, idx, totalPoints) {
+  const pointNumber = idx + 1;
   const acc   = (typeof pt.accuracy === 'number') ? `${fmtNum(pt.accuracy, 0)} metres` : '—';
+  const hasPrev = idx > 0;
+  const hasNext = idx < (totalPoints - 1);
 
   // --- NEW: date + short time formatter ---
   function formatDateTime(raw) {
@@ -372,7 +583,7 @@
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                         "Jul","Aug","Sep","Oct","Nov","Dec"];
     const mon = monthNames[d.getMonth()];
-    const yr  = String(d.getFullYear()).slice(-2);
+    const yr  = String(d.getFullYear());
 
     const hh = String(d.getHours()).padStart(2,'0');
     const mm = String(d.getMinutes()).padStart(2,'0');
@@ -384,10 +595,68 @@
 
   const lat = fmtCoord(pt.lat);
   const lng = fmtCoord(pt.lng);
+  const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
+  const geolocationMechanism = pt.geolocationMechanism || '—';
+  const currentPage = idx + 1;
+  const totalPages = Math.max(1, totalPoints);
+
+  function buildPageItem(pageNumber) {
+    const isCurrent = pageNumber === currentPage;
+    const currentClass = isCurrent ? ' govuk-pagination__item--current' : '';
+    const currentAria = isCurrent ? ' aria-current="page"' : '';
+    return `
+      <li class="govuk-pagination__item${currentClass}">
+        <a class="govuk-link govuk-pagination__link gps-point-popup__page-link" href="#" aria-label="Point ${pageNumber}" data-point-index="${pageNumber - 1}"${currentAria}>
+          ${pageNumber}
+        </a>
+      </li>
+    `;
+  }
+
+  function buildNumberedPages() {
+    // Keep pagination compact: show first, current, and last point numbers.
+    const pages = [1, currentPage, totalPages];
+    const uniquePages = Array.from(new Set(pages));
+    return uniquePages.map(function (pageNumber) {
+      return buildPageItem(pageNumber);
+    }).join('');
+  }
+
+  const pagination = `
+    <nav class="govuk-pagination" aria-label="Pagination">
+      ${hasPrev ? `
+      <div class="govuk-pagination__prev">
+        <a class="govuk-link govuk-pagination__link gps-point-popup__nav-button" href="#" rel="prev" data-nav="prev" data-point-index="${idx}">
+          <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+          </svg>
+          <span class="govuk-pagination__link-title">
+            Previous<span class="govuk-visually-hidden"> point</span>
+          </span>
+        </a>
+      </div>
+      ` : ''}
+      <ul class="govuk-pagination__list">
+        ${buildNumberedPages()}
+      </ul>
+      ${hasNext ? `
+      <div class="govuk-pagination__next">
+        <a class="govuk-link govuk-pagination__link gps-point-popup__nav-button" href="#" rel="next" data-nav="next" data-point-index="${idx}">
+          <span class="govuk-pagination__link-title">
+            Next<span class="govuk-visually-hidden"> point</span>
+          </span>
+          <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+          </svg>
+        </a>
+      </div>
+      ` : ''}
+    </nav>
+  `;
 
   return `
     <div class="gps-point-card">
-      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${label}</h4>
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${pointNumber} of ${totalPoints}</h4>
       <dl class="govuk-summary-list govuk-!-margin-bottom-0">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Accuracy</dt>
@@ -395,23 +664,65 @@
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Date / time</dt>
+          <dt class="govuk-summary-list__key">Date, time</dt>
           <dd class="govuk-summary-list__value">${dateTime}</dd>
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Lat / Lng</dt>
+          <dt class="govuk-summary-list__key">Lat, long</dt>
           <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Location</dt>
-          <dd class="govuk-summary-list__value"><a href="#">Save this location</a></dd>
+          <dt class="govuk-summary-list__key">Speed</dt>
+          <dd class="govuk-summary-list__value">${speed}</dd>
         </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Signal type</dt>
+          <dd class="govuk-summary-list__value" style="margin-left: 1rem;">${geolocationMechanism}</dd>
+        </div>
+
+        
       </dl>
+      ${pagination}
     </div>
   `;
 }
+
+  function showPointPopup(targetIndex) {
+    if (!Array.isArray(currentTracePoints) || currentTracePoints.length === 0) return;
+    if (!Number.isFinite(targetIndex)) return;
+    if (targetIndex < 0 || targetIndex >= currentTracePoints.length) return;
+
+    const pt = currentTracePoints[targetIndex];
+    if (!pt || !Number.isFinite(pt.lat) || !Number.isFinite(pt.lng)) return;
+
+    currentPointIndex = targetIndex;
+    const map = window.map;
+    if (!map || typeof map.openPopup !== 'function') return;
+
+    const popupOptions = {
+      closeButton: true,
+      autoClose: true,
+      closeOnClick: true,
+      className: 'gps-point-popup',
+      minWidth: 460,
+      maxWidth: 560,
+      autoPan: true,
+      autoPanPadding: [20, 20],
+      autoPanPaddingTopLeft: [20, 20],
+      autoPanPaddingBottomRight: [20, 20]
+    };
+
+    const popupHtml = pointPopupHTML(pt, targetIndex, currentTracePoints.length);
+    L.popup(popupOptions)
+      .setLatLng([pt.lat, pt.lng])
+      .setContent(popupHtml)
+      .openOn(map);
+
+    map.panTo([pt.lat, pt.lng], { animate: true });
+  }
 
 
   // Build the "when" line for an Area card using an override date (from the LOI table) if provided.
@@ -563,6 +874,43 @@
 
     const groups = getGroups(map);
     clearGroups(groups);
+    pointMarkers = [];
+    currentTracePoints = Array.isArray(traceObj.points) ? traceObj.points : [];
+    currentPointIndex = null;
+
+    // (Re-)initialise marker clusters for numbered points when enabled for this page
+    pointClusters = null;
+    if (CFG.USE_POINT_CLUSTERING && typeof L.markerClusterGroup === 'function') {
+      pointClusters = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          const label = count === 1 ? '1 point' : `${count} points`;
+          return L.divIcon({
+            html: `<span>${label}</span>`,
+            className: 'marker-cluster marker-cluster-small gps-point-cluster',
+            iconSize: L.point(68, 68)
+          });
+        }
+      });
+      groups.numbers.addLayer(pointClusters);
+    }
+
+    // (Re-)initialise spiderfy — replaces per-marker click listeners
+    if (typeof OverlappingMarkerSpiderfier !== 'undefined') {
+      oms = new OverlappingMarkerSpiderfier(map, {
+        keepSpiderfied: true,
+        nearbyDistance: 20
+      });
+      oms.addListener('click', function (m) {
+        currentPointIndex = m._pointIndex;
+        m.openPopup();
+      });
+    } else {
+      oms = null;
+    }
 
     const allBounds = L.latLngBounds([]);
 
@@ -579,10 +927,15 @@
           autoClose: true,
           closeOnClick: true,
           className: 'gps-point-popup',
-          autoPan: false
+          minWidth: 460,
+          maxWidth: 560,
+          autoPan: true,
+          autoPanPadding: [20, 20],
+          autoPanPaddingTopLeft: [20, 20],
+          autoPanPaddingBottomRight: [20, 20]
         };
 
-        // Keep confidence circles clear so they are visually distinct from tinted exclusion zones.
+        // Keep confidence circles clear so they do not look like exclusion zones.
         const accCircle = L.circle(ll, {
           radius: pt.accuracy,
           color: '#1d70b8',
@@ -591,7 +944,7 @@
           fillOpacity: 0
         }).addTo(groups.accuracy);
 
-        accCircle.bindPopup(pointPopupHTML(pt, idx), popupOptions);
+        accCircle.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
         accCircle.on('click', function (e) {
           if (e && e.originalEvent) {
             e.originalEvent.preventDefault();
@@ -605,15 +958,15 @@
           window.addConfidenceCircle(pt.lat, pt.lng, pt.accuracy);
         } else {
           const dot = L.circleMarker(ll, {
-            radius: 2.5,
+            radius: 5,
             color: '#1d70b8',
             weight: 0,
             fillColor: '#1d70b8',
             fillOpacity: 1,
             interactive: true
-          }).addTo(groups.accuracy);
+          }).addTo(groups.pointDots);
 
-          dot.bindPopup(pointPopupHTML(pt, idx), popupOptions);
+          dot.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
           dot.on('click', function (e) {
             if (e && e.originalEvent) {
               e.originalEvent.preventDefault();
@@ -630,31 +983,74 @@
         autoClose: true,
         closeOnClick: true,
         className: 'gps-point-popup',
-        autoPan: false
+        minWidth: 460,
+        maxWidth: 560,
+        autoPan: true,
+        autoPanPadding: [20, 20],
+        autoPanPaddingTopLeft: [20, 20],
+        autoPanPaddingBottomRight: [20, 20]
       };
+
+      const isFirstPoint = idx === 0;
+      const isLastPoint = idx === (traceObj.points.length - 1);
+      let markerIcon = null;
+      let markerColor = null;
+
+      if (CFG.COLORIZE_ENDPOINTS) {
+        if (isFirstPoint) {
+          markerColor = '#00703c';
+        } else if (isLastPoint) {
+          markerColor = '#d4351c';
+        }
+      }
+
+      if (CFG.USE_START_FINISH_FLAGS) {
+        if (traceObj.points.length === 1) {
+          markerIcon = createEndpointMarkerIcon('both');
+        } else if (isFirstPoint) {
+          markerIcon = createEndpointMarkerIcon('start');
+        } else if (isLastPoint) {
+          markerIcon = createEndpointMarkerIcon('finish');
+        }
+      }
+
+      if (!markerIcon) {
+        const largeMarker = CFG.LARGE_MARKERS && (isFirstPoint || isLastPoint);
+        markerIcon = createNumberMarkerIcon(String(pt.label || idx + 1), markerColor, largeMarker);
+      }
 
       const marker = L.marker(ll, {
         title: `Point ${idx + 1}`,
         interactive: true,
         riseOnHover: true,
-        zIndexOffset: 1000
-      })
-        .bindTooltip(String(pt.label || idx + 1), {
-          permanent: true,
-          direction: 'center',
-          className: 'gps-point-label'
-        })
-        .addTo(groups.numbers);
-
-      marker.bindPopup(pointPopupHTML(pt, idx), markerPopupOptions);
-
-      marker.on('click', function (e) {
-        if (e && e.originalEvent) {
-          e.originalEvent.preventDefault();
-          e.originalEvent.stopPropagation();
-        }
-        this.openPopup();
+        zIndexOffset: 1000,
+        icon: markerIcon
       });
+
+      if (pointClusters) {
+        pointClusters.addLayer(marker);
+      } else {
+        marker.addTo(groups.numbers);
+      }
+
+      marker._pointIndex = idx;
+      pointMarkers.push(marker);
+
+      marker.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), markerPopupOptions);
+
+      if (oms) {
+        // OMS intercepts overlapping clicks and spiderfies; click fires via oms listener
+        oms.addMarker(marker);
+      } else {
+        marker.on('click', function (e) {
+          if (e && e.originalEvent) {
+            e.originalEvent.preventDefault();
+            e.originalEvent.stopPropagation();
+          }
+          currentPointIndex = this._pointIndex;
+          this.openPopup();
+        });
+      }
     }); // <-- THIS WAS MISSING
 
     if (latlngs.length) {
@@ -664,7 +1060,7 @@
 
     // ---- polyline with arrows (Direction info) ----
     if (latlngs.length >= 2) {
-      addPolylineWithArrows(map, latlngs, groups);
+      addPolylineWithArrows(map, latlngs, groups, traceObj.points);
     }
 
         // ---- polygons / areas + always-visible info card ----
@@ -712,7 +1108,11 @@
       firstPoly.openPopup();
     }
 
-
+    // ---- dwell time heatmap ----
+    if (window.createDwellHeatmapData && window.addHeatmapLayer && (traceObj.points || []).length > 1) {
+      const heatData = window.createDwellHeatmapData(traceObj.points);
+      window.addHeatmapLayer(heatData);
+    }
 
     if (allBounds.isValid()) {
       groups.areas.eachLayer(l => { if (l.bringToFront) l.bringToFront(); });
@@ -729,6 +1129,8 @@
       const heading = document.getElementById('map');
       if (heading) heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    renderMissingDataTable(traceObj.points || []);
 
     const status = document.getElementById('map-status');
     if (status) status.textContent = 'Map updated with filtered GPS trace.';
@@ -757,7 +1159,46 @@
       });
     });
 
-    // 2) Preload scenarios JSON, then simulate a click on "Update map"
+    // 2) Delegated navigation for GPS point popups.
+    document.addEventListener('click', function (e) {
+      const pageLink = e.target.closest('.gps-point-popup__page-link');
+      if (pageLink) {
+        e.preventDefault();
+        const pointIndex = Number(pageLink.dataset.pointIndex);
+        if (!Number.isFinite(pointIndex) || pointIndex < 0) return;
+        showPointPopup(pointIndex);
+        return;
+      }
+
+      const button = e.target.closest('.gps-point-popup__nav-button');
+      if (!button) return;
+      if (button.getAttribute('aria-disabled') === 'true') return;
+      e.preventDefault();
+
+      const nav = button.dataset.nav;
+      const idx = Number(button.dataset.pointIndex);
+      if (!Number.isFinite(idx) || idx < 0) return;
+
+      if (nav === 'prev') {
+        showPointPopup(idx - 1);
+      } else if (nav === 'next') {
+        showPointPopup(idx + 1);
+      }
+    });
+
+    // 3) Missing-data table links to exact map points.
+    document.addEventListener('click', function (e) {
+      const link = e.target.closest('.js-missing-point-link');
+      if (!link) return;
+      e.preventDefault();
+      const pointIndex = Number(link.dataset.pointIndex);
+      if (!Number.isFinite(pointIndex)) return;
+      showPointPopup(pointIndex);
+      const mapEl = document.getElementById('map');
+      if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // 4) Preload scenarios JSON, then simulate a click on "Update map"
     whenMapReady(async () => {
       try {
         const scenariosUrl = CFG.SCENARIOS_URL;
@@ -806,5 +1247,7 @@
       });
     }
   });
+
+
 
 })();

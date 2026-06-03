@@ -24,7 +24,12 @@
     DEFAULT_SCENARIO_KEY: 'bh_20260212',  // safe fallback string
     USE_POINT_CLUSTERING: false,
     USE_START_FINISH_FLAGS: false,
-    COLORIZE_ENDPOINTS: false
+    COLORIZE_ENDPOINTS: false,
+    LARGE_MARKERS: false,
+    ENABLE_MISSING_DATA_TABLE: false,
+    MISSING_DATA_TABLE_BODY_ID: 'missing-data-table-body',
+    MISSING_DATA_GAP_MINS: 5,
+    MISSING_DATA_TABLE_GAPS_AND_EXCLUSION_ONLY: false
   }, (window.GPS_CONFIG || {}));
 
   // DEBUG: surface the config we actually ended up with
@@ -322,18 +327,19 @@
     return merged;
   }
 
-  function createNumberMarkerIcon(label, color) {
-    let className = 'gps-number-marker';
+  function createNumberMarkerIcon(label, color, large) {
+    const size = large ? 40 : 28;
+    const anchor = large ? 20 : 14;
     let style = '';
     if (color) {
       style = ` style="color: ${color};"` ;
     }
     return L.divIcon({
-      className: className,
+      className: 'gps-number-marker' + (large ? ' gps-number-marker--large' : ''),
       html: `<span${style}>${label}</span>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
-      popupAnchor: [0, -16]
+      iconSize: [size, size],
+      iconAnchor: [anchor, anchor],
+      popupAnchor: [0, -22]
     });
   }
 
@@ -384,7 +390,7 @@
     }
 
     // Draw segment-by-segment, checking time gaps
-    const GAP_THRESHOLD_MINS = 5;
+    const GAP_THRESHOLD_MINS = Number(CFG.MISSING_DATA_GAP_MINS) || 5;
 
     for (let i = 0; i < points.length - 1; i++) {
       const curr = points[i];
@@ -397,12 +403,12 @@
       const gapMins = (nextTime - currTime) / 60000;
 
       // Dotted line for large gaps, solid for small gaps
-      const isDottedSegment = gapMins > GAP_THRESHOLD_MINS;
+      const isDottedSegment = gapMins >= GAP_THRESHOLD_MINS;
       const line = L.polyline(segment, {
         color: 'black',
         weight: 3,
         opacity: 0.9,
-        dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap > 5 mins
+        dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap exceeds configured threshold
         interactive: false
       });
       targetGroup.addLayer(line);
@@ -432,6 +438,155 @@
   }
   function fmtCoord(n) {
     return (typeof n === 'number') ? n.toFixed(6) : '—';
+  }
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getExclusionZonePolygon() {
+    const exclusionZoneLayer = window.mapLayers && window.mapLayers.exclusionZone;
+    if (!exclusionZoneLayer || typeof exclusionZoneLayer.eachLayer !== 'function') return [];
+
+    let polygon = [];
+    exclusionZoneLayer.eachLayer(function (layer) {
+      if (polygon.length || !layer || typeof layer.getLatLngs !== 'function') return;
+      const latlngs = layer.getLatLngs();
+      if (!Array.isArray(latlngs) || !latlngs.length) return;
+
+      const ring = Array.isArray(latlngs[0]) ? latlngs[0] : latlngs;
+      if (!Array.isArray(ring) || ring.length < 3) return;
+
+      polygon = ring
+        .filter(function (p) { return p && Number.isFinite(p.lat) && Number.isFinite(p.lng); })
+        .map(function (p) { return [p.lat, p.lng]; });
+    });
+
+    return polygon;
+  }
+
+  function isPointInsidePolygon(point, polygon) {
+    if (!point || !Array.isArray(polygon) || polygon.length < 3) return false;
+    if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return false;
+    return pointInPolygon([point.lat, point.lng], polygon);
+  }
+
+  function buildMissingDataRows(points) {
+    const byPoint = new Map();
+    const gapThreshold = Number(CFG.MISSING_DATA_GAP_MINS) || 5;
+    const gapsAndExclusionOnly = !!CFG.MISSING_DATA_TABLE_GAPS_AND_EXCLUSION_ONLY;
+    const exclusionPolygon = getExclusionZonePolygon();
+
+    function addIssue(pointIndex, message) {
+      if (!Number.isFinite(pointIndex) || pointIndex < 0) return;
+      if (!byPoint.has(pointIndex)) byPoint.set(pointIndex, []);
+      byPoint.get(pointIndex).push(message);
+    }
+
+    if (gapsAndExclusionOnly) {
+      for (let i = 0; i < points.length; i++) {
+        const pt = points[i] || {};
+        const prev = i > 0 ? (points[i - 1] || {}) : null;
+
+        if (i > 0) {
+          const prevTime = new Date(prev.time);
+          const currTime = new Date(pt.time);
+          if (!Number.isNaN(prevTime.getTime()) && !Number.isNaN(currTime.getTime())) {
+            const gapMins = (currTime - prevTime) / 60000;
+            if (gapMins >= gapThreshold) {
+              addIssue(i, `Dotted line shown: gap of ${Math.round(gapMins)} minutes since previous point.`);
+            }
+          }
+        }
+
+        const insideNow = isPointInsidePolygon(pt, exclusionPolygon);
+        const insidePrev = prev ? isPointInsidePolygon(prev, exclusionPolygon) : false;
+        if (insideNow && !insidePrev) {
+          addIssue(i, 'Point entered the exclusion zone.');
+        }
+      }
+
+      return Array.from(byPoint.entries())
+        .sort((a, b) => a[0] - b[0])
+        .map(([pointIndex, issues]) => ({
+          pointIndex,
+          pointLabel: `Point ${pointIndex + 1}`,
+          issues
+        }));
+    }
+
+    for (let i = 0; i < points.length; i++) {
+      const pt = points[i] || {};
+
+      if (!Number.isFinite(pt.lat) || !Number.isFinite(pt.lng)) {
+        addIssue(i, 'Location coordinates are missing or invalid.');
+      }
+
+      if (!Number.isFinite(pt.accuracy) || pt.accuracy <= 0) {
+        addIssue(i, 'Accuracy value is missing.');
+      }
+
+      if (!pt.geolocationMechanism) {
+        addIssue(i, 'Signal type is missing.');
+      }
+
+      if (!pt.time || Number.isNaN(new Date(pt.time).getTime())) {
+        addIssue(i, 'Date/time is missing or invalid.');
+      }
+
+      if (i > 0) {
+        const prev = points[i - 1] || {};
+        const prevTime = new Date(prev.time);
+        const currTime = new Date(pt.time);
+        if (!Number.isNaN(prevTime.getTime()) && !Number.isNaN(currTime.getTime())) {
+          const gapMins = (currTime - prevTime) / 60000;
+          if (gapMins >= gapThreshold) {
+            addIssue(i, `Gap of ${Math.round(gapMins)} minutes since previous point.`);
+          }
+        }
+      }
+    }
+
+    return Array.from(byPoint.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([pointIndex, issues]) => ({
+        pointIndex,
+        pointLabel: `Point ${pointIndex + 1}`,
+        issues
+      }));
+  }
+
+  function renderMissingDataTable(points) {
+    if (!CFG.ENABLE_MISSING_DATA_TABLE) return;
+    const bodyId = CFG.MISSING_DATA_TABLE_BODY_ID || 'missing-data-table-body';
+    const tbody = document.getElementById(bodyId);
+    if (!tbody) return;
+
+    const rows = buildMissingDataRows(Array.isArray(points) ? points : []);
+    if (!rows.length) {
+      tbody.innerHTML = [
+        '<tr class="govuk-table__row">',
+        '<th scope="row" class="govuk-table__header">None</th>',
+        '<td class="govuk-table__cell">No missing data found for current map view.</td>',
+        '</tr>'
+      ].join('');
+      return;
+    }
+
+    tbody.innerHTML = rows.map((row) => {
+      const issuesHtml = row.issues.map(issue => escapeHtml(issue)).join('<br>');
+      return [
+        '<tr class="govuk-table__row">',
+        `<th scope="row" class="govuk-table__header"><a class="govuk-link js-missing-point-link" href="#" data-point-index="${row.pointIndex}">${escapeHtml(row.pointLabel)}</a></th>`,
+        `<td class="govuk-table__cell">${issuesHtml}</td>`,
+        '</tr>'
+      ].join('');
+    }).join('');
   }
   function fmtTimeHHMM(val) {
     if (!val) return '—';
@@ -500,13 +655,6 @@
   const lng = fmtCoord(pt.lng);
   const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
-  const navLinks = [];
-  if (hasPrev) {
-    navLinks.push(`<a href="#" class="gps-point-popup__nav-button" data-nav="prev" data-point-index="${idx}">Previous point</a>`);
-  }
-  if (hasNext) {
-    navLinks.push(`<a href="#" class="gps-point-popup__nav-button" data-nav="next" data-point-index="${idx}">Next point</a>`);
-  }
 
   return `
     <div class="gps-point-card">
@@ -539,9 +687,6 @@
 
         
       </dl>
-      <div class="gps-point-popup__nav govuk-body-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-        ${navLinks.join('')}
-      </div>
     </div>
   `;
 }
@@ -777,12 +922,13 @@
           autoPanPaddingBottomRight: [20, 20]
         };
 
-        // Large translucent circle
+        // Keep confidence circles clear so they do not look like exclusion zones.
         const accCircle = L.circle(ll, {
           radius: pt.accuracy,
           color: '#1d70b8',
           weight: 1,
-          fillOpacity: 0.1
+          fill: false,
+          fillOpacity: 0
         }).addTo(groups.accuracy);
 
         accCircle.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
@@ -854,7 +1000,8 @@
       }
 
       if (!markerIcon) {
-        markerIcon = createNumberMarkerIcon(String(pt.label || idx + 1), markerColor);
+        const largeMarker = CFG.LARGE_MARKERS && (isFirstPoint || isLastPoint);
+        markerIcon = createNumberMarkerIcon(String(pt.label || idx + 1), markerColor, largeMarker);
       }
 
       const marker = L.marker(ll, {
@@ -968,6 +1115,8 @@
       if (heading) heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    renderMissingDataTable(traceObj.points || []);
+
     const status = document.getElementById('map-status');
     if (status) status.textContent = 'Map updated with filtered GPS trace.';
   };
@@ -995,25 +1144,21 @@
       });
     });
 
-    // 2) Delegated navigation for GPS point popups.
+    // 2) Delegated navigation for GPS point popups — removed.
+
+    // 3) Missing-data table links to exact map points.
     document.addEventListener('click', function (e) {
-      const button = e.target.closest('.gps-point-popup__nav-button');
-      if (!button) return;
-      if (button.getAttribute('aria-disabled') === 'true') return;
+      const link = e.target.closest('.js-missing-point-link');
+      if (!link) return;
       e.preventDefault();
-
-      const nav = button.dataset.nav;
-      const idx = Number(button.dataset.pointIndex);
-      if (!Number.isFinite(idx) || idx < 0) return;
-
-      if (nav === 'prev') {
-        showPointPopup(idx - 1);
-      } else if (nav === 'next') {
-        showPointPopup(idx + 1);
-      }
+      const pointIndex = Number(link.dataset.pointIndex);
+      if (!Number.isFinite(pointIndex)) return;
+      showPointPopup(pointIndex);
+      const mapEl = document.getElementById('map');
+      if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // 3) Preload scenarios JSON, then simulate a click on "Update map"
+    // 4) Preload scenarios JSON, then simulate a click on "Update map"
     whenMapReady(async () => {
       try {
         const scenariosUrl = CFG.SCENARIOS_URL;

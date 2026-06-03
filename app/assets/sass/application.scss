@@ -520,12 +520,9 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
 }
 
 .gps-point-popup .leaflet-popup-content {
-  min-width: 246px;
-  max-width: 306px;
+
+  max-width: 370px;
   white-space: normal; /* allow wrapping instead of squishing */
-}
-.leaflet-popup.gps-point-popup.leaflet-zoom-animated {
-  max-width: 326px;
 }
 .gps-point-popup .govuk-heading-s {
   font-size: 14px;
@@ -545,6 +542,49 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
 
 .gps-point-popup .govuk-summary-list__row {
   margin-bottom: 2px;
+}
+
+/* Keep point pagination compact and on one line in the ping card */
+.gps-point-popup .govuk-pagination {
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.gps-point-popup .govuk-pagination__prev,
+.gps-point-popup .govuk-pagination__next,
+.gps-point-popup .govuk-pagination__list {
+  flex: 0 0 auto;
+}
+
+.gps-point-popup .govuk-pagination__list {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+}
+
+.gps-point-popup .govuk-pagination__item {
+  margin-bottom: 0;
+}
+
+.gps-point-popup .govuk-pagination__link,
+.gps-point-popup .govuk-pagination__item,
+.gps-point-popup .govuk-pagination__link-title {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.gps-point-popup .govuk-pagination__link {
+  padding: 2px 4px;
 }
 
 .gps-point-popup code {

@@ -225,8 +225,8 @@
 <script src="/public/javascripts/bh-loi-row-highlight.js"></script>
 
 <script src="/public/javascripts/bh-location-init.js"></script>
-<script src="/public/javascripts/map-overlaysv2.js"></script>
-<script src="/public/javascripts/gps-map-mvp-2.js"></script>
+<script src="/public/javascripts/map-overlaysv3.js"></script>
+<script src="/public/javascripts/gps-map-mvp-3.js"></script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
 
@@ -494,6 +494,8 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
 <style>
 
+
+
   .govuk-service-navigation__link {
     font-weight: bold;
   }
@@ -557,11 +559,13 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
 
 
-.leaflet-interactive {
-  fill-opacity: 0;
-  stroke: black;
-  color: white;
 
+/* Dedicated exclusion-zone hook: safe place for per-zone styling */
+.emdi-exclusion-zone-path {
+  stroke: #00703c !important;
+  stroke-width: 0 !important;
+  fill: #00703c !important;
+  fill-opacity: 0.35 !important;
 }
 
 path[stroke-width="1"]

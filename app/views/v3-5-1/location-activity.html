@@ -63,16 +63,26 @@
 </nav>
  
 
+<div id="feedback-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">  {%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+  {{ mojAlert({
+    variant: "success",
+    title: "Upload successful",
+    dismissible: true,
+    html: 'Your feedback has been successfully submitted.'
+  }) }}
+</div>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2" >
         <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
         Date of birth: {{ persondata.dateOfBirth  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Sentence: {{ persondata.sentence  }}
+        Tier: <a href="#" class="govuk-link">DO</a>
       </span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
       {{ persondata.name  }}
     </h1>
   </div>
@@ -224,7 +234,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Leaflet Heatmap -->
-<script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+<!-- <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script> -->
 
 <!-- PolylineDecorator -->
 <script src="/public/javascripts/leaflet.polylineDecorator.js"></script>
@@ -243,11 +253,38 @@
 <script src="/public/javascripts/bh-location-init.js"></script>
 <script src="/public/javascripts/map-overlaysv2.js"></script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
+
+<script>
+  // v3-5-1 only: remove Heatmap checkbox from the layers control panel
+  document.addEventListener('DOMContentLoaded', function () {
+    // The map may not be fully set up yet, so wait a tick
+    setTimeout(function () {
+      var overlayLabels = document.querySelectorAll('.leaflet-control-layers-overlays label');
+      overlayLabels.forEach(function (label) {
+        if (label.textContent.trim().indexOf('Heatmap') !== -1) {
+          label.parentNode.removeChild(label);
+        }
+      });
+    }, 500);
+  });
+</script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
 
 <!-- Table filtering -->
 <script src="/public/javascripts/loi-filters.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (sessionStorage.getItem('v351LocationActivitySuccessBanner') !== '1') return;
+
+    var banner = document.getElementById('feedback-success-banner');
+
+    if (banner) banner.classList.remove('govuk-!-display-none');
+
+    sessionStorage.removeItem('v351LocationActivitySuccessBanner');
+  });
+</script>
 
 <script>
 
@@ -510,6 +547,21 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
 <style>
 
+ /* Larger Leaflet zoom controls */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-zoom a,
+.leaflet-touch .leaflet-control-zoom a {
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-size: 24px !important;
+}
+
+  .govuk-caption-m {
+    color: black;
+  }
+
   .govuk-service-navigation__link {
     font-weight: bold;
   }
@@ -580,15 +632,6 @@ a[aria-label="North arrow"] {
     height: 45px;
     padding-top: 10px;
     padding-left: 10px;
-}
-
-/* Larger Leaflet zoom controls */
-.leaflet-control-zoom a,
-.leaflet-touch .leaflet-control-zoom a {
-  width: 44px;
-  height: 44px;
-  line-height: 44px;
-  font-size: 19px;
 }
 
 .emdi-layers-close {

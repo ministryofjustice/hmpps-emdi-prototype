@@ -1,0 +1,105 @@
+{% extends "layouts/main2.html" %}
+
+{% block pageTitle %}
+  Question page template – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false },
+  { text: "Alerts", href: "#", active: false }
+] %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+  text: "Back",
+  href: "javascript:window.history.back()"
+}) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">
+        Give feedback on Electronic Monitoring 
+      </h1>
+
+      <form id="feedback-form" class="form" action="/v3-5-1/location-activity" method="get">
+
+        <div class="govuk-form-group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend">
+      Overall, how satisfied are you with the service?
+    </legend>
+    <div class="govuk-radios" data-module="govuk-radios">
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="feedback" name="feedback" type="radio" value="very-good">
+        <label class="govuk-label govuk-radios__label" for="feedback">
+          Very good
+        </label>
+      </div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="feedback-2" name="feedback" type="radio" value="good">
+        <label class="govuk-label govuk-radios__label" for="feedback-2">
+          Good
+        </label>
+      </div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="feedback-3" name="feedback" type="radio" value="poor">
+        <label class="govuk-label govuk-radios__label" for="feedback-3">
+          Poor
+        </label>
+      </div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="feedback-4" name="feedback" type="radio" value="very-poor">
+        <label class="govuk-label govuk-radios__label" for="feedback-4">
+          Very poor
+        </label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+       <div class="govuk-form-group">
+  <label class="govuk-label" for="more-detail">
+   How could we improve this service? (optional)
+  </label>
+  <textarea class="govuk-textarea" id="more-detail" name="moreDetail" rows="5"></textarea>
+</div>
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+
+  <style>
+
+.govuk-service-navigation__link {
+    font-weight: bold;
+}
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var form = document.getElementById('feedback-form');
+      if (!form) return;
+
+      form.addEventListener('submit', function () {
+        sessionStorage.setItem('v351LocationActivitySuccessBanner', '1');
+      });
+    });
+  </script>
+
+
+
+{% endblock %}
+

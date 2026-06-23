@@ -59,18 +59,19 @@
  
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2" >
         <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
         Date of birth: {{ persondata.dateOfBirth  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Sentence: {{ persondata.sentence  }}
+        Tier: <a href="#" class="govuk-link">DO</a>
       </span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
       {{ persondata.name  }}
     </h1>
   </div>
 </div>
+
 
 {{ mojSubNavigation({
   label: "Sub navigation",
@@ -317,6 +318,10 @@
 
   .govuk-grid-column-full {
     padding-top: 40px;
+}
+
+.govuk-caption-m {
+    color: black !important;
 }
 </style>
 

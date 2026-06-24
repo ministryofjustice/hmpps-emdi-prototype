@@ -93,6 +93,49 @@
   <div class="govuk-width-container">
       <h2 class="govuk-heading-m" id="map-header">Curfew activity</h2>
 
+    {% set showTopExampleSection = data['personselected'] in ['billyhoskins', 'mikeknight', 'terrymedford', 'chrispost', 'mikevanpeebles'] %}
+
+    {% if showTopExampleSection %}
+
+    {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+
+      <h3 class="govuk-heading-s" id="map-header">Recent activity</h3>
+      <p class="govuk-body">
+        {{ persondata.name  }} was <strong>out during curfew for 31 minutes</strong> from 1:05am to 1:36am on Sunday 12 October 2025.
+      </p>
+
+      <p class="govuk-body">
+        They were also out during curfew from <strong>1am to 2am on Friday 10 October 2025</strong> and from <strong>4:30am to 6:30am on Saturday 11 October 2025</strong>.
+      </p>
+
+      <p class="govuk-body">
+        They <strong>arrived late</strong> at their approved address on 5 days for a total of <strong>33 minutes</strong>.
+      </p>
+
+      <p class="govuk-body">
+        They <strong>left early</strong> from their approved address on 1 day for a total of <strong>7 minutes</strong>. 
+      </p>
+
+      <p class="govuk-body">
+        Recent activity includes any times that the person has been out during curfew, even where there may be a reasonable excuse.
+      </p>
+      {% endcall %}
+
+      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+      <h3 class="govuk-heading-s govuk-!-margin-top-10" id="atvs">Accumulated time violations (ATV)</h3>
+
+      <p class="govuk-body">
+        {{ persondata.firstname  }}  has built up <strong>100 violation minutes</strong> since their home detention tag (HDC) was fitted on <strong>Wednesday 12 August 2025</strong>.
+      </p>
+      <p class="govuk-body">
+        These are known as ‘accumulated time violations’ (ATV) and only include ‘unreasonable’ violations.
+      </p>
+      <p class="govuk-body">
+        {{ persondata.firstname  }}  is now 20 minutes away from breaching their curfew conditions.
+      </p>
+      {% endcall %}
+
+      {% else %}
 
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
 
@@ -117,6 +160,9 @@
 
      
       {% endcall %}
+
+      {% endif %}
+
   </div>
 
 

@@ -216,7 +216,7 @@
         <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
           Update map
         </button>
-        <a href="#" id="bh-clear-filters" class="govuk-link">Clear filters</a>
+        <a href="#" id="bh-clear-filters" class="govuk-link" style="font-size: 19px;">Clear filters</a>
       </div>
     </div>
 
@@ -258,16 +258,214 @@
 <h3 class="govuk-heading-m govuk-!-margin-bottom-0" id="filter-by-loi">Visits to specific locations of interest</h3>
 <p class="govuk-body">You can check if the person on probation has been to certain locations that may be relevant to their licence conditions.</p>
 
-{{ govukInsetText({
-  html: "<p class='govuk-body'><a href='manage-locations' class='govuk-link'>Add or remove locations of interest</a></p>"
-}) }}
+ <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
 
 
+  {% if data.loiName1 and (data.loiName1 | length) or data['personselected']=='billyhoskins' or data['personselected']=='chrispost' or data['personselected']=='mikeknight'%}
+
+      <p><a href='mvp-manage-locations' class='govuk-link'>Manage addresses</a></p>
+
+
+
+      <table class="govuk-table" id="bh-loi-table" data-module="moj-sortable-table" data-moj-sortable-table-init="">
+
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+          
+            <th scope="col" class="govuk-table__header" aria-sort="descending"><button type="button" data-index="0">Date<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            
+            <path d="M15.4375 7L11 15.8687L6.5625 7L15.4375 7Z" fill="currentColor"></path>
+            </svg></button></th>
+          
+            <th scope="col" class="govuk-table__header" aria-sort="none"><button type="button" data-index="1">Location type<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+      <path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+      </svg></button></th>
+          
+            <th scope="col" class="govuk-table__header">Address</th>
+          
+            <th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Time<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+      <path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+      </svg></button></th>
+      <th scope="col" class="govuk-table__header no-wrap" aria-sort="none"><button type="button" data-index="3">Duration<svg width="22" height="22" focusable="false" aria-hidden="true" role="img" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>
+      <path d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>
+      </svg></button></th>
+            <th scope="col" class="govuk-table__header">View on map</th>    
+          </tr>
+        </thead>
+
+
+    <tbody class="govuk-table__body">
+
+      {% if data.row1 %}
+        <tr class="govuk-table__row">
+          
+          {% if data.row2 %} 
+              <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress1'] }}&locationtypenotes={{ data['addresstype1'] }}&durationnotes=6 hours 4 mins ">Send to NDelius</a></td>
+
+            {% else  %}
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 3 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress1']}}&locationtypenotes={{ data['loiName1'] }}&durationnotes=6 hours 4 mins ">Send to NDelius</a></td>
+
+            {% endif  %}
+
+                  
+            <td class="govuk-table__cell"  data-sort-value="custom" data-loi-type="custom">
+
+            {% if data.row2 %} 
+              {{ data['addresstype1'] }} 
+
+            {% else  %}
+            {{ data['loiName1'] }} 
+
+            {% endif  %}
+
+          </td>
+
+            <td class="govuk-table__cell">{{ data['selectedAddress1'] | replace(', ', '<br>') | safe }} </td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm<br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">(6 hours 4 mins)</td>
+            
+            <td class="govuk-table__cell"><a href="" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+            
+          
+          </tr>
+          {% endif %}
+
+      {% if data.row2 %}
+          <tr class="govuk-table__row">
+          
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes={{ data['selectedAddress2']}}&locationtypenotes={{ data['loiName1'] }}&durationnotes=35 mins ">Send to NDelius</a></td>
+                  
+            <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">{{ data['loiName1'] }}</td>
+
+            <td class="govuk-table__cell">{{ data['selectedAddress2']| replace(', ', '<br>') | safe }}</td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">1:55pm to 2:30pm<br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">(35 mins)</td>
+            
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+            
+          
+          </tr>
+      {% endif %}
+
+<!-- This is Billy Hoskins -->
+
+      {% if data['personselected']=='billyhoskins' %}
+
+      <tr class="govuk-table__row">
+          
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=10 Finch Road, Stanway, Colchester, CO3 8DF&locationtypenotes=Ex-partners house&durationnotes=6 hours 4 mins">Send to NDelius</a></td>
+                  
+            <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Ex-partners house </td>
+
+            <td class="govuk-table__cell"> 10 Finch Road <br> Stanway<br> Colchester<br> CO3 8DF </td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm <br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">6 hours 4 mins</td>
+            
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+            
+          
+          </tr>
+
+        {% endif %}
+
+<!-- This is Chris Post -->
+        {% if data['personselected']=='chrispost' %}
+
+      <tr class="govuk-table__row">
+          
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=10 Finch Road, Stanway, Colchester, CO3 8DF&locationtypenotes=Ex-partners house&durationnotes=6 hours 4 mins">Send to NDelius</a></td>
+                  
+            <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Ex-partners house </td>
+
+            <td class="govuk-table__cell"> 10 Finch Road <br> Stanway<br> Colchester<br> CO3 8DF </td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm <br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">6 hours 4 mins</td>
+            
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+            
+          
+          </tr>
+
+          <tr class="govuk-table__row">
+          
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Thursday 18 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=The Fusilier Bar and Restaurant, Aingers Green Rd, Great Bentley, Colchester, CO7 8NH&locationtypenotes=Pub&durationnotes=3 hours 33 mins">Send to NDelius</a></td>
+                  
+            <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Pub </td>
+
+            <td class="govuk-table__cell"> The Fusilier Bar & Restaurant <br> Aingers Green Rd,<br> Great Bentley<br> Colchester <br> CO7 8NH </td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">7:32pm to 11:05pm <br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">3 hours 33 mins</td>
+            
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="fusilier-2">View</a></td>
+            
+          </tr>
+
+
+        {% endif %}
+
+<!-- This is Mike Knight-->
+
+        {% if data['personselected']=='mikeknight' %}
+
+      <tr class="govuk-table__row">
+          
+            <td class="govuk-table__cell" data-sort-value="2025-12-03">Wednesday 17 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=10 Finch Road, Stanway, Colchester, CO3 8DF&locationtypenotes=Ex-partners house&durationnotes=6 hours 4 mins">Send to NDelius</a></td>
+                  
+            <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Ex-partners house </td>
+
+            <td class="govuk-table__cell"> 10 Finch Road <br> Stanway<br> Colchester<br> CO3 8DF </td>
+            
+            <td class="govuk-table__cell" data-sort-value="364">1:55pm to 7:59pm <br></td>
+
+            <td class="govuk-table__cell" data-sort-value="364">6 hours 4 mins</td>
+            
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="finch-road">View</a></td>
+            
+          
+          </tr>
+
+
+        {% endif %}
+
+
+
+        </tbody>
+
+      </table>
+
+    {% endif %}
+
+
+{% set showFirstLoiSection =
+  data['personselected'] in ['billyhoskins', 'chrispost', 'mikeknight']
+  or (data.loiName1 and (data.loiName1 | length))
+  or (data.selectedAddress and (data.selectedAddress | trim | length) > 0)
+  or data.row1
+  or data.row2
+%}
+
+{% if not showFirstLoiSection %}
+
+
+{% if data['personselected'] != 'mikevanpeebles' %}
 <div class="loi-filters govuk-!-margin-bottom-3">
   <form id="loi-filters" class="loi-filters__form" novalidate data-tag-fitted="2025-06-08">
     <div class="loi-filters__row">
       <div class="loi-filters__group">
-        <label class="govuk-label" for="filter-type">Location</label>
+        <label class="govuk-label" for="filter-type" style="font-weight: bold;">Location</label>
 
 {% set allTypes = [
   { value: "anywhere outside the uk", label: "Anywhere outside the UK" },
@@ -302,7 +500,7 @@
       </div>
 
       <div class="loi-filters__group">
-        <label class="govuk-label" for="filter-date">Date range</label>
+        <label class="govuk-label" for="filter-date" style="font-weight: bold;">Date range</label>
         <select class="govuk-select" id="filter-date" name="filter-date">
           <option value="" id="all-dates-option" selected>All dates since tag fitting (68 days)</option>
           <option value="last7">Last 7 days</option>
@@ -310,20 +508,21 @@
         </select>
       </div>
 
-      <div class="loi-filters__actions">
-        <button class="govuk-button" data-module="govuk-button" id="apply-loi-filters" type="submit">
-          Filter locations
-        </button>
-      </div>
-    </div>
+</div>
 
-    <div class="loi-filters__footer">
-      <a href="#" id="clear-loi-filters" class="govuk-link">Clear filters</a>
+    <div class="loi-filters__actions govuk-button-group">
+      <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="apply-loi-filters" type="submit" style="margin-top: 30px;">
+        Filter locations
+      </button>
+      <a href="#" id="clear-loi-filters" class="govuk-link loi-filters__clear-link" style="margin-top: 30px;">Clear filters</a>
     </div>
 
     <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
   </form>
 </div>
+
+
+{% endif %}
 
 {% set start = startIndex or 0 %}
 
@@ -473,6 +672,11 @@
   {% endif %}
 {% endfor %}
 
+{# For Mike Van Peebles, show an empty table until an address is added #}
+{% if data['personselected'] == 'mikevanpeebles' %}
+  {% set visibleRows = [] %}
+{% endif %}
+
 {# 4) Render the table #}
 {{ govukTable({
   attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
@@ -487,6 +691,7 @@
 }) }}
 
 
+{% if data['personselected'] != 'mikevanpeebles' %}
 {{ govukPagination({
   next: { href: "#" },
   items: [
@@ -495,6 +700,9 @@
     { number: 3, href: "#" }
   ]
 }) }}
+{% endif %}
+
+{% endif %}
 
 
 
@@ -1223,6 +1431,20 @@ path[stroke-width="1"]
 .bh-time-from .govuk-label:not(.govuk-date-input__label),
 .bh-time-to .govuk-label:not(.govuk-date-input__label) {
   font-weight: 700;
+}
+
+#loi-filters .loi-filters__actions {
+  display: contents;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 15px;
+}
+
+#loi-filters .loi-filters__clear-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin-bottom: 0;
 }
 
 </style>

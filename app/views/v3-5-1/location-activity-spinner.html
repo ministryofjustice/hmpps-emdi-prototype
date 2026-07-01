@@ -217,15 +217,15 @@
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 
 
-<div id="bh-map-loading-modal" class="govuk-modal-dialogue" role="status" aria-live="polite" aria-label="Updating map">
-  <div class="govuk-modal-dialogue__wrapper">
-    <div class="govuk-modal-dialogue__box govuk-modal-dialogue__box--loading" tabindex="-1">
-      <h2 class="govuk-modal-dialogue__heading govuk-heading-m">Updating map</h2>
+<div id="bh-map-loading-modal" class="emdi-loading-modal" role="status" aria-live="polite" aria-label="Updating map">
+  <div class="emdi-loading-modal__wrapper">
+    <div class="emdi-loading-modal__box emdi-loading-modal__box--loading" tabindex="-1">
+      <h2 class="emdi-loading-modal__heading govuk-heading-m">Updating map</h2>
       <div class="ho-loading-spinner" aria-hidden="true"></div>
       <p class="govuk-body govuk-!-margin-bottom-0">Loading latest map activity</p>
     </div>
   </div>
-  <div class="govuk-modal-dialogue__backdrop"></div>
+  <div class="emdi-loading-modal__backdrop"></div>
 </div>
 
 
@@ -290,25 +290,41 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var mapFiltersForm = document.getElementById('bh-map-filters');
+    var updateMapButton = document.getElementById('bh-apply-filters');
     var loadingModal = document.getElementById('bh-map-loading-modal');
     var hideTimer;
+    var clickedByUpdateMap = false;
 
-    if (!mapFiltersForm || !loadingModal) return;
+    if (!mapFiltersForm || !updateMapButton || !loadingModal) return;
+
+    loadingModal.classList.remove('emdi-loading-modal--open');
+    document.body.classList.remove('govuk-modal-open');
 
     function openLoadingModal() {
-      loadingModal.classList.add('govuk-modal-dialogue--open');
+      loadingModal.classList.add('emdi-loading-modal--open');
       document.body.classList.add('govuk-modal-open');
     }
 
     function closeLoadingModal() {
-      loadingModal.classList.remove('govuk-modal-dialogue--open');
+      loadingModal.classList.remove('emdi-loading-modal--open');
       document.body.classList.remove('govuk-modal-open');
     }
 
-    mapFiltersForm.addEventListener('submit', function () {
+    updateMapButton.addEventListener('click', function () {
+      clickedByUpdateMap = true;
+    });
+
+    mapFiltersForm.addEventListener('submit', function (event) {
+      var submitterId = event.submitter && event.submitter.id;
+      var isUpdateMapSubmit = clickedByUpdateMap || submitterId === 'bh-apply-filters';
+
+      clickedByUpdateMap = false;
+
+      if (!isUpdateMapSubmit) return;
+
       openLoadingModal();
       clearTimeout(hideTimer);
-      hideTimer = setTimeout(closeLoadingModal, 1400);
+      hideTimer = setTimeout(closeLoadingModal, 3000);
     });
   });
 </script>
@@ -997,8 +1013,8 @@ path[stroke-width="1"]
   margin-bottom: 0;
 }
 
-.govuk-modal-dialogue,
-.govuk-modal-dialogue__backdrop {
+.emdi-loading-modal,
+.emdi-loading-modal__backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -1006,16 +1022,16 @@ path[stroke-width="1"]
   height: 100%;
 }
 
-.govuk-modal-dialogue {
+.emdi-loading-modal {
   display: none;
   z-index: 1100;
 }
 
-.govuk-modal-dialogue--open {
+.emdi-loading-modal--open {
   display: block;
 }
 
-.govuk-modal-dialogue__wrapper {
+.emdi-loading-modal__wrapper {
   box-sizing: border-box;
   display: flex;
   width: 100%;
@@ -1025,7 +1041,7 @@ path[stroke-width="1"]
   padding: 32px 16px;
 }
 
-.govuk-modal-dialogue__box {
+.emdi-loading-modal__box {
   box-sizing: border-box;
   position: relative;
   z-index: 2;
@@ -1036,15 +1052,15 @@ path[stroke-width="1"]
   padding: 32px;
 }
 
-.govuk-modal-dialogue__box--loading {
+.emdi-loading-modal__box--loading {
   text-align: center;
 }
 
-.govuk-modal-dialogue__heading {
+.emdi-loading-modal__heading {
   margin-bottom: 16px;
 }
 
-.govuk-modal-dialogue__backdrop {
+.emdi-loading-modal__backdrop {
   z-index: 1;
   background: rgba(11, 12, 12, 0.7);
 }

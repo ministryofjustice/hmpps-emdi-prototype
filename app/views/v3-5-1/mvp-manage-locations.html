@@ -1,4 +1,4 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/main2.html" %}
 
 {% set currentNav = "cases" %}
 
@@ -41,15 +41,45 @@
 {% set pageName="Manage locations" %}
 
 {% block content %}
-{% block breadcrumb %}
-  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-  {{ govukBreadcrumbs({
-    items: [
-      { text: "Cases", href: "/cases" },
-      { text: persondata.name, href: "/case/" + persondata.url }
-    ]
-  }) }}
-{% endblock %}
+
+
+<nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+  <ol class="govuk-breadcrumbs__list">
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="cases">Cases</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="#">{{ persondata.name }}</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item" aria-current="page">
+      Electronic monitoring - Manage addresses
+    </li>
+  </ol>
+</nav>
+
+{% set removedDefaultPeople = data.mvpRemovedDefaultLoiPeople or [] %}
+{% set showDefaultAddress =
+  data['personselected'] in ['billyhoskins', 'chrispost', 'mikeknight']
+  and not (data['personselected'] in removedDefaultPeople)
+%}
+
+{% set displayLoiName = '' %}
+{% set displayAddress = '' %}
+
+{% if data.selectedAddress and (data.selectedAddress | trim | length) > 0 %}
+  {% set displayLoiName = data.loiName1 or '' %}
+  {% set displayAddress = data.selectedAddress %}
+{% elif showDefaultAddress %}
+  {% if data['personselected'] == 'chrispost' %}
+    {% set displayLoiName = 'Ex-partners house' %}
+    {% set displayAddress = '10 Finch Road, Stanway, Colchester, CO3 8DF' %}
+  {% else %}
+    {% set displayLoiName = 'Ex-partners house' %}
+    {% set displayAddress = '10 Finch Road, Stanway, Colchester, CO3 8DF' %}
+  {% endif %}
+{% endif %}
+
+{% set hasManagedAddress = displayAddress and (displayAddress | trim | length) > 0 %}
 
 <form method="post" action="location-activity" novalidate>
  
@@ -59,26 +89,13 @@
         <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>:  {{ persondata.crn  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
         Date of birth:  {{ persondata.dateOfBirth  }}
-        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        <a href="https://www.figma.com/proto/vlCrUVrP6fuq59QzUg9lyy/GPS-Alpha-2.0?page-id=6722%3A15258&node-id=6936-6250&p=f&viewport=-4249%2C-4220%2C0.21&t=gk748NC1vQvFiqZc-8&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=6722%3A16450&hide-ui=1" style="color:#505a5f; text-decoration: none;">Sentence:  {{ persondata.sentence  }}</a>
-      </span>
+      
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
        {{ persondata.name  }}
     </h1>
  
 
-    {{ mojSubNavigation({
-      label: "Sub navigation",
-      items: [{
-        text: "Location activity",
-        href: "bh-location"
-      },
-      {
-        text: "Curfew activity",
-        href: "bh-curfew"
-      }
-      ]
-    }) }}
+
   </div>
 
   <div class="govuk-grid-column-full">
@@ -116,7 +133,7 @@
 -->
 
 
-{% if data.selectedAddress %}
+{% if hasManagedAddress %}
   <table class="govuk-table">
     <caption class="govuk-table__caption govuk-table__caption--m">Manage addresses</caption>
     <thead class="govuk-table__head">
@@ -128,12 +145,12 @@
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% if data.loiName1 and (data.loiName1 | length) %}
-            <strong>{{ data.loiName1 | escape }}</strong><br>
+          {% if displayLoiName and (displayLoiName | length) %}
+            <strong>{{ displayLoiName | escape }}</strong><br>
           {% endif %}
-          {{ (data.selectedAddress | escape) | replace(", ", "<br>") | safe }}
+          {{ (displayAddress | escape) | replace(", ", "<br>") | safe }}
         </td>
-        <td class="govuk-table__cell"> <a href="/loi/clear-mvp" class="govuk-link"> Delete</a>
+        <td class="govuk-table__cell"> <a href="/clear-mvp" class="govuk-link"> Delete</a>
         </td>
       </tr>
     </tbody>
@@ -160,10 +177,28 @@
 
       <div class="govuk-button-group">
         {{ govukButton({ text: "Save changes", type: "submit" }) }}
-        <a class="govuk-link" href="mvp-location">Cancel and go back</a>
+        <a class="govuk-link" href="location-activity">Cancel and go back</a>
       </div>
 
     </form>
   </div> <!-- /govuk-grid-column-full -->
 </div> <!-- /govuk-grid-row -->
+
+
+<style>
+
+   .govuk-main-wrapper {
+    padding-top: 10px;
+  }
+
+
+   /* Page width override for this version: +50px each side (100px total). */
+  .govuk-width-container {
+    max-width: 1280px;
+  }
+
+</style>
+
 {% endblock %}
+
+

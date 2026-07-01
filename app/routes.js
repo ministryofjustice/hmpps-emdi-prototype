@@ -290,33 +290,41 @@ router.post('/mvp-add-location3', function (req, res) {
   return res.redirect('/mvp-location');
 });
 
-// Clear the current custom LOI (name + address) from session, then return to Manage Locations
-router.post('/loi/clear', function (req, res) {
-  req.session.data.selectedAddress = '';
-  req.session.data.loiName = '';
-  return res.redirect('/bh-manage-locations');
-});
-// NEW: allow GET for the prototype so the link works inside the main form
-router.get('/loi/clear', function (req, res) {
-  req.session.data.selectedAddress = '';
-  req.session.data.loiName = '';
-  return res.redirect('/bh-manage-locations');
-});
+// MVP: Clear the currently displayed custom LOI row and return to Manage Locations
+function clearMvpAddress(req, res) {
+  const person = req.session.data.personselected;
+  const hadCustomLoi = req.session.data.selectedAddress && (req.session.data.selectedAddress.trim().length > 0);
 
-//MVP
-// Clear the current custom LOI (name + address) from session, then return to Manage Locations
-router.post('/loi/clear-mvp', function (req, res) {
   req.session.data.selectedAddress = '';
   req.session.data.loiName1 = '';
-  return res.redirect('/v3/mvp-manage-locations');
-});
 
-// NEW: allow GET for the prototype so the link works inside the main form
-router.get('/loi/clear-mvp', function (req, res) {
-  req.session.data.selectedAddress = '';
-  req.session.data.loiName1 = '';
-  return res.redirect('/v3/mvp-manage-locations');
-});
+  // Track if a custom address was deleted (not a prepopulated default)
+  if (hadCustomLoi) {
+    const deleted = Array.isArray(req.session.data.mvpDeletedCustomLoi)
+      ? req.session.data.mvpDeletedCustomLoi
+      : [];
+    if (!deleted.includes(person)) {
+      deleted.push(person);
+    }
+    req.session.data.mvpDeletedCustomLoi = deleted;
+  }
+
+  const canDeleteDefault = ['billyhoskins', 'chrispost', 'mikeknight'];
+  if (canDeleteDefault.includes(person)) {
+    const removed = Array.isArray(req.session.data.mvpRemovedDefaultLoiPeople)
+      ? req.session.data.mvpRemovedDefaultLoiPeople
+      : [];
+    if (!removed.includes(person)) {
+      removed.push(person);
+    }
+    req.session.data.mvpRemovedDefaultLoiPeople = removed;
+  }
+
+  return res.redirect('/v3-5-1/mvp-manage-locations');
+}
+
+router.post('/clear-mvp', clearMvpAddress);
+router.get('/clear-mvp', clearMvpAddress);
 
 // Manage Locations form submission
 router.post('/mvp-manage-locations', function (req, res) {
@@ -328,7 +336,7 @@ router.post('/mvp-manage-locations', function (req, res) {
   req.session.data.outsideUk = Array.isArray(outside) ? outside : (outside ? [outside] : []);
 
   // go back to the manage page (you can change to bh-location if preferred)
-  return res.redirect('/mvp-location');
+  return res.redirect('mvp-manage-locations');
 });
 
 
@@ -342,7 +350,7 @@ router.post('/bh-manage-locations', function (req, res) {
   req.session.data.outsideUk = Array.isArray(outside) ? outside : (outside ? [outside] : []);
 
   // go back to the manage page (you can change to bh-location if preferred)
-  return res.redirect('/location-activity');
+  return res.redirect('mvp-manage-locations');
 });
 
 

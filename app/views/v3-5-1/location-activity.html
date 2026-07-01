@@ -76,7 +76,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
           <span class="govuk-caption-m govuk-!-margin-bottom-2" >
-        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <abbr title="Case reference number" style="text-decoration: none;">CRN</abbr>: {{ persondata.crn  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
         Date of birth: {{ persondata.dateOfBirth  }}
         <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
@@ -260,8 +260,34 @@
 
  <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
 
+{% set removedDefaultPeople = data.mvpRemovedDefaultLoiPeople or [] %}
+{% set deletedCustomLoi = data.mvpDeletedCustomLoi or [] %}
+{% set showDeletedCustomLoiEmptyState =
+  data['personselected'] in deletedCustomLoi
+  and not (data.loiName1 and (data.loiName1 | length))
+%}
+{% set showPrepopulatedLoi =
+  data['personselected'] in ['billyhoskins', 'chrispost', 'mikeknight']
+  and not (data['personselected'] in removedDefaultPeople)
+  and not (data['personselected'] in deletedCustomLoi)
+%}
 
-  {% if data.loiName1 and (data.loiName1 | length) or data['personselected']=='billyhoskins' or data['personselected']=='chrispost' or data['personselected']=='mikeknight'%}
+{% if showDeletedCustomLoiEmptyState %}
+{{ govukTable({
+  attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
+  head: [
+    { text: "Date", attributes: { "aria-sort": "descending" } },
+    { text: "Location type", attributes: { "aria-sort": "none" } },
+    { text: "Address" },
+    { text: "Time", attributes: { "aria-sort": "none" }, classes: "no-wrap" },
+    { text: "View on map" }
+  ],
+  rows: []
+}) }}
+<p class="govuk-body">No addresses have been added</p>
+{% endif %}
+
+  {% if data.loiName1 and (data.loiName1 | length) or showPrepopulatedLoi %}
 
       <p><a href='mvp-manage-locations' class='govuk-link'>Manage addresses</a></p>
 
@@ -356,7 +382,7 @@
 
 <!-- This is Billy Hoskins -->
 
-      {% if data['personselected']=='billyhoskins' %}
+      {% if data['personselected']=='billyhoskins' and showPrepopulatedLoi %}
 
       <tr class="govuk-table__row">
           
@@ -378,7 +404,7 @@
         {% endif %}
 
 <!-- This is Chris Post -->
-        {% if data['personselected']=='chrispost' %}
+        {% if data['personselected']=='chrispost' and showPrepopulatedLoi %}
 
       <tr class="govuk-table__row">
           
@@ -418,7 +444,7 @@
 
 <!-- This is Mike Knight-->
 
-        {% if data['personselected']=='mikeknight' %}
+        {% if data['personselected']=='mikeknight' and showPrepopulatedLoi %}
 
       <tr class="govuk-table__row">
           
@@ -702,7 +728,15 @@
 }) }}
 {% endif %}
 
+{% if data['personselected'] == 'mikevanpeebles' %}
+  <p class="govuk-body">No addresses have been added</p>
 {% endif %}
+
+
+
+{% endif %}
+
+<hr>
 
 
 

@@ -236,9 +236,49 @@
 <h3 class="govuk-heading-m govuk-!-margin-bottom-2">Overnight activity</h3>
 
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
-      <p class="govuk-body"> {{ persondata.firstname  }} left home during the night 1 time in the last 7 days:</p>
+      
+      {% if data['personselected'] == 'pennyjordan' %}
+      <p class="govuk-body">No address available to match</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>From 1:05am to 1:36am on Friday 7 November 2025. 
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'mikeknight' %}
+      <p class="govuk-body">Address match found no match</p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'chrispost' %}
+      <p class="govuk-body">Address matched </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'terrymedford' %}
+      <p class="govuk-body"> Raw address and the address matched </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+        {% elif data['personselected'] == 'mikevanpeebles' %}
+      <p class="govuk-body"> Address matched close options - some uncertainty </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+
+
+      {% else %}
+      <p class="govuk-body"> {{ persondata.firstname  }} left their approved address (31 High street, London, W1A 1AA) during the night 1 time in the last 7 days:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          From 1:05am to 1:36am on <span id="overnight-activity-date-text">Friday 7 November 2025</span>.
         <a href="#"
           class="plot-link govuk-link"
           data-trace="overnight-2025-10-25"
@@ -249,7 +289,8 @@
         </li>
       </ul>
       <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-      <p class="govuk-body"></p>It does not show activity in relation to any curfew licence conditions.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      {% endif %}
       {% endcall %}
 
 
@@ -794,6 +835,34 @@
     if (banner) banner.classList.remove('govuk-!-display-none');
 
     sessionStorage.removeItem('v351LocationActivitySuccessBanner');
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var dateTextEl = document.getElementById('overnight-activity-date-text');
+    var overnightLink = document.querySelector('.plot-link[data-trace="overnight-2025-10-25"]');
+
+    if (!dateTextEl && !overnightLink) return;
+
+    var targetDate = new Date();
+    targetDate.setHours(0, 0, 0, 0);
+    targetDate.setDate(targetDate.getDate() - 2);
+
+    var formattedDate = targetDate.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    if (dateTextEl) {
+      dateTextEl.textContent = formattedDate;
+    }
+
+    if (overnightLink) {
+      overnightLink.setAttribute('data-date', targetDate.toISOString().slice(0, 10));
+    }
   });
 </script>
 

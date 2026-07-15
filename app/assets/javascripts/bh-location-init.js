@@ -65,21 +65,6 @@
       pane.style.zIndex = 645; // just under tooltip
     }
 
-    // 7) Tiny wayfinding: North arrow (non-interfering)
-    (function addNorthArrow() {
-      const compass = L.control({ position: 'topleft' });
-      compass.onAdd = function () {
-        const bar = L.DomUtil.create('div', 'leaflet-bar');
-        const a = L.DomUtil.create('a', '', bar);
-        a.href = '#';
-        a.title = 'North';
-        a.setAttribute('aria-label', 'North arrow');
-        a.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><polygon points="12,3 20,21 12,16 4,21" /></svg>';
-        L.DomEvent.on(a, 'click', (e) => L.DomEvent.stop(e));
-        return bar;
-      };
-      compass.addTo(window.map);
-    })();
 
     // 8) Accessibility: treat popups as lightweight dialogs, move focus in, restore on close,
     //    and announce opens in the existing live region (#map-status).

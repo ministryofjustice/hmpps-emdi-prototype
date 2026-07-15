@@ -252,6 +252,39 @@
 <script src="/public/javascripts/loi-filters.js"></script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var updateBtn = document.getElementById('bh-apply-filters');
+    var form = document.getElementById('bh-map-filters');
+
+    if (!updateBtn || !form) return;
+
+    updateBtn.addEventListener('click', function (event) {
+      var dateFromWrapper = form.querySelector('#bh-date-from');
+      var dateFromInput = dateFromWrapper ? dateFromWrapper.querySelector('input') : null;
+      var dateFromValue = dateFromInput && typeof dateFromInput.value === 'string'
+        ? dateFromInput.value.trim()
+        : '';
+
+      // Keep bh-update-map.js behavior when a date is provided.
+      if (dateFromValue) return;
+
+      if (typeof window.plotTrace !== 'function') return;
+
+      event.preventDefault();
+
+      var fallbackKey = (window.CFG && window.CFG.DEFAULT_SCENARIO_KEY)
+        ? window.CFG.DEFAULT_SCENARIO_KEY
+        : 'bh_20260212';
+
+      window.plotTrace(fallbackKey, {
+        scrollToMap: false,
+        highlightRowEl: null
+      });
+    });
+  });
+</script>
+
+<script>
   document.addEventListener('bh:map-ready', function () {
     if (!window.mapLayers || !window.mapLayers.exclusionZone) return;
 

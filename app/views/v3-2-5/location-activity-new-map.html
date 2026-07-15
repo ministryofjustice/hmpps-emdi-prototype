@@ -332,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   var allGpsPoints = [];
+  var activeMapInstance = null;
 
   function showUkOverview(map) {
     map.jumpTo({
@@ -1029,32 +1030,44 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    if (!hasCompleteDateTimeFilters()) {
-      if (map.getSource('emdi-gps-lines')) {
-        map.getSource('emdi-gps-lines').setData({ type: 'FeatureCollection', features: [] });
-      }
-      if (map.getSource('emdi-gps-points')) {
-        map.getSource('emdi-gps-points').setData({ type: 'FeatureCollection', features: [] });
-      }
-      showUkOverview(map);
-
-      if (mapStatus) {
-        mapStatus.textContent = 'Enter Date from/to and Time from/to, then select Update map to load pings.';
-      }
-      return;
-    }
+    // If no date/time filters are set, continue and plot all available points.
 
     try {
       if (!allGpsPoints.length) {
-        var response = await fetch('/public/data/gps-traces-bh-demo-nov03.json', { cache: 'no-store' });
-        if (!response.ok) throw new Error('Failed to load GPS data: ' + response.status);
+        var payload = null;
+        var dataUrls = [
+          '/public/data/gps-traces-bh-demo-nov03.json',
+          '/assets/data/gps-traces-bh-demo-nov03.json',
+          '/data/gps-traces-bh-demo-nov03.json'
+        ];
+        var loadError = null;
 
-        var payload = await response.json();
+        for (var i = 0; i < dataUrls.length; i++) {
+          try {
+            var response = await fetch(dataUrls[i], { cache: 'no-store' });
+            if (!response.ok) throw new Error('HTTP ' + response.status + ' from ' + dataUrls[i]);
+            payload = await response.json();
+            loadError = null;
+            break;
+          } catch (err) {
+            loadError = err;
+          }
+        }
+
+        if (!payload) {
+          throw new Error('Failed to load GPS data from known paths. ' + (loadError ? loadError.message : 'No response.'));
+        }
+
         allGpsPoints = flattenTracePoints(payload);
       }
       if (!allGpsPoints.length) throw new Error('No valid GPS points found in dataset.');
 
       var points = filterPointsByForm(allGpsPoints);
+      var usedFallbackPoints = false;
+      if (!points.length && allGpsPoints.length) {
+        points = allGpsPoints.slice();
+        usedFallbackPoints = true;
+      }
       var geojson = buildFeatureCollections(points);
 
       if (!map.getSource('emdi-gps-lines')) {
@@ -1202,7 +1215,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       if (mapStatus) {
-        if (points.length) {
+        if (usedFallbackPoints) {
+          mapStatus.textContent = 'No GPS points matched the selected date/time filters. Showing all available points.';
+        } else if (points.length) {
           mapStatus.textContent = 'Map updated. ' + points.length + ' GPS points plotted.';
         } else {
           mapStatus.textContent = 'No GPS points match the selected date and time filters.';
@@ -1216,26 +1231,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  interactiveMap.on('map:ready', function (event) {
-    if (!event || !event.map) return;
-    ensureLayersPanelControls();
-    showUkOverview(event.map);
-    ensureExclusionZoneLayers(event.map);
-
-    var mapStatus = document.getElementById('map-status');
-    if (mapStatus) {
-      mapStatus.textContent = 'Enter Date from/to and Time from/to, then select Update map to load pings.';
-    }
-
+  function bindMapFilterHandlers() {
     var form = document.getElementById('bh-map-filters');
     var clearLink = document.getElementById('bh-clear-filters');
+    var updateBtn = document.getElementById('bh-apply-filters');
+    var mapStatus = document.getElementById('map-status');
 
     if (form && !form.dataset.mapFilterBound) {
       form.dataset.mapFilterBound = 'true';
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        plotGpsDataOnMap(event.map);
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
       }, true);
     }
 
@@ -1244,10 +1257,99 @@ document.addEventListener('DOMContentLoaded', function () {
       clearLink.addEventListener('click', function (e) {
         e.preventDefault();
         if (form && typeof form.reset === 'function') form.reset();
-        plotGpsDataOnMap(event.map);
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
       });
     }
+
+    if (updateBtn && !updateBtn.dataset.mapFilterBound) {
+      updateBtn.dataset.mapFilterBound = 'true';
+      updateBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!activeMapInstance && interactiveMap) {
+          if (typeof interactiveMap.getMap === 'function') {
+            activeMapInstance = interactiveMap.getMap() || activeMapInstance;
+          }
+          if (!activeMapInstance && interactiveMap.map) {
+            activeMapInstance = interactiveMap.map;
+          }
+          if (!activeMapInstance && interactiveMap._map) {
+            activeMapInstance = interactiveMap._map;
+          }
+        }
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
+      });
+    }
+  }
+
+  // Bind immediately so button clicks are always captured.
+  bindMapFilterHandlers();
+
+  function initializeActiveMap(map) {
+    if (!map || activeMapInstance === map) return;
+
+    activeMapInstance = map;
+    ensureLayersPanelControls();
+    showUkOverview(map);
+    ensureExclusionZoneLayers(map);
+
+    var mapStatus = document.getElementById('map-status');
+    if (mapStatus) {
+      mapStatus.textContent = 'Enter Date from/to and Time from/to, then select Update map to load pings.';
+    }
+
+    bindMapFilterHandlers();
+  }
+
+  function readMapFromEvent(event) {
+    if (!event) return null;
+    if (event.map && typeof event.map.getSource === 'function') return event.map;
+    if (typeof event.getSource === 'function') return event;
+    return null;
+  }
+
+  interactiveMap.on('map:ready', function (event) {
+    initializeActiveMap(readMapFromEvent(event));
   });
+
+  interactiveMap.on('ready', function (event) {
+    initializeActiveMap(readMapFromEvent(event));
+  });
+
+  // Fallback for environments where ready events are inconsistent.
+  setTimeout(function tryMapFallback() {
+    if (activeMapInstance) return;
+
+    var candidate = null;
+    if (interactiveMap && typeof interactiveMap.getMap === 'function') {
+      candidate = interactiveMap.getMap();
+    }
+    if (!candidate && interactiveMap && interactiveMap.map) {
+      candidate = interactiveMap.map;
+    }
+    if (!candidate && interactiveMap && interactiveMap._map) {
+      candidate = interactiveMap._map;
+    }
+
+    if (candidate && typeof candidate.getSource === 'function') {
+      initializeActiveMap(candidate);
+      return;
+    }
+
+    setTimeout(tryMapFallback, 400);
+  }, 400);
 
   window.interactiveMap = interactiveMap;
 });

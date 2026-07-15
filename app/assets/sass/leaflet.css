@@ -375,7 +375,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	position: relative;
 	}
 .leaflet-control-layers-expanded {
-	padding: 6px 10px 6px 6px;
+	padding: 6px 30px 6px 10px;
 	color: #333;
 	background: #fff;
 	}
@@ -391,7 +391,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 .leaflet-control-layers label {
 	display: block;
-	font-size: 16px;
+	font-size: 19px;
 	}
 .leaflet-control-layers-separator {
 	height: 0;

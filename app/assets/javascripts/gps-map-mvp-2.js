@@ -685,6 +685,16 @@
           <dd class="govuk-summary-list__value" style="margin-left: 1rem;">${geolocationMechanism}</dd>
         </div>
 
+          <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Tag status</dt>
+          <dd class="govuk-summary-list__value" style="margin-left: 1rem;"></dd>
+        </div>
+
+          <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Battery status</dt>
+          <dd class="govuk-summary-list__value" style="margin-left: 1rem;"></dd>
+        </div>
+
         
       </dl>
     </div>

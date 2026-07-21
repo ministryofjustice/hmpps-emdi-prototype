@@ -1,0 +1,99 @@
+{% extends "layouts/main.html" %}
+
+{% block pageTitle %}
+  Confirmation – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Record sent to NDelius
+        </h1>
+        <div class="govuk-panel__body">
+          Billy Hoskins<br>
+          CRN: Y123456
+        </div>
+      </div>
+
+      <p class="govuk-body">
+        The location activity has been saved to NDelius.
+      </p>
+
+      <h2 class="govuk-heading-m">What you recorded</h2>
+
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Location type</dt>
+          <dd class="govuk-summary-list__value" id="conf-type">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Notes (address)</dt>
+          <dd class="govuk-summary-list__value" id="conf-notes">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Date</dt>
+          <dd class="govuk-summary-list__value" id="conf-date">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Start time</dt>
+          <dd class="govuk-summary-list__value" id="conf-time">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Duration</dt>
+          <dd class="govuk-summary-list__value" id="conf-duration">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Contact type</dt>
+          <dd class="govuk-summary-list__value" id="conf-contact-type">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Suspected licence condition breach</dt>
+          <dd class="govuk-summary-list__value" id="conf-licence">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Contact outcome</dt>
+          <dd class="govuk-summary-list__value" id="conf-outcome">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Alert</dt>
+          <dd class="govuk-summary-list__value" id="conf-alert">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Include in ViSOR extract</dt>
+          <dd class="govuk-summary-list__value" id="conf-visor">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Sensitive contact</dt>
+          <dd class="govuk-summary-list__value" id="conf-sensitive">—</dd>
+        </div>
+      </dl>
+
+      <h2 class="govuk-heading-m">What you want to do next</h2>
+      <p class="govuk-body">
+        <a href="bh-location" class="govuk-link">Return to location activity</a>
+      </p>
+      <p class="govuk-body">
+        <a href="cases" class="govuk-link">View all cases</a>
+      </p>
+
+    </div>
+  </div>
+
+  {# JS: shared lookup + confirmation filler #}
+  <script src="/public/javascripts/loi-lookup.js"></script>
+  <script src="/public/javascripts/ndelius-confirm-fill.js"></script>
+{% endblock %}

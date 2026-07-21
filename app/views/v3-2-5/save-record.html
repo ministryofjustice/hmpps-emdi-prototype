@@ -1,0 +1,240 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Send to NDelius" %}
+
+{% block content %}
+<h1 class="govuk-heading-l govuk-!-margin-bottom-6">Save search to MPoP</h2>
+
+<form action="#" method="post" novalidate>
+
+
+
+{# Description #}
+  {{ govukInput({
+    id: "description",
+    name: "description",
+    label: { html: "<strong>Description</strong>" },
+    classes: "govuk-!-width-two-thirds"
+  }) }}
+
+   {# Date #}
+        {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+        {{ govukDateInput({
+          id: "breach-date",
+          namePrefix: "breachDate",
+          fieldset: { legend: { text: "Date from", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "" },
+          items: [
+            { name: "day", classes: "govuk-input--width-2", value: "" },
+            { name: "month", classes: "govuk-input--width-2", value: "" },
+            { name: "year", classes: "govuk-input--width-4", value: "" }
+          ]
+
+          
+        }) }}
+
+         {# Date #}
+        {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+        {{ govukDateInput({
+          id: "breach-date-to",
+          namePrefix: "breachDateTo",
+          fieldset: { legend: { text: "Date to", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "" },
+          items: [
+            { name: "day", classes: "govuk-input--width-2", value: "" },
+            { name: "month", classes: "govuk-input--width-2", value: "" },
+            { name: "year", classes: "govuk-input--width-4", value: "" }
+          ]
+
+          
+        }) }}
+
+        {# Time #}
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="breach-time-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Time from</legend>
+            <div id="breach-time-hint" class="govuk-hint"></div>
+            <div class="govuk-date-input" id="breach-time">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-hour">Hours</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-hour" name="breachHour" type="number" inputmode="numeric" min="0" max="23" value="">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-min">Minutes</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-min" name="breachMin" type="number" inputmode="numeric" min="0" max="59" value="">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        {# Time #}
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="breach-time-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Time to</legend>
+            <div id="breach-time-hint" class="govuk-hint"></div>
+            <div class="govuk-date-input" id="breach-time">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-hour-to">Hours</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-hour-to" name="breachHourTo" type="number" inputmode="numeric" min="0" max="23" value="">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-min-to">Minutes</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-min-to" name="breachMinTo" type="number" inputmode="numeric" min="0" max="59" value="">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+{# --- Precompute attribute values --- #}
+{% set addrAttr = (data.selectedAddress or "") | replace(", ", "\n") %}
+{% if data.loiName and (data.loiName | length) %}
+  {% set typeAttr = data.loiName %}
+{% else %}
+  {% set typeAttr = "Custom" %}
+{% endif %}
+
+{# --- Build a clean params object, then call the macro --- #}
+{% set notesParams = {
+  id: "notes",
+  name: "notes",
+  label: { html: "<strong>Notes</strong>" },
+  hint:  { text: "Record any notes that you think would be useful" },
+  value: data.notes or "",
+  rows: 8,
+  attributes: {
+    "data-address": "",
+    "data-type": "",
+    "data-duration": ""
+  }
+} %}
+
+        {{ govukTextarea(notesParams) }}
+
+
+  
+  
+
+       
+
+<div class="govuk-button-group">
+{{ govukButton({
+  text: "Save search",
+  href: "save-confirmation",
+  attributes: { id: "send-to-ndelius-btn" }
+}) }}
+  <a class="govuk-link" href="bh-location">Cancel and go back</a>
+</div>
+
+
+      </form>
+
+    </div>
+  </div>
+
+<script src="/public/javascripts/loi-lookup.js"></script>
+<script src="/public/javascripts/ndelius-prefill.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var params = new URLSearchParams(window.location.search);
+
+    function setValue(id, value) {
+      var el = document.getElementById(id);
+      if (!el || value === null || value === undefined) return;
+      el.value = String(value).trim();
+    }
+
+    function firstParamValue(keys) {
+      for (var i = 0; i < keys.length; i++) {
+        var v = params.get(keys[i]);
+        if (v && String(v).trim()) return String(v).trim();
+      }
+      return '';
+    }
+
+    function setDateParts(prefixId, day, month, year) {
+      if (!day || !month || !year) return;
+      setValue(prefixId + '-day', day);
+      setValue(prefixId + '-month', month);
+      setValue(prefixId + '-year', year);
+    }
+
+    function setDate(prefixId, raw) {
+      if (!raw) return;
+
+      var value = String(raw).trim();
+      var day = '';
+      var month = '';
+      var year = '';
+
+      // dd/mm/yyyy
+      if (value.indexOf('/') > -1) {
+        var slashParts = value.split('/');
+        if (slashParts.length === 3) {
+          day = slashParts[0];
+          month = slashParts[1];
+          year = slashParts[2];
+        }
+      }
+
+      // yyyy-mm-dd
+      if (!day && /^\d{4}-\d{1,2}-\d{1,2}$/.test(value)) {
+        var dashParts = value.split('-');
+        year = dashParts[0];
+        month = dashParts[1];
+        day = dashParts[2];
+      }
+
+      if (!day || !month || !year) return;
+      setDateParts(prefixId, day, month, year);
+    }
+
+    var dateFromRaw = firstParamValue(['dateFrom', 'date-from']);
+    var dateToRaw = firstParamValue(['dateTo', 'date-to']);
+
+    if (dateFromRaw) {
+      setDate('breach-date', dateFromRaw);
+    } else {
+      setDateParts(
+        'breach-date',
+        firstParamValue(['dateFrom-day', 'date-from-day', 'dateFromDay']),
+        firstParamValue(['dateFrom-month', 'date-from-month', 'dateFromMonth']),
+        firstParamValue(['dateFrom-year', 'date-from-year', 'dateFromYear'])
+      );
+    }
+
+    if (dateToRaw) {
+      setDate('breach-date-to', dateToRaw);
+    } else {
+      setDateParts(
+        'breach-date-to',
+        firstParamValue(['dateTo-day', 'date-to-day', 'dateToDay']),
+        firstParamValue(['dateTo-month', 'date-to-month', 'dateToMonth']),
+        firstParamValue(['dateTo-year', 'date-to-year', 'dateToYear'])
+      );
+    }
+
+    setValue('breach-hour', params.get('timeFromHour'));
+    setValue('breach-min', params.get('timeFromMin'));
+    setValue('breach-hour-to', params.get('timeToHour'));
+    setValue('breach-min-to', params.get('timeToMin'));
+  });
+</script>
+
+
+{% endblock %}

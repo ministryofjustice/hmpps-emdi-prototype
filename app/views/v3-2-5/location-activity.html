@@ -91,7 +91,8 @@
   </div>
   <div class="moj-page-header-actions__actions">
     <div class="moj-button-group moj-button-group--inline">
-        <a href="create-report"
+        <a href="save-record"
+          id="bh-save-search-link"
           class="govuk-button govuk-button--secondary"
           role="button"
           data-module="govuk-button">
@@ -253,45 +254,74 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    var updateBtn = document.getElementById('bh-apply-filters');
     var form = document.getElementById('bh-map-filters');
+    var saveLink = document.getElementById('bh-save-search-link');
 
-    if (!updateBtn || !form) return;
+    if (!form) return;
 
-    updateBtn.addEventListener('click', function (event) {
-      var dateFromWrapper = form.querySelector('#bh-date-from');
-      var dateFromInput = dateFromWrapper ? dateFromWrapper.querySelector('input') : null;
-      var dateFromValue = dateFromInput && typeof dateFromInput.value === 'string'
-        ? dateFromInput.value.trim()
-        : '';
+    if (saveLink) {
+      saveLink.addEventListener('click', function (event) {
+        event.preventDefault();
 
-      // Keep bh-update-map.js behavior when a date is provided.
-      if (dateFromValue) return;
+        var params = new URLSearchParams();
+        var formData = new FormData(form);
 
-      if (typeof window.plotTrace !== 'function') return;
+        formData.forEach(function (value, key) {
+          var strVal = String(value == null ? '' : value).trim();
+          if (strVal) params.set(key, strVal);
+        });
 
-      event.preventDefault();
-
-      var fallbackKey = (window.CFG && window.CFG.DEFAULT_SCENARIO_KEY)
-        ? window.CFG.DEFAULT_SCENARIO_KEY
-        : 'bh_20260212';
-
-      window.plotTrace(fallbackKey, {
-        scrollToMap: false,
-        highlightRowEl: null
+        window.location.href = 'save-record?' + params.toString();
       });
-    });
+    }
   });
 </script>
 
 <script>
   document.addEventListener('bh:map-ready', function () {
-    if (!window.mapLayers || !window.mapLayers.exclusionZone) return;
+    if (!window.map) return;
 
-    window.mapLayers.exclusionZone.eachLayer(function (layer) {
-      if (layer && typeof layer.unbindPopup === 'function') {
-        layer.unbindPopup();
+    function removeOverlayOptionByText(textToMatch) {
+      var labels = document.querySelectorAll('.leaflet-control-layers-overlays label');
+      labels.forEach(function (label) {
+        var text = (label.textContent || '').trim().toLowerCase();
+        if (text === textToMatch) {
+          label.remove();
+        }
+      });
+    }
+
+    function pruneMapControls() {
+      removeOverlayOptionByText('heatmap');
+      removeOverlayOptionByText('exclusion zone');
+    }
+
+    function removeRestrictedLayersFromMap() {
+      if (!window.mapLayers) return;
+      if (window.mapLayers.heatmap && window.map.hasLayer(window.mapLayers.heatmap)) {
+        window.map.removeLayer(window.mapLayers.heatmap);
       }
+      if (window.mapLayers.exclusionZone && window.map.hasLayer(window.mapLayers.exclusionZone)) {
+        window.map.removeLayer(window.mapLayers.exclusionZone);
+      }
+    }
+
+    pruneMapControls();
+    removeRestrictedLayersFromMap();
+
+    // Controls can be re-rendered, so keep pruning on DOM changes.
+    var controlContainer = document.querySelector('.leaflet-control-layers');
+    if (controlContainer && typeof MutationObserver === 'function') {
+      var observer = new MutationObserver(function () {
+        pruneMapControls();
+      });
+      observer.observe(controlContainer, { childList: true, subtree: true });
+    }
+
+    // Keep layers removed if another script tries to add them.
+    window.map.on('overlayadd', function () {
+      removeRestrictedLayersFromMap();
+      pruneMapControls();
     });
   });
 </script>
@@ -302,7 +332,7 @@
 // routes.js (or app.js)
 
 // Handle the form POST
-app.post('/mvp-add-location3', (req, res) => {
+if (typeof app !== 'undefined' && app && typeof app.post === 'function') app.post('/mvp-add-location3', (req, res) => {
   const { loiName1 } = req.body;
 
   // TODO: persist loiName + selected address (e.g. req.session or DB)
@@ -317,7 +347,7 @@ app.post('/mvp-add-location3', (req, res) => {
 });
 
 // Render the destination page
-app.get('/mvp-location', (req, res) => {
+if (typeof app !== 'undefined' && app && typeof app.get === 'function') app.get('/mvp-location', (req, res) => {
   const saved = req.query.saved === '1';
   res.render('mvp-location.njk', {
     saved,

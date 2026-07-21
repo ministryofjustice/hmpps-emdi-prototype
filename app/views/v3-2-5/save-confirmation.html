@@ -1,5 +1,39 @@
 {% extends "layouts/main.html" %}
 
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='jasonscott' %}
+
+        {% set persondata=data['jasonscott'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
 {% block pageTitle %}
   Confirmation – {{ serviceName }} – GOV.UK Prototype Kit
 {% endblock %}
@@ -11,16 +45,16 @@
 
       <div class="govuk-panel govuk-panel--confirmation">
         <h1 class="govuk-panel__title">
-          Record sent to NDelius
+          Search has been successfully saved
         </h1>
         <div class="govuk-panel__body">
-          Billy Hoskins<br>
-          CRN: Y123456
+          {{ persondata.name  }}<br>
+          {{ persondata.crn  }}
         </div>
       </div>
 
       <p class="govuk-body">
-        The location activity has been saved to NDelius.
+        The search has been saved.
       </p>
 
       <h2 class="govuk-heading-m">What you recorded</h2>

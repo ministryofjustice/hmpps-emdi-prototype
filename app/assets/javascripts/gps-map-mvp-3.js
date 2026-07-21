@@ -597,66 +597,36 @@
   const lng = fmtCoord(pt.lng);
   const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
-  const currentPage = idx + 1;
-  const totalPages = Math.max(1, totalPoints);
+  const lastIndex = Math.max(0, totalPoints - 1);
 
-  function buildPageItem(pageNumber) {
-    const isCurrent = pageNumber === currentPage;
-    const currentClass = isCurrent ? ' govuk-pagination__item--current' : '';
-    const currentAria = isCurrent ? ' aria-current="page"' : '';
+  function buildNavButton(nav, targetIndex, label, iconHtml, isDisabled) {
+    const disabledClass = isDisabled ? ' gps-point-popup__nav-button--disabled' : '';
+    const ariaDisabled = isDisabled ? ' aria-disabled="true" tabindex="-1"' : '';
+
+    if (isDisabled) {
+      return '';
+    }
+
     return `
-      <li class="govuk-pagination__item${currentClass}">
-        <a class="govuk-link govuk-pagination__link gps-point-popup__page-link" href="#" aria-label="Point ${pageNumber}" data-point-index="${pageNumber - 1}"${currentAria}>
-          ${pageNumber}
-        </a>
-      </li>
+      <a class="govuk-link gps-point-popup__nav-button${disabledClass}" href="#" aria-label="${label}" data-nav="${nav}" data-point-index="${targetIndex}">
+        ${iconHtml}
+      </a>
     `;
   }
 
-  function buildNumberedPages() {
-    // Keep pagination compact: show first, current, and last point numbers.
-    const pages = [1, currentPage, totalPages];
-    const uniquePages = Array.from(new Set(pages));
-    return uniquePages.map(function (pageNumber) {
-      return buildPageItem(pageNumber);
-    }).join('');
-  }
-
-  const pagination = `
-    <nav class="govuk-pagination" aria-label="Pagination">
-      ${hasPrev ? `
-      <div class="govuk-pagination__prev">
-        <a class="govuk-link govuk-pagination__link gps-point-popup__nav-button" href="#" rel="prev" data-nav="prev" data-point-index="${idx}">
-          <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-            <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-          </svg>
-          <span class="govuk-pagination__link-title">
-            Previous<span class="govuk-visually-hidden"> point</span>
-          </span>
-        </a>
-      </div>
-      ` : ''}
-      <ul class="govuk-pagination__list">
-        ${buildNumberedPages()}
-      </ul>
-      ${hasNext ? `
-      <div class="govuk-pagination__next">
-        <a class="govuk-link govuk-pagination__link gps-point-popup__nav-button" href="#" rel="next" data-nav="next" data-point-index="${idx}">
-          <span class="govuk-pagination__link-title">
-            Next<span class="govuk-visually-hidden"> point</span>
-          </span>
-          <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-            <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-          </svg>
-        </a>
-      </div>
-      ` : ''}
-    </nav>
+  const headerNav = `
+    <div class="gps-point-popup__header">
+      ${buildNavButton('first', 0, 'Go to first point', '&laquo;', !hasPrev)}
+      ${buildNavButton('prev', idx - 1, 'Go to previous point', '&lsaquo;', !hasPrev)}
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Point ${pointNumber} of ${totalPoints}</h4>
+      ${buildNavButton('next', idx + 1, 'Go to next point', '&rsaquo;', !hasNext)}
+      ${buildNavButton('last', lastIndex, 'Go to last point', '&raquo;', !hasNext)}
+    </div>
   `;
 
   return `
     <div class="gps-point-card">
-      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${pointNumber} of ${totalPoints}</h4>
+      ${headerNav}
       <dl class="govuk-summary-list govuk-!-margin-bottom-0">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Accuracy</dt>
@@ -685,7 +655,6 @@
 
         
       </dl>
-      ${pagination}
     </div>
   `;
 }
@@ -707,8 +676,8 @@
       autoClose: true,
       closeOnClick: true,
       className: 'gps-point-popup',
-      minWidth: 460,
-      maxWidth: 560,
+      minWidth: 340,
+      maxWidth: 420,
       autoPan: true,
       autoPanPadding: [20, 20],
       autoPanPaddingTopLeft: [20, 20],
@@ -927,8 +896,8 @@
           autoClose: true,
           closeOnClick: true,
           className: 'gps-point-popup',
-          minWidth: 460,
-          maxWidth: 560,
+          minWidth: 340,
+          maxWidth: 420,
           autoPan: true,
           autoPanPadding: [20, 20],
           autoPanPaddingTopLeft: [20, 20],
@@ -958,7 +927,7 @@
           window.addConfidenceCircle(pt.lat, pt.lng, pt.accuracy);
         } else {
           const dot = L.circleMarker(ll, {
-            radius: 5,
+            radius: 4,
             color: '#1d70b8',
             weight: 0,
             fillColor: '#1d70b8',
@@ -983,8 +952,8 @@
         autoClose: true,
         closeOnClick: true,
         className: 'gps-point-popup',
-        minWidth: 460,
-        maxWidth: 560,
+        minWidth: 340,
+        maxWidth: 420,
         autoPan: true,
         autoPanPadding: [20, 20],
         autoPanPaddingTopLeft: [20, 20],
@@ -1179,10 +1148,10 @@
       const idx = Number(button.dataset.pointIndex);
       if (!Number.isFinite(idx) || idx < 0) return;
 
-      if (nav === 'prev') {
-        showPointPopup(idx - 1);
-      } else if (nav === 'next') {
-        showPointPopup(idx + 1);
+      if (nav === 'first' || nav === 'last') {
+        showPointPopup(idx);
+      } else if (nav === 'prev' || nav === 'next') {
+        showPointPopup(idx);
       }
     });
 

@@ -25,10 +25,10 @@
     // ---- Centre dot helper (no zoom gate; big circle stays in gps-map.js)
     function getPointDotRadius(zoom) {
       const z = Number.isFinite(zoom) ? zoom : map.getZoom();
-      if (z <= 6) return 4;
-      if (z <= 9) return 5;
-      if (z <= 12) return 6;
-      return 7;
+      if (z <= 6) return 3;
+      if (z <= 9) return 4;
+      if (z <= 12) return 5;
+      return 6;
     }
 
     function updatePointDotRadii() {
@@ -116,10 +116,10 @@
       // Add the exclusion zone polygon
       const polygon = L.polygon(polygonCoordinates, {
         className: 'emdi-exclusion-zone-path',
-        color: '#00703c',
-        weight: 3,
+        color: '#D32F2F',
+        weight: 0,
         opacity: 0.9,
-        fillColor: '#00703c',
+        fillColor: '#D32F2F',
         fillOpacity: 0.35,
         interactive: true
       });
@@ -138,15 +138,19 @@
       [51.50115, -0.14190],  // 3. Spur Road midpoint, directly facing the Victoria Memorial
       [51.50155, -0.14185],  // 4. Spur Road northern curve approaching the Queen's Gardens
       [51.50195, -0.14155],  // 5. North-West corner where Spur Road meets The Mall
+      
       // North Edge (The Mall)
-      [51.50225, -0.14000],  // 6. The Mall pavement, just past the western path entrance
-      [51.50255, -0.13830],  // 7. The Mall, tracking parallel to the central lake's western tip
-      [51.50285, -0.13670],  // 8. The Mall, directly opposite Marlborough House
-      [51.50315, -0.13520],  // 9. The Mall, passing the northern entrance path to the Blue Bridge
-      [51.50345, -0.13370],  // 10. The Mall, running past the mid-park open lawn
-      [51.50375, -0.13210],  // 11. The Mall, directly opposite the Duke of York Column steps
-      [51.50405, -0.13060],  // 12. The Mall, approaching the Admiralty Arch gateway
-      [51.50425, -0.12960],  // 13. North-East corner where The Mall meets Horse Guards Road
+      [51.50220, -0.14100],  // 1. Western section of The Mall, near St James's Park path crossing
+      [51.50240, -0.13950],  // 2. Moving east along the central carriageway
+      [51.50260, -0.13800],  // 3. Parallel to the lake’s western end (center of road)
+      [51.50280, -0.13650],  // 4. Opposite Marlborough House (mid-road)
+      [51.50300, -0.13500],  // 5. Passing north access path toward Blue Bridge
+      [51.50320, -0.13350],  // 6. Central Mall stretch alongside open parkland
+      [51.50340, -0.13200],  // 7. Opposite Duke of York Column (centerline)
+      [51.50360, -0.13050],  // 8. Approaching Admiralty Arch from the west
+      [51.50380, -0.12940],  // 9. Final stretch before Horse Guards Road junction
+      [51.50395, -0.12890],   // 10. Junction with Horse Guards Road near Admiralty Arch
+
       // East Edge (Horse Guards Road)
       [51.50370, -0.12945],  // 14. Horse Guards Road, directly outside the Old Admiralty Building
       [51.50315, -0.12930],  // 15. Horse Guards Road, tracing the edge of Horse Guards Parade

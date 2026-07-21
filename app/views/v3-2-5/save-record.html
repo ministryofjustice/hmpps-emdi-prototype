@@ -233,6 +233,47 @@
     setValue('breach-min', params.get('timeFromMin'));
     setValue('breach-hour-to', params.get('timeToHour'));
     setValue('breach-min-to', params.get('timeToMin'));
+
+    var saveBtn = document.getElementById('send-to-ndelius-btn');
+    var form = document.querySelector('form');
+
+    function readValue(selector) {
+      var el = document.querySelector(selector);
+      return el && typeof el.value === 'string' ? el.value.trim() : '';
+    }
+
+    function readDate(prefix) {
+      var day = readValue('#' + prefix + '-day') || readValue('input[name="' + prefix.replace(/-/g, '') + 'Day"]');
+      var month = readValue('#' + prefix + '-month') || readValue('input[name="' + prefix.replace(/-/g, '') + 'Month"]');
+      var year = readValue('#' + prefix + '-year') || readValue('input[name="' + prefix.replace(/-/g, '') + 'Year"]');
+      if (!day && !month && !year) return '';
+      return [day, month, year].join('/');
+    }
+
+    function readTime(hourId, minId) {
+      var hh = readValue('#' + hourId);
+      var mm = readValue('#' + minId);
+      if (!hh && !mm) return '';
+      var h = hh.padStart(2, '0');
+      var m = mm.padStart(2, '0');
+      return h + ':' + m;
+    }
+
+    if (saveBtn && form) {
+      saveBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        var out = new URLSearchParams();
+        out.set('description', readValue('#description'));
+        out.set('dateFrom', readDate('breach-date'));
+        out.set('dateTo', readDate('breach-date-to'));
+        out.set('timeFrom', readTime('breach-hour', 'breach-min'));
+        out.set('timeTo', readTime('breach-hour-to', 'breach-min-to'));
+        out.set('notes', readValue('#notes'));
+
+        window.location.href = 'save-confirmation?' + out.toString();
+      });
+    }
   });
 </script>
 

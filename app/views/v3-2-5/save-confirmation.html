@@ -27,58 +27,33 @@
 
       <dl class="govuk-summary-list govuk-!-margin-bottom-9">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Location type</dt>
-          <dd class="govuk-summary-list__value" id="conf-type">—</dd>
+          <dt class="govuk-summary-list__key">Description</dt>
+          <dd class="govuk-summary-list__value" id="conf-description">—</dd>
         </div>
 
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Notes (address)</dt>
+          <dt class="govuk-summary-list__key">Date from</dt>
+          <dd class="govuk-summary-list__value" id="conf-date-from">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Date to</dt>
+          <dd class="govuk-summary-list__value" id="conf-date-to">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Time from</dt>
+          <dd class="govuk-summary-list__value" id="conf-time-from">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Time to</dt>
+          <dd class="govuk-summary-list__value" id="conf-time-to">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Notes</dt>
           <dd class="govuk-summary-list__value" id="conf-notes">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Date</dt>
-          <dd class="govuk-summary-list__value" id="conf-date">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Start time</dt>
-          <dd class="govuk-summary-list__value" id="conf-time">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Duration</dt>
-          <dd class="govuk-summary-list__value" id="conf-duration">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Contact type</dt>
-          <dd class="govuk-summary-list__value" id="conf-contact-type">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Suspected licence condition breach</dt>
-          <dd class="govuk-summary-list__value" id="conf-licence">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Contact outcome</dt>
-          <dd class="govuk-summary-list__value" id="conf-outcome">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Alert</dt>
-          <dd class="govuk-summary-list__value" id="conf-alert">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Include in ViSOR extract</dt>
-          <dd class="govuk-summary-list__value" id="conf-visor">—</dd>
-        </div>
-
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Sensitive contact</dt>
-          <dd class="govuk-summary-list__value" id="conf-sensitive">—</dd>
         </div>
       </dl>
 
@@ -93,7 +68,27 @@
     </div>
   </div>
 
-  {# JS: shared lookup + confirmation filler #}
-  <script src="/public/javascripts/loi-lookup.js"></script>
-  <script src="/public/javascripts/ndelius-confirm-fill.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var params = new URLSearchParams(window.location.search);
+
+      function textOrDash(value) {
+        var v = String(value == null ? '' : value).trim();
+        return v || '—';
+      }
+
+      function setText(id, value) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = textOrDash(value);
+      }
+
+      setText('conf-description', params.get('description'));
+      setText('conf-date-from', params.get('dateFrom'));
+      setText('conf-date-to', params.get('dateTo'));
+      setText('conf-time-from', params.get('timeFrom'));
+      setText('conf-time-to', params.get('timeTo'));
+      setText('conf-notes', params.get('notes'));
+    });
+  </script>
 {% endblock %}

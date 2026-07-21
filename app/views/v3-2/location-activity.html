@@ -109,6 +109,7 @@
         }) }}
       </div>
 
+   
 
 
       <div class="bh-slot bh-date-to">
@@ -125,6 +126,8 @@
           }
         }) }}
       </div>
+
+      
  
       <!-- Row 2: Time inputs -->
       <div class="bh-slot bh-time-from">
@@ -177,9 +180,19 @@
           </div>
         </div>
       </div>
+      </div>
 
-      <!-- Row 2: Actions -->
-      <div class="bh-slot bh-actions">
+   
+
+      
+    
+
+       <br> <br>
+
+
+      <!-- Row 3: Actions -->
+    <div class="bh-actions-row">
+      <div class="bh-slot bh-actions bh-actions--left">
         <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
           Update map
         </button>
@@ -190,6 +203,8 @@
     <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
   </form>
 </div>
+
+
 
 
 
@@ -292,6 +307,149 @@ if (!window.map.getPane('loi-areas')) {
     }
 
     // IMPORTANT: do NOT call setupMapOverlays() here — it’s already called in bh-location-init.js
+    // ---- Exclusion Zone Time-Based Visibility ----
+    // Show exclusion zone only when selected time window overlaps 09:00-17:00.
+    function parseTimeInput(hourId, minId) {
+      const hourEl = document.getElementById(hourId);
+      const minEl = document.getElementById(minId);
+      if (!hourEl || !minEl) return null;
+
+      const hourRaw = hourEl.value;
+      const minRaw = minEl.value;
+      if (hourRaw === '' && minRaw === '') return null;
+
+      const hour = parseInt(hourRaw, 10);
+      const minute = parseInt(minRaw || '0', 10);
+      if (!Number.isInteger(hour) || hour < 0 || hour > 23) return null;
+      if (!Number.isInteger(minute) || minute < 0 || minute > 59) return null;
+
+      return (hour * 60) + minute;
+    }
+
+    function selectedWindowOverlapsActiveWindow() {
+      const ACTIVE_START = 9 * 60;   // 09:00
+      const ACTIVE_END = 17 * 60;    // 17:00
+      const from = parseTimeInput('bh-time-from-hour', 'bh-time-from-min');
+      const to = parseTimeInput('bh-time-to-hour', 'bh-time-to-min');
+
+      // If no time filters are provided, keep the zone visible by default.
+      if (from === null && to === null) return true;
+
+      // If only one bound is provided, treat it as a point-in-time check.
+      if (from !== null && to === null) {
+        return from >= ACTIVE_START && from < ACTIVE_END;
+      }
+      if (from === null && to !== null) {
+        return to > ACTIVE_START && to <= ACTIVE_END;
+      }
+
+      // Full range provided.
+      if (from <= to) {
+        return from < ACTIVE_END && to > ACTIVE_START;
+      }
+
+      // Overnight selection, e.g. 22:00 -> 06:00.
+      return (from < ACTIVE_END) || (to > ACTIVE_START);
+    }
+
+    function updateExclusionZoneVisibility() {
+      if (!window.mapLayers || !window.mapLayers.exclusionZone) return;
+
+      const isActive = selectedWindowOverlapsActiveWindow();
+      const exclusionZoneLayer = window.mapLayers.exclusionZone;
+
+      if (isActive && !window.map.hasLayer(exclusionZoneLayer)) {
+        window.map.addLayer(exclusionZoneLayer);
+      } else if (!isActive && window.map.hasLayer(exclusionZoneLayer)) {
+        window.map.removeLayer(exclusionZoneLayer);
+      }
+    }
+
+    function updateExclusionZonePopup() {
+      if (!window.mapLayers || !window.mapLayers.exclusionZone) return;
+      
+      // Find the exclusion zone polygon and update its popup
+      window.mapLayers.exclusionZone.eachLayer(function (layer) {
+        if (layer && typeof layer.setPopupContent === 'function') {
+          const popupHTML = '<div class="gps-point-popup">' +
+            '<div class="gps-point-popup__header">' +
+              '<strong>Active times</strong>' +
+            '</div>' +
+            '<div class="gps-point-popup__content">' +
+              '<p style="margin: 0; font-size: 15px; line-height: 1.4;">9:00 AM - 5:00 PM</p>' +
+            '</div>' +
+          '</div>';
+          layer.setPopupContent(popupHTML);
+        }
+      });
+    }
+
+    function wireExclusionZoneTimeVisibility() {
+      const form = document.getElementById('bh-map-filters');
+      const clearBtn = document.getElementById('bh-clear-filters');
+      const timeFieldIds = [
+        'bh-time-from-hour',
+        'bh-time-from-min',
+        'bh-time-to-hour',
+        'bh-time-to-min'
+      ];
+
+      if (form) {
+        form.addEventListener('submit', function () {
+          // Run after map/filter scripts process the submit.
+          setTimeout(updateExclusionZoneVisibility, 0);
+          setTimeout(updateExclusionZoneVisibility, 250);
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          setTimeout(updateExclusionZoneVisibility, 0);
+        });
+      }
+
+      timeFieldIds.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', updateExclusionZoneVisibility);
+        el.addEventListener('input', updateExclusionZoneVisibility);
+      });
+
+      // Prevent manual/control-based re-enable outside active time window.
+      window.map.on('overlayadd', function (e) {
+        if (!window.mapLayers || !window.mapLayers.exclusionZone) return;
+        if (e && e.layer === window.mapLayers.exclusionZone && !selectedWindowOverlapsActiveWindow()) {
+          window.map.removeLayer(window.mapLayers.exclusionZone);
+        }
+      });
+
+      // Also guard direct layer additions triggered by redraw scripts.
+      window.map.on('layeradd', function () {
+        if (!selectedWindowOverlapsActiveWindow()) {
+          setTimeout(updateExclusionZoneVisibility, 0);
+        }
+      });
+
+      // Enforce rule after every trace plot refresh.
+      if (typeof window.plotTraceObject === 'function' && !window._emdiWrappedPlotTraceObject) {
+        var originalPlotTraceObject = window.plotTraceObject;
+        window.plotTraceObject = function () {
+          var result = originalPlotTraceObject.apply(this, arguments);
+          setTimeout(updateExclusionZoneVisibility, 0);
+          setTimeout(updateExclusionZoneVisibility, 200);
+          return result;
+        };
+        window._emdiWrappedPlotTraceObject = true;
+      }
+    }
+
+    // Set initial visibility and popup on page load
+    setTimeout(function() {
+      updateExclusionZoneVisibility();
+      updateExclusionZonePopup();
+    }, 500);
+
+    wireExclusionZoneTimeVisibility();
   });
 
 
@@ -516,10 +674,12 @@ $(document).on("click", "a.moj-filter__tag",function() {
 /* Add replacement text */
 .emdi-layers-close::after {
   content: "Close map controls ▾";
-  font-size: 16px;
+  font-size: 19px;
   line-height: 1.4;
   color: #0b0c0c;
   margin-top: 10px;
+  margin-right: 15px;
+  margin-bottom: 25px;
 }
 
 
@@ -529,6 +689,7 @@ $(document).on("click", "a.moj-filter__tag",function() {
   border: none;
   cursor: pointer;
   padding: 4px;
+  padding-top: 10px;
 }
 
 .emdi-layers-close:hover::after {
@@ -544,7 +705,7 @@ $(document).on("click", "a.moj-filter__tag",function() {
 /* Add replacement text */
 .emdi-layers-opener::after {
   content: "Open map controls ▸";
-  font-size: 16px;
+  font-size: 19px;
   line-height: 1.4;
   color: #0b0c0c;
   margin-left: 5px;
@@ -557,15 +718,21 @@ $(document).on("click", "a.moj-filter__tag",function() {
   text-decoration: underline;
 }
 
+.leaflet-touch .leaflet-control-layers-toggle {
+  width: 205px;
+  height: 45px;
+  padding-top: 10px;
+  padding-left: 10px;
+}
 
+.leaflet-control-layers-expanded {
+  padding: 0px 45px 0px 10px;
+  color: #333;
+  background: #fff;
+}
 
-
-/* Dedicated exclusion-zone hook: safe place for per-zone styling */
 .emdi-exclusion-zone-path {
-  stroke: #00703c !important;
-  stroke-width: 0 !important;
-  fill: #00703c !important;
-  fill-opacity: 0.35 !important;
+  stroke-width: 2 !important;
 }
 
 path[stroke-width="1"]
@@ -583,11 +750,7 @@ path[stroke-width="1"]
   height: 0 !important;
   margin: 0 !important;
   pointer-events: none !important;
-
 }
-
-
-
 
 /* Checkbox label */
 .leaflet-control-layers-selector[type="checkbox"] + span {
@@ -597,7 +760,6 @@ path[stroke-width="1"]
   display: inline-block;
   padding-top: 4px;
   padding-bottom: 12px;
-
 }
 
 /* Checkbox box */
@@ -611,33 +773,28 @@ path[stroke-width="1"]
   left: 0;
   top: 1px;
   box-sizing: border-box;
-
-
 }
 
 /* Checkbox tick */
 .leaflet-control-layers-selector[type="checkbox"]:checked + span::after {
   content: "";
-    position: absolute;
-    left: 7px;
-    top: 2px;
-    width: 4px;
-    height: 12px;
-    margin-left: 2px;
-    margin-top: 2.3px;
-    border: solid #0b0c0c;
-    border-width: 0px 3.5px 3.5px 0;
-    transform: rotate(45deg);
+  position: absolute;
+  left: 7px;
+  top: 2px;
+  width: 4px;
+  height: 12px;
+  margin-left: 2px;
+  margin-top: 2.3px;
+  border: solid #0b0c0c;
+  border-width: 0px 3.5px 3.5px 0;
+  transform: rotate(45deg);
 }
-
 
 /* Input receives focus, so style the box using the sibling selector */
 .leaflet-control-layers-selector[type="checkbox"]:focus + span::before {
-  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline: 3px solid #ffdd00;
   outline-offset: 0px;
 }
-
-
 
 /* Radio label */
 .leaflet-control-layers-selector[type="radio"] + span {
@@ -647,16 +804,12 @@ path[stroke-width="1"]
   padding-bottom: 12px;
   cursor: pointer;
   display: inline-block;
-
-
 }
-
 
 /* Only affect the FIRST RADIO OPTION */
 .leaflet-control-layers-base label:first-child {
-    padding-top: 40px;
+  padding-top: 60px;
 }
-
 
 /* Radio outer circle */
 .leaflet-control-layers-selector[type="radio"] + span::before {
@@ -670,6 +823,11 @@ path[stroke-width="1"]
   left: 0;
   top: -2px;
   box-sizing: border-box;
+}
+
+.leaflet-control-layers label {
+  display: block;
+  font-size: 19px;
 }
 
 /* Radio inner dot */
@@ -686,11 +844,29 @@ path[stroke-width="1"]
 
 /* Input receives focus, so style the box using the sibling selector */
 .leaflet-control-layers-selector[type="radio"]:focus + span::before {
-  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline: 3px solid #ffdd00;
   outline-offset: 0px;
 }
 
+.bh-actions--left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
+.bh-actions-row {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+.leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-zoom a, .leaflet-touch .leaflet-control-zoom a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 24px !important;
+}
 
 .leaflet-container {
  font-family: "GDS Transport", arial, sans-serif;
@@ -814,11 +990,49 @@ path[stroke-width="1"]
 }
 
 .gps-point-popup .leaflet-popup-content-wrapper {
-  min-width: 250px;
+  min-width: 200px;
 }
 
 .gps-point-popup .leaflet-popup-content {
   margin: 12px 18px;
+}
+
+.gps-point-popup__content {
+  font-size: 15px;
+  color: #0b0c0c;
+}
+
+.gps-point-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.gps-point-popup__title {
+  flex: 0 1 auto;
+  text-align: center;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.gps-point-popup__nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 22px;
+  font-size: 24px;
+  line-height: 1;
+  text-decoration: none;
+  color: #0b0c0c !important;
+}
+
+.gps-point-popup__nav-button--disabled {
+  color: #b1b4b6;
+  cursor: default;
+  text-decoration: none;
 }
 
 .gps-point-popup__nav {
@@ -829,6 +1043,31 @@ path[stroke-width="1"]
 .govuk-summary-list__value {
   padding-left: 5px;
 }
+
+ /* Page width override for this version: +50px each side (100px total). */
+  .govuk-width-container {
+    max-width: 1280px;
+  }
+
+
+  .bh-date-from .govuk-label:not(.govuk-date-input__label), .bh-date-to .govuk-label:not(.govuk-date-input__label), .bh-time-from .govuk-label:not(.govuk-date-input__label), .bh-time-to .govuk-label:not(.govuk-date-input__label) {
+    font-weight: 700;
+}
+
+  /* Keep Date to width consistent with Date from on this page */
+  .bh-date-to .govuk-input {
+    max-width: 15rem;
+  }
+
+    /* Keep Date to width consistent with Date from on this page */
+  .bh-date-from .govuk-input {
+    max-width: 15rem;
+  }
+
+  .bh-time-from,
+  .bh-time-to {
+    margin-top: 15px;
+  }
 
 </style>
 

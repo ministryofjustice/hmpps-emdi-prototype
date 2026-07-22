@@ -14,6 +14,8 @@
     margin: 20px 0!important;
 }
 
+
+
 .app-textarea--pre-wrap {
   white-space: pre-wrap;
 }
@@ -525,7 +527,7 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
   white-space: normal; /* allow wrapping instead of squishing */
 }
 .gps-point-popup .govuk-heading-s {
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 4px;
 }
 
@@ -536,7 +538,7 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
 .gps-point-popup .govuk-summary-list__key,
 .gps-point-popup .govuk-summary-list__value {
   padding: 0;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.6;
 }
 
@@ -997,6 +999,10 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
   margin: 0 16px 0 0; /* space between links */
 }
 
+.govuk-service-navigation {
+  border-bottom: none !important;
+}
+
 .probation-common-footer__link {
   /* Use default GOV.UK link styles; nothing extra needed */
 }
@@ -1093,3 +1099,10 @@ tbody > tr.highlighted-row + tr.app-row-expansion > td { background: #F3F2F1; }
   /* when stacked vertically, let the right-pinned block behave normally */
   #curfew-duration-controls { margin-left: 0; }
 }
+
+@media (min-width: 40.0625em) {
+  .govuk-summary-list__key {
+    width: 40%;
+  }
+}
+

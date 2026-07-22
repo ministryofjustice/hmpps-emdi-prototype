@@ -240,245 +240,6 @@
 <script src="/public/javascripts/loi-filters.js"></script>
 
 <script>
-  function normaliseMapControlsToV325() {
-    var panel = document.querySelector('.leaflet-control-layers.emdi-layers-panel');
-    if (!panel) return;
-
-    var map = window.map;
-    if (!map) return;
-
-    var list = panel.querySelector('.leaflet-control-layers-list');
-    if (!list) return;
-
-    var base = panel.querySelector('.leaflet-control-layers-base');
-    var overlays = panel.querySelector('.leaflet-control-layers-overlays');
-    var separators = panel.querySelectorAll('.leaflet-control-layers-separator');
-
-    if (base) base.style.display = 'none';
-    if (overlays) overlays.style.display = 'none';
-    separators.forEach(function (sep) { sep.style.display = 'none'; });
-
-    if (!window.mapLayers) return;
-    if (window.L && typeof window.L.layerGroup === 'function') {
-      if (!window.mapLayers.inclusionZone || window.mapLayers.inclusionZone === window.mapLayers.areas) {
-        window.mapLayers.inclusionZone = window.L.layerGroup();
-      }
-      if (!window.mapLayers.restrictionZone) {
-        window.mapLayers.restrictionZone = window.L.layerGroup();
-      }
-    }
-
-    var westminsterBoundary = [
-      [51.5346, -0.2174],
-      [51.5319, -0.1633],
-      [51.5278, -0.1205],
-      [51.5108, -0.1102],
-      [51.4932, -0.1168],
-      [51.4848, -0.1328],
-      [51.4841, -0.1634],
-      [51.4926, -0.2058],
-      [51.5112, -0.2231],
-      [51.5346, -0.2174]
-    ];
-
-    var waterlooBoundary = [
-      [51.5078, -0.1262],
-      [51.5069, -0.1155],
-      [51.5031, -0.1116],
-      [51.4997, -0.1167],
-      [51.5003, -0.1245],
-      [51.5037, -0.1284],
-      [51.5078, -0.1262]
-    ];
-
-    function hasLayer(layer) {
-      return !!(layer && map.hasLayer(layer));
-    }
-
-    function createZonePolygon(layerGroup, coordinates, color, label, forceRebuild, className) {
-      if (!layerGroup || typeof layerGroup.clearLayers !== 'function') return;
-      var hasExisting = typeof layerGroup.getLayers === 'function' && layerGroup.getLayers().length > 0;
-      if (hasExisting && !forceRebuild) return;
-
-      layerGroup.clearLayers();
-      if (!Array.isArray(coordinates) || coordinates.length < 3) return;
-
-      var polygon = L.polygon(coordinates, {
-        className: className,
-        color: color,
-        fillColor: color,
-        fillOpacity: 0.35,
-        weight: 2,
-        pane: 'loi-areas',
-        interactive: true
-      });
-
-      polygon.bindPopup(label, {
-        closeButton: true,
-        autoClose: false,
-        closeOnClick: false,
-        className: 'app-area-popup'
-      });
-
-      polygon.addTo(layerGroup);
-    }
-
-    function syncZonePolygons(forceRebuild) {
-      var inclusionZone = window.mapLayers && window.mapLayers.inclusionZone;
-      var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
-      createZonePolygon(inclusionZone, westminsterBoundary, '#d4351c', 'Inclusion Zone<br/>Westminster', !!forceRebuild, 'emdi-inclusion-zone-path');
-      createZonePolygon(restrictionZone, waterlooBoundary, '#d4351c', 'Restriction Zone<br/>Waterloo', !!forceRebuild, 'emdi-restriction-zone-path');
-    }
-
-    function setLayerVisible(layer, visible) {
-      if (!layer) return;
-      if ((layer === window.mapLayers.inclusionZone || layer === window.mapLayers.restrictionZone) && visible) {
-        syncZonePolygons(true);
-      }
-      if (visible) {
-        if (!map.hasLayer(layer)) map.addLayer(layer);
-      } else if (map.hasLayer(layer)) {
-        map.removeLayer(layer);
-      }
-    }
-
-    function setBase(type) {
-      var street = window.streetLayer;
-      var satellite = window.satelliteLayer;
-
-      if (type === 'satellite') {
-        if (street && map.hasLayer(street)) map.removeLayer(street);
-        if (satellite && !map.hasLayer(satellite)) map.addLayer(satellite);
-      } else {
-        if (satellite && map.hasLayer(satellite)) map.removeLayer(satellite);
-        if (street && !map.hasLayer(street)) map.addLayer(street);
-      }
-    }
-
-    var existing = panel.querySelector('.emdi-custom-layer-controls');
-    if (!existing) {
-      var wrapper = document.createElement('section');
-      wrapper.className = 'emdi-custom-layer-controls';
-      wrapper.innerHTML = [
-        '<div class="emdi-control-group emdi-control-group--view">',
-        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Map view</div>',
-        '  <label class="emdi-control-row">',
-        '    <input type="radio" name="emdi-base" id="emdi-base-street">',
-        '    <span>Street</span>',
-        '  </label>',
-        '  <label class="emdi-control-row">',
-        '    <input type="radio" name="emdi-base" id="emdi-base-satellite">',
-        '    <span>Satellite</span>',
-        '  </label>',
-        '</div>',
-        '<hr class="emdi-map-controls-divider">',
-        '<div class="emdi-control-group emdi-control-group--map-controls">',
-        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Map controls</div>',
-        '  <label class="emdi-control-row">',
-        '    <input type="checkbox" id="emdi-toggle-direction">',
-        '    <span>Direction info</span>',
-        '  </label>',
-        '  <label class="emdi-control-row">',
-        '    <input type="checkbox" id="emdi-toggle-confidence">',
-        '    <span>Confidence circles</span>',
-        '  </label>',
-        '  <label class="emdi-control-row">',
-        '    <input type="checkbox" id="emdi-toggle-points">',
-        '    <span>Point numbers</span>',
-        '  </label>',
-        '</div>',
-        '<hr class="emdi-map-controls-divider">',
-        '<div class="emdi-control-group emdi-control-group--zones">',
-        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Zones</div>',
-        '  <label class="emdi-control-row">',
-        '    <input type="checkbox" id="emdi-toggle-exclusion">',
-        '    <span>Exclusion</span>',
-        '  </label>',
-        '</div>'
-      ].join('');
-
-      list.appendChild(wrapper);
-
-      wrapper.querySelector('#emdi-base-street').addEventListener('change', function () {
-        if (this.checked) setBase('street');
-      });
-
-      wrapper.querySelector('#emdi-base-satellite').addEventListener('change', function () {
-        if (this.checked) setBase('satellite');
-      });
-
-      wrapper.querySelector('#emdi-toggle-direction').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.directionInfo, this.checked);
-      });
-
-      wrapper.querySelector('#emdi-toggle-confidence').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.accuracy, this.checked);
-      });
-
-      wrapper.querySelector('#emdi-toggle-points').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.numbers, this.checked);
-      });
-
-      wrapper.querySelector('#emdi-toggle-exclusion').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.exclusionZone, this.checked);
-      });
-    }
-
-    var streetInput = panel.querySelector('#emdi-base-street');
-    var satelliteInput = panel.querySelector('#emdi-base-satellite');
-    var directionInput = panel.querySelector('#emdi-toggle-direction');
-    var confidenceInput = panel.querySelector('#emdi-toggle-confidence');
-    var pointsInput = panel.querySelector('#emdi-toggle-points');
-    var exclusionInput = panel.querySelector('#emdi-toggle-exclusion');
-
-    var satelliteActive = window.satelliteLayer && map.hasLayer(window.satelliteLayer);
-    if (streetInput) streetInput.checked = !satelliteActive;
-    if (satelliteInput) satelliteInput.checked = !!satelliteActive;
-    if (directionInput) directionInput.checked = hasLayer(window.mapLayers.directionInfo);
-    if (confidenceInput) confidenceInput.checked = hasLayer(window.mapLayers.accuracy);
-    if (pointsInput) pointsInput.checked = hasLayer(window.mapLayers.numbers);
-
-    syncZonePolygons(false);
-
-    // Keep zone controls unticked on initial load.
-    if (!window.__emdiZonesInitialised) {
-      setLayerVisible(window.mapLayers.exclusionZone, false);
-      setLayerVisible(window.mapLayers.inclusionZone, false);
-      setLayerVisible(window.mapLayers.restrictionZone, false);
-
-      if (exclusionInput) exclusionInput.checked = false;
-
-      window.__emdiZonesInitialised = true;
-    } else {
-      if (exclusionInput) exclusionInput.checked = hasLayer(window.mapLayers.exclusionZone);
-    }
-  }
-
-  document.addEventListener('bh:map-ready', function () {
-    if (window.mapLayers && window.mapLayers.exclusionZone) {
-      window.mapLayers.exclusionZone.eachLayer(function (layer) {
-        if (layer && typeof layer.unbindPopup === 'function') {
-          layer.unbindPopup();
-        }
-      });
-    }
-
-    normaliseMapControlsToV325();
-
-    if (!window.__emdiV325ControlObserver) {
-      var mapEl = document.getElementById('map');
-      if (mapEl && typeof MutationObserver !== 'undefined') {
-        var observer = new MutationObserver(function () {
-          normaliseMapControlsToV325();
-        });
-        observer.observe(mapEl, { childList: true, subtree: true });
-        window.__emdiV325ControlObserver = observer;
-      }
-    }
-  });
-</script>
-
-<script>
 
 
 // routes.js (or app.js)
@@ -740,11 +501,9 @@ $(document).on("click", "a.moj-filter__tag",function() {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var SVG_NS = 'http://www.w3.org/2000/svg';
-  var EXCLUSION_PATTERN_ID = 'emdi-diagonal-cross-hatch';
-  var INCLUSION_PATTERN_ID = 'emdi-dot-fill';
-  var RESTRICTION_PATTERN_ID = 'emdi-horizontal-line-fill';
+  var PATTERN_ID = 'emdi-diagonal-cross-hatch';
 
-  function ensurePatterns(svg) {
+  function ensurePattern(svg) {
     if (!svg) return;
 
     var defs = svg.querySelector('defs');
@@ -753,128 +512,51 @@ document.addEventListener('DOMContentLoaded', function () {
       svg.insertBefore(defs, svg.firstChild);
     }
 
-    if (!defs.querySelector('#' + EXCLUSION_PATTERN_ID)) {
-      var exclusionPattern = document.createElementNS(SVG_NS, 'pattern');
-      exclusionPattern.setAttribute('id', EXCLUSION_PATTERN_ID);
-      exclusionPattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      exclusionPattern.setAttribute('width', '8');
-      exclusionPattern.setAttribute('height', '8');
+    if (defs.querySelector('#' + PATTERN_ID)) return;
 
-      var lineA = document.createElementNS(SVG_NS, 'line');
-      lineA.setAttribute('x1', '0');
-      lineA.setAttribute('y1', '8');
-      lineA.setAttribute('x2', '8');
-      lineA.setAttribute('y2', '0');
-      lineA.setAttribute('stroke', '#d4351c');
-      lineA.setAttribute('stroke-width', '1.2');
+    var pattern = document.createElementNS(SVG_NS, 'pattern');
+    pattern.setAttribute('id', PATTERN_ID);
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('width', '8');
+    pattern.setAttribute('height', '8');
 
-      var lineB = document.createElementNS(SVG_NS, 'line');
-      lineB.setAttribute('x1', '0');
-      lineB.setAttribute('y1', '0');
-      lineB.setAttribute('x2', '8');
-      lineB.setAttribute('y2', '8');
-      lineB.setAttribute('stroke', '#d4351c');
-      lineB.setAttribute('stroke-width', '1.2');
+    var lineA = document.createElementNS(SVG_NS, 'line');
+    lineA.setAttribute('x1', '0');
+    lineA.setAttribute('y1', '8');
+    lineA.setAttribute('x2', '8');
+    lineA.setAttribute('y2', '0');
+    lineA.setAttribute('stroke', '#f47738');
+    lineA.setAttribute('stroke-width', '1.2');
 
-      exclusionPattern.appendChild(lineA);
-      exclusionPattern.appendChild(lineB);
-      defs.appendChild(exclusionPattern);
-    }
+    var lineB = document.createElementNS(SVG_NS, 'line');
+    lineB.setAttribute('x1', '0');
+    lineB.setAttribute('y1', '0');
+    lineB.setAttribute('x2', '8');
+    lineB.setAttribute('y2', '8');
+    lineB.setAttribute('stroke', '#f47738');
+    lineB.setAttribute('stroke-width', '1.2');
 
-    if (!defs.querySelector('#' + INCLUSION_PATTERN_ID)) {
-      var inclusionPattern = document.createElementNS(SVG_NS, 'pattern');
-      inclusionPattern.setAttribute('id', INCLUSION_PATTERN_ID);
-      inclusionPattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      inclusionPattern.setAttribute('width', '10');
-      inclusionPattern.setAttribute('height', '10');
-
-      var dotA = document.createElementNS(SVG_NS, 'circle');
-      dotA.setAttribute('cx', '2');
-      dotA.setAttribute('cy', '2');
-      dotA.setAttribute('r', '1.4');
-      dotA.setAttribute('fill', '#d4351c');
-
-      var dotB = document.createElementNS(SVG_NS, 'circle');
-      dotB.setAttribute('cx', '7');
-      dotB.setAttribute('cy', '7');
-      dotB.setAttribute('r', '1.4');
-      dotB.setAttribute('fill', '#d4351c');
-
-      inclusionPattern.appendChild(dotA);
-      inclusionPattern.appendChild(dotB);
-      defs.appendChild(inclusionPattern);
-    }
-
-    if (!defs.querySelector('#' + RESTRICTION_PATTERN_ID)) {
-      var restrictionPattern = document.createElementNS(SVG_NS, 'pattern');
-      restrictionPattern.setAttribute('id', RESTRICTION_PATTERN_ID);
-      restrictionPattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      restrictionPattern.setAttribute('width', '8');
-      restrictionPattern.setAttribute('height', '8');
-
-      var hLineA = document.createElementNS(SVG_NS, 'line');
-      hLineA.setAttribute('x1', '0');
-      hLineA.setAttribute('y1', '2');
-      hLineA.setAttribute('x2', '8');
-      hLineA.setAttribute('y2', '2');
-      hLineA.setAttribute('stroke', '#d4351c');
-      hLineA.setAttribute('stroke-width', '1.2');
-
-      var hLineB = document.createElementNS(SVG_NS, 'line');
-      hLineB.setAttribute('x1', '0');
-      hLineB.setAttribute('y1', '6');
-      hLineB.setAttribute('x2', '8');
-      hLineB.setAttribute('y2', '6');
-      hLineB.setAttribute('stroke', '#d4351c');
-      hLineB.setAttribute('stroke-width', '1.2');
-
-      restrictionPattern.appendChild(hLineA);
-      restrictionPattern.appendChild(hLineB);
-      defs.appendChild(restrictionPattern);
-    }
+    pattern.appendChild(lineA);
+    pattern.appendChild(lineB);
+    defs.appendChild(pattern);
   }
 
-  function applyPatternToLayerGroup(layerGroup, patternId) {
-    if (!layerGroup || typeof layerGroup.eachLayer !== 'function') return;
-
-    layerGroup.eachLayer(function (layer) {
-      if (!layer || !layer._path) return;
-      layer._path.setAttribute('fill', 'url(#' + patternId + ')');
-      layer._path.setAttribute('fill-opacity', '1');
-    });
-  }
-
-  function applyZonePatterns() {
+  function applyExclusionPattern() {
     var svgs = document.querySelectorAll('.leaflet-overlay-pane svg');
     svgs.forEach(function (svg) {
-      ensurePatterns(svg);
+      ensurePattern(svg);
     });
 
     var exclusionPaths = document.querySelectorAll('.emdi-exclusion-zone-path');
     exclusionPaths.forEach(function (path) {
-      path.setAttribute('fill', 'url(#' + EXCLUSION_PATTERN_ID + ')');
+      path.setAttribute('fill', 'url(#' + PATTERN_ID + ')');
       path.setAttribute('fill-opacity', '1');
     });
-
-    var inclusionPaths = document.querySelectorAll('.emdi-inclusion-zone-path');
-    inclusionPaths.forEach(function (path) {
-      path.setAttribute('fill', 'url(#' + INCLUSION_PATTERN_ID + ')');
-      path.setAttribute('fill-opacity', '1');
-    });
-
-    var restrictionPaths = document.querySelectorAll('.emdi-restriction-zone-path');
-    restrictionPaths.forEach(function (path) {
-      path.setAttribute('fill', 'url(#' + RESTRICTION_PATTERN_ID + ')');
-      path.setAttribute('fill-opacity', '1');
-    });
-
-    applyPatternToLayerGroup(window.mapLayers && window.mapLayers.inclusionZone, INCLUSION_PATTERN_ID);
-    applyPatternToLayerGroup(window.mapLayers && window.mapLayers.restrictionZone, RESTRICTION_PATTERN_ID);
   }
 
   var attempts = 0;
   var bootTimer = setInterval(function () {
-    applyZonePatterns();
+    applyExclusionPattern();
     attempts += 1;
 
     var overlayPane = document.querySelector('.leaflet-overlay-pane');
@@ -886,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clearInterval(bootTimer);
 
     var observer = new MutationObserver(function () {
-      applyZonePatterns();
+      applyExclusionPattern();
     });
 
     observer.observe(overlayPane, { childList: true, subtree: true });
@@ -970,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 
 .leaflet-control-layers-expanded {
-  padding: 0px 45px 20px 10px;
+  padding: 0px 45px 0px 10px;
   color: #333;
   background: #fff;
 }
@@ -978,23 +660,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* Dedicated exclusion-zone hook: safe place for per-zone styling */
 .emdi-exclusion-zone-path {
-  stroke: #d4351c !important;
-  stroke-width: 2 !important;
+  stroke: #f47738 !important;
+  stroke-width: 0 !important;
   fill: url(#emdi-diagonal-cross-hatch) !important;
-  fill-opacity: 1 !important;
-}
-
-.emdi-inclusion-zone-path {
-  stroke: #d4351c !important;
-  stroke-width: 2 !important;
-  fill: url(#emdi-dot-fill) !important;
-  fill-opacity: 1 !important;
-}
-
-.emdi-restriction-zone-path {
-  stroke: #d4351c !important;
-  stroke-width: 2 !important;
-  fill: url(#emdi-horizontal-line-fill) !important;
   fill-opacity: 1 !important;
 }
 
@@ -1004,164 +672,125 @@ path[stroke-width="1"]
 }
 
 
-/* Panel-specific control layout and input visibility */
-.emdi-layers-panel .leaflet-control-layers-base label,
-.emdi-layers-panel .leaflet-control-layers-overlays label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 0 0 10px;
-  line-height: 1.35;
-  min-height: 24px;
-}
 
-.emdi-layers-panel .leaflet-control-layers-base label:last-child,
-.emdi-layers-panel .leaflet-control-layers-overlays label:last-child {
-  margin-bottom: 0;
-}
-
-.emdi-layers-panel .leaflet-control-layers-selector {
-  position: static !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  width: 18px !important;
-  height: 18px !important;
-  margin: 1px 0 0 0 !important;
-  pointer-events: auto !important;
-  flex: 0 0 18px;
-}
-
-.emdi-layers-panel .leaflet-control-layers-base label span,
-.emdi-layers-panel .leaflet-control-layers-overlays label span {
-  display: inline-block;
-  padding: 0 !important;
+/* Remove the browser's checkbox/radio entirely */
+.leaflet-control-layers-selector {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
   margin: 0 !important;
-  white-space: normal;
-}
+  pointer-events: none !important;
 
-.emdi-layers-panel .leaflet-control-layers-selector:focus-visible {
-  outline: 3px solid #ffdd00;
-  outline-offset: 2px;
 }
 
 
-.emdi-map-controls-heading {
-  font-weight: 700;
-  font-size: 19px;
-  line-height: 1.3;
-  margin-bottom: 10px;
+
+
+/* Checkbox label */
+.leaflet-control-layers-selector[type="checkbox"] + span {
+  position: relative;
+  padding-left: 34px;
+  cursor: pointer;
+  display: inline-block;
+  padding-top: 4px;
+  padding-bottom: 12px;
+
 }
 
-.emdi-map-controls-heading--controls {
-  margin-top: 0;
-}
-
-.emdi-map-controls-divider {
-  margin: 10px 0;
-  border: 0;
-  border-top: 1px solid #b1b4b6;
-}
-
-.emdi-custom-layer-controls {
-  margin-top: 4px;
-}
-
-.emdi-control-group {
-  display: block;
-}
-
-.emdi-control-group--view .emdi-map-controls-heading {
-  margin-top: 55px;
-}
-
-.emdi-control-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 0 0 10px;
-  line-height: 1.35;
-  font-size: 16px;
-}
-
-.emdi-control-row:last-child {
-  margin-bottom: 0;
-}
-
-.emdi-control-row input[type="radio"],
-.emdi-control-row input[type="checkbox"] {
+/* Checkbox box */
+.leaflet-control-layers-selector[type="checkbox"] + span::before {
+  content: "";
   width: 24px;
   height: 24px;
-  margin: 1px 0 0;
-  flex: 0 0 24px;
-  accent-color: #0b0c0c;
-}
-
-.emdi-control-row input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #ffffff;
   border: 2px solid #0b0c0c;
-  border-radius: 50%;
-  position: relative;
-}
-
-.emdi-control-row input[type="radio"]:checked {
-  background-color: #ffffff;
-}
-
-.emdi-control-row input[type="radio"]:checked::after {
-  content: "";
+  background: #fff;
   position: absolute;
-  left: 5px;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #0b0c0c;
+  left: 0;
+  top: 1px;
+  box-sizing: border-box;
+
+
 }
 
-.emdi-control-row input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #ffffff;
-  border: 2px solid #0b0c0c;
-  border-radius: 0;
-  position: relative;
-}
-
-.emdi-control-row input[type="checkbox"]:checked {
-  background-color: #ffffff;
-}
-
-.emdi-control-row input[type="checkbox"]:checked::after {
+/* Checkbox tick */
+.leaflet-control-layers-selector[type="checkbox"]:checked + span::after {
   content: "";
-  position: absolute;
-  left: 6px;
-  top: 2px;
-  width: 6px;
-  height: 12px;
-  border: solid #0b0c0c;
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
+    position: absolute;
+    left: 7px;
+    top: 2px;
+    width: 4px;
+    height: 12px;
+    margin-left: 2px;
+    margin-top: 2.3px;
+    border: solid #0b0c0c;
+    border-width: 0px 3.5px 3.5px 0;
+    transform: rotate(45deg);
 }
 
-.emdi-layers-panel .leaflet-control-layers-selector {
-  accent-color: #0b0c0c;
-}
 
-.emdi-control-row input:focus-visible {
-  outline: 3px solid #ffdd00;
-  outline-offset: 2px;
-}
-
-.emdi-control-row input:focus {
-  outline: 3px solid #ffdd00;
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="checkbox"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
   outline-offset: 0px;
 }
 
-.emdi-layers-panel .leaflet-control-layers-base,
-.emdi-layers-panel .leaflet-control-layers-overlays {
-  margin-left: 0;
+
+
+/* Radio label */
+.leaflet-control-layers-selector[type="radio"] + span {
+  position: relative;
+  padding-left: 34px;
+  padding-top: 4px;
+  padding-bottom: 12px;
+  cursor: pointer;
+  display: inline-block;
+
+
+}
+
+
+/* Only affect the FIRST RADIO OPTION */
+.leaflet-control-layers-base label:first-child {
+  padding-top: 60px;
+}
+
+
+/* Radio outer circle */
+.leaflet-control-layers-selector[type="radio"] + span::before {
+  content: "";
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: -2px;
+  box-sizing: border-box;
+}
+
+/* Radio inner dot */
+.leaflet-control-layers-selector[type="radio"]:checked + span::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0b0c0c;
+  position: absolute;
+  left: 7px;
+  top: 5px;
+}
+
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="radio"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline-offset: 0px;
+}
+
+.leaflet-control-layers label {
+  display: block;
+  font-size: 19px;
 }
 
 .bh-actions--left {
@@ -1310,39 +939,6 @@ path[stroke-width="1"]
 
 .gps-point-popup .leaflet-popup-content {
   margin: 12px 18px;
-}
-
-.gps-point-popup__header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin-bottom: 12px;
-}
-
-.gps-point-popup__title {
-  flex: 0 1 auto;
-  text-align: center;
-  margin-left: 6px;
-  margin-right: 6px;
-}
-
-.gps-point-popup__nav-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  min-height: 22px;
-  font-size: 24px;
-  line-height: 1;
-  text-decoration: none;
-  color: #0b0c0c !important;
-}
-
-.gps-point-popup__nav-button--disabled {
-  color: #b1b4b6;
-  cursor: default;
-  text-decoration: none;
 }
 
 .gps-point-popup__nav {

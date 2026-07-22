@@ -457,8 +457,31 @@
   document.addEventListener('bh:map-ready', function () {
     if (window.mapLayers && window.mapLayers.exclusionZone) {
       window.mapLayers.exclusionZone.eachLayer(function (layer) {
-        if (layer && typeof layer.unbindPopup === 'function') {
-          layer.unbindPopup();
+        if (layer && typeof layer.bindPopup === 'function') {
+          var popupHtml = [
+            '<div class="gps-point-popup">',
+            '  <div class="gps-point-popup__header">',
+            '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Exclusion zone</h4>',
+            '  </div>',
+            '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+            '    <div class="govuk-summary-list__row">',
+            '      <dt class="govuk-summary-list__key">Active time</dt>',
+            '      <dd class="govuk-summary-list__value">09:00 to 17:00</dd>',
+            '    </div>',
+            '    <div class="govuk-summary-list__row">',
+            '      <dt class="govuk-summary-list__key">Address covered</dt>',
+            '      <dd class="govuk-summary-list__value">St James Park,<br> Westminster, <br> SW1A 2BJ</dd>',
+            '    </div>',
+            '  </dl>',
+            '</div>'
+          ].join('');
+
+          layer.bindPopup(popupHtml, {
+            closeButton: true,
+            autoClose: false,
+            closeOnClick: false,
+            className: 'gps-point-popup'
+          });
         }
       });
     }

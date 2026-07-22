@@ -686,7 +686,7 @@
         </div>
 
           <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Tag status</dt>
+          <dt class="govuk-summary-list__key">Tamper event</dt>
           <dd class="govuk-summary-list__value" style="margin-left: 1rem;"></dd>
         </div>
 

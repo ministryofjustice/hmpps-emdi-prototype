@@ -1,0 +1,287 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Location activity" %}
+
+{% block pageTitle %}
+  Map prototype - GOV.UK
+{% endblock %}
+
+{% block head %}
+
+
+  {{ super() }}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css" type="text/css">
+  <style>
+    /* You MUST give the map a height, otherwise it will collapse to 0 pixels and be invisible */
+    .location-activity-openlayers-map {
+      width: 100%;
+      height: 600px;
+      background-color: #f3f2f1; /* GOV.UK grey background to show while loading */
+      margin-bottom: 30px;
+      border: 1px solid #b1b4b6;
+    }
+
+    .ol-control {
+      font-family: "GDS Transport", Arial, sans-serif;
+    }
+
+    .ol-rotate {
+      position: absolute !important;
+      top: 0rem !important;
+      left: auto !important;
+      right: 0.5rem !important;
+      bottom: auto !important;
+      background: #ffffff !important;
+      border: 1px solid #b1b4b6 !important;
+      border-radius: 0.3rem !important;
+      margin: 0 !important;
+    }
+
+    .ol-rotate button {
+      width: 2.4rem !important;
+      height: 2.4rem !important;
+      border: none !important;
+      background: #ffffff !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+
+    
+   
+
+    .ol-full-screen button:hover {
+      background: #f8f8f8 !important;
+    }
+
+    .ol-scale-line {
+      position: absolute !important;
+      left: 0.75rem !important;
+      bottom: 0.75rem !important;
+      width: auto !important;
+      min-width: 6rem !important;
+      max-width: 10rem !important;
+      padding: 0.35rem 0.65rem !important;
+      font-size: 0.75rem !important;
+      line-height: 1.4 !important;
+      z-index: 1000 !important;
+    }
+
+    .ol-control {
+    position: absolute;
+    background-color: var(--ol-subtle-background-color);
+    border-radius: 4px;
+    }
+
+    .ol-control button {
+    font-family: "GDS Transport", arial, sans-serif;
+    line-height: 1;
+    background-color: #ffffff;
+    color: #0b0c0c;
+    border: 1px solid #0b0c0c;
+    border-radius: 0;
+    width: 2em;
+    height: 2em;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out, border-color 0.1s ease-in-out;
+    }
+
+    #ol-zoom-in,
+    #ol-zoom-out,
+    #ol-zoom-reset {
+      padding: 12px 20px !important;
+      font-size: 16px !important;
+      min-width: auto !important;
+      height: auto !important;
+      width: auto !important;
+    }
+  </style>
+{% endblock %}
+
+
+
+{% block content %}
+  <a href="#" class="govuk-back-link">Back to Manage people on probation</a>
+
+{% block breadcrumb %}
+  {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Cases", href: "cases" },
+      { text: persondata.name, href: "/case/" + persondata.url }
+    ]
+  }) }}
+{% endblock %}
+
+ 
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: {{ persondata.sentence  }}
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      {{ persondata.name  }}
+    </h1>
+  </div>
+</div>
+
+<!-- This is the header for the page and start of page content -->
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+<h3 class="govuk-heading-s">Search map by date and time</h3>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="bh-map-filters" class="loi-filters__form" novalidate>
+    <div class="bh-filters-grid">
+
+      <!-- Row 1: Date pickers -->
+      <div class="bh-slot bh-date-from">
+        {{ mojDatePicker({
+          id: "bh-date-from",
+          name: "dateFrom",
+          label: { text: "Date from" },
+          classes: "govuk-input--width-10",
+          value: ""
+        }) }}
+      </div>
+
+      <div class="bh-slot bh-date-to">
+        {{ mojDatePicker({
+          id: "bh-date-to",
+          name: "dateTo",
+          label: { text: "Date to" },
+          classes: "govuk-input--width-10",
+          value: ""
+        }) }}
+      </div>
+ 
+      <!-- Row 2: Time inputs -->
+      <div class="bh-slot bh-time-from">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time from</label>
+          <div class="govuk-date-input" id="bh-time-from">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-hour" name="timeFromHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-min" name="timeFromMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bh-slot bh-time-to">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time to</label>
+          <div class="govuk-date-input" id="bh-time-to">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-hour" name="timeToHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-min" name="timeToMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="bh-slot bh-actions">
+        <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
+          Update map
+        </button>
+        <a href="#" id="bh-clear-filters" class="govuk-link">Clear filters</a>
+      </div>
+
+    </div>
+
+    <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+ 
+
+<div class="govuk-!-margin-bottom-6">
+
+      <div id="ol-map" class="location-activity-openlayers-map"></div>
+      <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
+    </div>
+  </div>
+
+ 
+{% endblfock %}
+
+{% block pageScripts %}
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+  <script src="/public/javascripts/location-activity-openlayers.js"></script>
+{% endblock %}
+

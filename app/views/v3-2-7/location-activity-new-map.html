@@ -1,0 +1,2097 @@
+{% extends "layouts/main2.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false },
+  { text: "Alerts", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='jasonscott' %}
+
+        {% set persondata=data['jasonscott'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% set pageName="Location activity" %}
+
+
+{% block content %}
+
+<nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
+  <ol class="govuk-breadcrumbs__list">
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="cases">Cases</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="#">{{ persondata.name }}</a>
+    </li>
+    <li class="govuk-breadcrumbs__list-item" aria-current="page">
+      Electronic monitoring - Location activity
+    </li>
+  </ol>
+</nav>
+ 
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">
+        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Date of birth: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
+        Sentence: {{ persondata.sentence  }}
+      </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      {{ persondata.name  }}
+    </h1>
+  </div>
+</div>
+
+
+ 
+<!-- This is the header for the page and start of page content -->
+<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+
+
+<h3 class="govuk-heading-s">Search map by date and time</h3>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <form id="bh-map-filters" class="loi-filters__form" novalidate>
+    <div class="bh-filters-grid">
+
+      <!-- Row 1: Date pickers -->
+      <div class="bh-slot bh-date-from">
+        {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+    
+        {{ mojDatePicker({
+          id: "bh-date-from",
+          name: "dateFrom",
+          label: {
+            text: "Date from"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          }
+        }) }}
+      </div>
+
+
+
+      <div class="bh-slot bh-date-to">
+         {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+    
+        {{ mojDatePicker({
+          id: "bh-date-to",
+          name: "dateTo",
+          label: {
+            text: "Date to"
+          },
+          hint: {
+            text: "For example, 17/5/2024."
+          }
+        }) }}
+      </div>
+ 
+      <!-- Row 2: Time inputs -->
+      <div class="bh-slot bh-time-from">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time from</label>
+          <div class="govuk-date-input" id="bh-time-from">
+            <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-hour" name="timeFromHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-from-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-from-min" name="timeFromMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bh-slot bh-time-to">
+        <div class="govuk-form-group">
+          <label class="govuk-label">Time to</label>
+          <div class="govuk-date-input" id="bh-time-to">
+           <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
+            <div class="govuk-date-input__item">
+              
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-hour" name="timeToHour" type="number"
+                       inputmode="numeric" min="0" max="23" value="">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="bh-time-to-min">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                       id="bh-time-to-min" name="timeToMin" type="number"
+                       inputmode="numeric" min="0" max="59" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="bh-slot bh-actions">
+        <button class="govuk-button" data-module="govuk-button" id="bh-apply-filters" type="submit">
+          Update map
+        </button>
+        <a href="#" id="bh-clear-filters" class="govuk-link">Clear filters</a>
+      </div>
+    </div>
+
+    <div id="bh-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  </form>
+</div>
+
+
+
+<div class="govuk-!-margin-bottom-6">
+  <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
+  <div class="emdi-map-shell">
+    <div id="map" style="height: 600px;"></div>
+  </div>
+  <br>
+  <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
+</div>
+
+<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+
+
+<!-- DEFRA Interactive Map assets -->
+<link href="/plugin-assets/%40defra%2Finteractive-map/dist/css/index.css" rel="stylesheet" type="text/css" />
+<link href="/plugin-assets/%40defra%2Finteractive-map/plugins/beta/datasets/dist/css/index.css" rel="stylesheet" type="text/css" />
+<link href="/plugin-assets/%40defra%2Finteractive-map/plugins/beta/scale-bar/dist/css/index.css" rel="stylesheet" type="text/css" />
+
+<script src="/plugin-assets/%40defra%2Finteractive-map/dist/umd/index.js"></script>
+<script src="/plugin-assets/%40defra%2Finteractive-map/providers/maplibre/dist/umd/index.js"></script>
+<script src="/plugin-assets/%40defra%2Finteractive-map/plugins/beta/datasets/dist/umd/maplibre/index.js"></script>
+<script src="/plugin-assets/%40defra%2Finteractive-map/plugins/beta/scale-bar/dist/umd/index.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.defra || !window.defra.InteractiveMap || !window.defra.maplibreProvider) {
+    console.error('DEFRA Interactive Map assets failed to load.');
+    return;
+  }
+
+  function getDefraExamplePolygonsGeoJson() {
+    return {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          id: 1,
+          properties: {
+            name: 'Feature 1',
+            land_use: 'Permanent grassland'
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [-2.4691585, 54.5552164],
+              [-2.4692202, 54.5553906],
+              [-2.4690646, 54.5554155],
+              [-2.4689152, 54.5552672],
+              [-2.4691585, 54.5552164]
+            ]]
+          }
+        },
+        {
+          type: 'Feature',
+          id: 2,
+          properties: {
+            name: 'Feature 2',
+            land_use: 'Arable'
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [-2.4669400, 54.5567000],
+              [-2.4662500, 54.5562800],
+              [-2.4656400, 54.5567200],
+              [-2.4663400, 54.5570800],
+              [-2.4669400, 54.5567000]
+            ]]
+          }
+        }
+      ]
+    };
+  }
+
+  var mapPlugins = [
+    window.defra.scaleBarPlugin({ units: 'metric' })
+  ];
+
+  if (typeof window.defra.datasetsMaplibrePlugin === 'function') {
+    var polygonDatasetPlugin = window.defra.datasetsMaplibrePlugin({
+      datasets: [
+        {
+          id: 'field-parcels',
+          label: 'Zones',
+          geojson: getDefraExamplePolygonsGeoJson(),
+          minZoom: 10,
+          maxZoom: 24,
+          showInKey: true,
+          showInMenu: false,
+          sublayers: [
+            {
+              id: 'inclusion-zone',
+              label: 'Inclusion zone',
+              showInMenu: true,
+              filter: ['==', ['get', 'land_use'], 'Arable'],
+              style: {
+                stroke: '#00703c',
+                fillPattern: 'horizontal-hatch',
+                fillPatternForegroundColor: '#00703c',
+                fillPatternBackgroundColor: 'transparent'
+              }
+            },
+            {
+              id: 'exclusion-zone',
+              label: 'Exclusion zone',
+              showInMenu: true,
+              filter: ['==', ['get', 'land_use'], 'Permanent grassland'],
+              style: {
+                stroke: '#d4351c',
+                fillPattern: 'diagonal-cross-hatch',
+                fillPatternForegroundColor: '#d4351c',
+                fillPatternBackgroundColor: 'transparent'
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    mapPlugins.push(polygonDatasetPlugin);
+  } else {
+    console.warn('DEFRA datasets polygon plugin is not available; continuing without polygon overlays.');
+  }
+
+  const interactiveMap = new window.defra.InteractiveMap('map', {
+    mapProvider: window.defra.maplibreProvider(),
+    behaviour: 'hybrid',
+    mapLabel: 'Location activity map',
+    zoom: 13,
+    center: [-1.2053, 52.9452],
+    containerHeight: '600px',
+    mapStyle: {
+      url: 'https://tiles.openfreemap.org/styles/liberty',
+      attribution: 'OpenFreeMap © OpenMapTiles Data from OpenStreetMap',
+      backgroundColor: '#f5f5f0'
+    },
+    plugins: mapPlugins
+  });
+
+  var allGpsPoints = [];
+  var activeMapInstance = null;
+
+  function showUkOverview(map) {
+    map.jumpTo({
+      center: [-2.5, 54.2],
+      zoom: 5
+    });
+  }
+
+  function flattenTracePoints(payload) {
+    if (!payload || typeof payload !== 'object') return [];
+
+    const points = [];
+    Object.entries(payload).forEach(function (entry) {
+      var traceId = entry[0];
+      var trace = entry[1] || {};
+      var tracePoints = Array.isArray(trace.points) ? trace.points : [];
+
+      tracePoints.forEach(function (pt, idx) {
+        var lat = Number(pt.lat);
+        var lng = Number(pt.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        points.push({
+          traceId: traceId,
+          index: idx + 1,
+          lat: lat,
+          lng: lng,
+          label: String(pt.label || idx + 1),
+          time: pt.time || '',
+          accuracy: pt.accuracy,
+          speed: pt.speed,
+          geolocationMechanism: pt.geolocationMechanism || '',
+          positionId: pt.positionId
+        });
+      });
+    });
+
+    return points;
+  }
+
+  function buildFeatureCollections(points) {
+    var byTrace = {};
+    points.forEach(function (pt) {
+      if (!byTrace[pt.traceId]) byTrace[pt.traceId] = [];
+      byTrace[pt.traceId].push(pt);
+    });
+
+    var pointFeatures = points.map(function (pt, idx) {
+      return {
+        type: 'Feature',
+        properties: {
+          traceId: pt.traceId,
+          index: pt.index,
+          label: pt.label,
+          time: pt.time,
+          accuracy: pt.accuracy,
+          speed: pt.speed,
+          geolocationMechanism: pt.geolocationMechanism,
+          positionId: pt.positionId,
+          pointNumber: idx + 1,
+          totalPoints: points.length
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [pt.lng, pt.lat]
+        }
+      };
+    });
+
+    var lineFeatures = Object.keys(byTrace).map(function (traceId) {
+      var coords = byTrace[traceId].map(function (pt) {
+        return [pt.lng, pt.lat];
+      });
+
+      return {
+        type: 'Feature',
+        properties: { traceId: traceId },
+        geometry: {
+          type: 'LineString',
+          coordinates: coords
+        }
+      };
+    });
+
+    return {
+      points: { type: 'FeatureCollection', features: pointFeatures },
+      lines: { type: 'FeatureCollection', features: lineFeatures }
+    };
+  }
+
+  function readInputString(el) {
+    if (!el) return '';
+    if (typeof el.value === 'string') return el.value.trim();
+    var inner = el.querySelector && el.querySelector('input');
+    return (inner && typeof inner.value === 'string') ? inner.value.trim() : '';
+  }
+
+  function readDateFromPicker(prefix) {
+    var raw = '';
+    var wrapper = document.getElementById(prefix);
+
+    // MOJ date picker wrappers can vary, so check multiple likely targets.
+    var candidates = [
+      wrapper,
+      document.getElementById(prefix + '-input'),
+      document.querySelector('#' + prefix + ' input'),
+      document.querySelector('input[name="' + (prefix === 'bh-date-from' ? 'dateFrom' : 'dateTo') + '"]')
+    ];
+
+    candidates.some(function (el) {
+      raw = readInputString(el);
+      return Boolean(raw);
+    });
+
+    var text = String(raw).trim();
+    if (!text) return null;
+
+    // Accept dd/mm/yyyy, dd-mm-yyyy, dd.mm.yyyy and 2-digit years.
+    var dmy = text.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/);
+    var ymd = text.match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})$/);
+
+    var day;
+    var month;
+    var year;
+
+    if (dmy) {
+      day = Number(dmy[1]);
+      month = Number(dmy[2]);
+      year = Number(dmy[3]);
+    } else if (ymd) {
+      year = Number(ymd[1]);
+      month = Number(ymd[2]);
+      day = Number(ymd[3]);
+    } else {
+      return null;
+    }
+
+    if (year < 100) year += 2000;
+    if (!day || !month || !year) return null;
+
+    var d = new Date(year, month - 1, day);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function readHourMinute(hourId, minuteId, defaultHour, defaultMinute) {
+    var hourRaw = String((document.getElementById(hourId) || {}).value || '').trim();
+    var minRaw = String((document.getElementById(minuteId) || {}).value || '').trim();
+
+    var hasDefaultHour = Number.isFinite(defaultHour);
+    var hasDefaultMinute = Number.isFinite(defaultMinute);
+
+    var hour = hourRaw === '' ? (hasDefaultHour ? defaultHour : null) : Number(hourRaw);
+    var minute = minRaw === '' ? (hasDefaultMinute ? defaultMinute : null) : Number(minRaw);
+
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+
+    return { hour: hour, minute: minute };
+  }
+
+  function parseTraceDate(traceId) {
+    var match = String(traceId || '').match(/(\d{4})(\d{2})(\d{2})/);
+    if (!match) return null;
+    var year = Number(match[1]);
+    var month = Number(match[2]);
+    var day = Number(match[3]);
+    var d = new Date(year, month - 1, day);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function parsePointDateTime(point) {
+    var raw = String(point.time || '').trim();
+    if (raw.includes('T')) {
+      var dt = new Date(raw);
+      if (!Number.isNaN(dt.getTime())) return dt;
+    }
+
+    var hm = raw.match(/^(\d{1,2}):(\d{2})$/);
+    if (hm) {
+      var baseDate = parseTraceDate(point.traceId);
+      if (!baseDate) return null;
+      baseDate.setHours(Number(hm[1]), Number(hm[2]), 0, 0);
+      return baseDate;
+    }
+
+    return null;
+  }
+
+  function getActiveFilterRange() {
+    var fromDate = readDateFromPicker('bh-date-from');
+    var toDate = readDateFromPicker('bh-date-to');
+    var fromHm = readHourMinute('bh-time-from-hour', 'bh-time-from-min', 0, 0);
+    var toHm = readHourMinute('bh-time-to-hour', 'bh-time-to-min', 23, 59);
+
+    var from = null;
+    var to = null;
+
+    if (fromDate) {
+      if (!fromHm) return { from: null, to: null, invalid: true };
+      fromDate.setHours(fromHm.hour, fromHm.minute, 0, 0);
+      from = fromDate;
+    }
+
+    if (toDate) {
+      if (!toHm) return { from: null, to: null, invalid: true };
+      toDate.setHours(toHm.hour, toHm.minute, 59, 999);
+      to = toDate;
+    }
+
+    if (from && to && from > to) {
+      return { from: null, to: null, invalid: true };
+    }
+
+    return { from: from, to: to, invalid: false };
+  }
+
+  function hasCompleteDateTimeFilters() {
+    var fromDate = readDateFromPicker('bh-date-from');
+    var toDate = readDateFromPicker('bh-date-to');
+
+    return Boolean(fromDate && toDate);
+  }
+
+  function filterPointsByForm(points) {
+    var range = getActiveFilterRange();
+    if (range.invalid) return [];
+    if (!range.from && !range.to) return points;
+
+    return points.filter(function (pt) {
+      var dt = parsePointDateTime(pt);
+      if (!dt) return false;
+      if (range.from && dt < range.from) return false;
+      if (range.to && dt > range.to) return false;
+      return true;
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function buildPingCardHtml(feature) {
+    var props = (feature && feature.properties) || {};
+    var coords = (feature && feature.geometry && feature.geometry.coordinates) || [];
+    var lng = Number(coords[0]);
+    var lat = Number(coords[1]);
+
+    var pointNumber = props.pointNumber || props.label || props.index || '-';
+    var totalPoints = props.totalPoints || '-';
+    var dateTime = props.time || 'Not available';
+    var accuracy = Number.isFinite(Number(props.accuracy)) ? (Number(props.accuracy) + ' m') : 'Not available';
+    var speed = Number.isFinite(Number(props.speed)) ? (Number(props.speed) + ' mph') : 'Not available';
+    var signalType = props.geolocationMechanism || 'Not available';
+    var latLong = (Number.isFinite(lat) && Number.isFinite(lng))
+      ? (lat.toFixed(6) + ', ' + lng.toFixed(6))
+      : 'Not available';
+
+    return [
+      '<div class="gps-point-card">',
+      '<h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ' + escapeHtml(pointNumber) + ' of ' + escapeHtml(totalPoints) + '</h4>',
+      '<dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+      '<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Accuracy</dt><dd class="govuk-summary-list__value">' + escapeHtml(accuracy) + '</dd></div>',
+      '<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Date, time</dt><dd class="govuk-summary-list__value">' + escapeHtml(dateTime) + '</dd></div>',
+      '<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Lat, long</dt><dd class="govuk-summary-list__value"><code>' + escapeHtml(latLong) + '</code></dd></div>',
+      '<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Speed</dt><dd class="govuk-summary-list__value">' + escapeHtml(speed) + '</dd></div>',
+      '<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Signal type</dt><dd class="govuk-summary-list__value">' + escapeHtml(signalType) + '</dd></div>',
+      '</dl>',
+      '</div>'
+    ].join('');
+  }
+
+  function ensureInlinePingCard(map) {
+    if (!map || !map.getContainer) return null;
+    if (map.__emdiInlinePingCard) return map.__emdiInlinePingCard;
+
+    var container = map.getContainer();
+    if (!container) return null;
+
+    var card = document.createElement('div');
+    card.className = 'emdi-inline-ping-card';
+    card.hidden = true;
+
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'emdi-inline-ping-card__close';
+    closeBtn.setAttribute('aria-label', 'Close ping card');
+    closeBtn.textContent = '×';
+
+    var content = document.createElement('div');
+    content.className = 'emdi-inline-ping-card__content gps-point-popup';
+
+    closeBtn.addEventListener('click', function () {
+      card.hidden = true;
+    });
+
+    card.appendChild(closeBtn);
+    card.appendChild(content);
+    container.appendChild(card);
+
+    map.__emdiInlinePingCard = {
+      showHtml: function (html, point) {
+        content.innerHTML = html;
+        card.hidden = false;
+
+        var offset = 14;
+        var fallbackX = 12;
+        var fallbackY = 12;
+        var pointX = point && Number.isFinite(point.x) ? point.x : fallbackX;
+        var pointY = point && Number.isFinite(point.y) ? point.y : fallbackY;
+
+        // Temporarily place the card so dimensions are measurable before final positioning.
+        card.style.left = '0px';
+        card.style.top = '0px';
+
+        var containerRect = container.getBoundingClientRect();
+        var cardWidth = card.offsetWidth || 320;
+        var cardHeight = card.offsetHeight || 220;
+
+        var left = pointX + offset;
+        var top = pointY - (cardHeight / 2);
+
+        if (left + cardWidth > containerRect.width - 8) {
+          left = pointX - cardWidth - offset;
+        }
+        if (left < 8) left = 8;
+
+        if (top < 8) top = 8;
+        if (top + cardHeight > containerRect.height - 8) {
+          top = containerRect.height - cardHeight - 8;
+        }
+
+        card.style.left = Math.round(left) + 'px';
+        card.style.top = Math.round(top) + 'px';
+      },
+      hide: function () {
+        card.hidden = true;
+      }
+    };
+
+    return map.__emdiInlinePingCard;
+  }
+
+  function getExclusionZoneGeoJson() {
+    // St James Park boundary from existing overlay implementation, converted to [lng, lat].
+    var ring = [
+      [-0.14120, 51.50020],
+      [-0.14155, 51.50065],
+      [-0.14190, 51.50115],
+      [-0.14185, 51.50155],
+      [-0.14155, 51.50195],
+      [-0.14100, 51.50220],
+      [-0.13950, 51.50240],
+      [-0.13800, 51.50260],
+      [-0.13650, 51.50280],
+      [-0.13500, 51.50300],
+      [-0.13350, 51.50320],
+      [-0.13200, 51.50340],
+      [-0.13050, 51.50360],
+      [-0.12940, 51.50380],
+      [-0.12890, 51.50395],
+      [-0.12945, 51.50370],
+      [-0.12930, 51.50315],
+      [-0.12920, 51.50260],
+      [-0.12905, 51.50205],
+      [-0.12890, 51.50150],
+      [-0.12870, 51.50110],
+      [-0.12980, 51.50100],
+      [-0.13150, 51.50085],
+      [-0.13300, 51.50070],
+      [-0.13450, 51.50055],
+      [-0.13600, 51.50040],
+      [-0.13750, 51.50025],
+      [-0.13920, 51.50015],
+      [-0.14120, 51.50020]
+    ];
+
+    return {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: {
+          name: 'Exclusion Zone',
+          area: 'St James Park, Westminster',
+          postcode: 'SW1A 2BJ'
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [ring]
+        }
+      }]
+    };
+  }
+
+  function ensureExclusionZoneLayers(map) {
+    if (!map) return;
+
+    var sourceId = 'emdi-exclusion-zone';
+    var fillId = 'emdi-exclusion-zone-fill-layer';
+    var lineId = 'emdi-exclusion-zone-line-layer';
+    var data = getExclusionZoneGeoJson();
+
+    if (!map.getSource(sourceId)) {
+      map.addSource(sourceId, { type: 'geojson', data: data });
+    } else {
+      map.getSource(sourceId).setData(data);
+    }
+
+    if (!map.getLayer(fillId)) {
+      map.addLayer({
+        id: fillId,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          'fill-color': '#87bca8',
+          'fill-opacity': 0.35
+        }
+      });
+    }
+
+    if (!map.getLayer(lineId)) {
+      map.addLayer({
+        id: lineId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': '#87bca8',
+          'line-width': 3,
+          'line-opacity': 0.9
+        }
+      });
+    }
+
+    if (!map.__emdiExclusionBound) {
+      map.__emdiExclusionBound = true;
+      map.on('mouseenter', fillId, function () {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', fillId, function () {
+        map.getCanvas().style.cursor = '';
+      });
+
+      var PopupCtor = (window.maplibregl && window.maplibregl.Popup) ? window.maplibregl.Popup : null;
+      var popup = PopupCtor ? new PopupCtor({ closeButton: true, closeOnClick: true }) : null;
+
+      map.on('click', fillId, function (e) {
+        var feature = e && e.features && e.features[0];
+        if (!feature) return;
+
+        var props = feature.properties || {};
+        var html = '<strong>' + escapeHtml(props.name || 'Exclusion Zone') + '</strong>' +
+          '<br>' + escapeHtml(props.area || '') +
+          '<br>' + escapeHtml(props.postcode || '');
+
+        if (popup && e.lngLat) {
+          popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+        }
+      });
+    }
+  }
+
+  function ensureSatelliteBasemapLayer(map) {
+    if (!map) return;
+
+    var sourceId = 'emdi-satellite-source';
+    var layerId = 'emdi-satellite-layer';
+
+    if (!map.getSource(sourceId)) {
+      map.addSource(sourceId, {
+        type: 'raster',
+        tiles: [
+          'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        ],
+        tileSize: 256,
+        attribution: 'Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+      });
+    }
+
+    if (!map.getLayer(layerId)) {
+      var style = map.getStyle && map.getStyle();
+      var firstLayerId = style && style.layers && style.layers.length ? style.layers[0].id : undefined;
+
+      map.addLayer({
+        id: layerId,
+        type: 'raster',
+        source: sourceId,
+        layout: {
+          visibility: 'none'
+        },
+        paint: {
+          'raster-opacity': 1
+        }
+      }, firstLayerId);
+    }
+  }
+
+  function updateGeoJsonLayers(map, geojson) {
+    if (map.getSource('emdi-gps-lines')) {
+      map.getSource('emdi-gps-lines').setData(geojson.lines);
+    }
+    if (map.getSource('emdi-gps-points')) {
+      map.getSource('emdi-gps-points').setData(geojson.points);
+    }
+  }
+
+  function ensureLayersPanelControls() {
+    var controlsState = window.__emdiLayersControlsState || {
+      base: 'street',
+      directionInfo: true,
+      confidenceCircles: true,
+      pointNumbers: true,
+      exclusionZones: true
+    };
+    window.__emdiLayersControlsState = controlsState;
+
+    function isCheckedAttr(condition) {
+      return condition ? ' checked' : '';
+    }
+
+    function createControlsMarkup() {
+      return [
+        '<fieldset class="govuk-fieldset">',
+        '  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Map display</legend>',
+        '  <div class="govuk-radios govuk-radios--small">',
+        '    <div class="govuk-radios__item">',
+        '      <input class="govuk-radios__input" id="toggle-base-street" name="map-base" type="radio"' + isCheckedAttr(controlsState.base !== 'satellite') + '>',
+        '      <label class="govuk-label govuk-radios__label" for="toggle-base-street">Street</label>',
+        '    </div>',
+        '    <div class="govuk-radios__item">',
+        '      <input class="govuk-radios__input" id="toggle-base-satellite" name="map-base" type="radio"' + isCheckedAttr(controlsState.base === 'satellite') + '>',
+        '      <label class="govuk-label govuk-radios__label" for="toggle-base-satellite">Satellite</label>',
+        '    </div>',
+        '  </div>',
+        '  <hr class="emdi-map-controls__divider">',
+        '  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Map controls</legend>',
+        '  <div class="govuk-checkboxes govuk-checkboxes--small">',
+        '    <div class="govuk-checkboxes__item">',
+        '      <input class="govuk-checkboxes__input" id="toggle-direction-lines" name="map-controls" type="checkbox"' + isCheckedAttr(controlsState.directionInfo) + '>',
+        '      <label class="govuk-label govuk-checkboxes__label" for="toggle-direction-lines">Direction info</label>',
+        '    </div>',
+        '    <div class="govuk-checkboxes__item">',
+        '      <input class="govuk-checkboxes__input" id="toggle-confidence-circles" name="map-controls" type="checkbox"' + isCheckedAttr(controlsState.confidenceCircles) + '>',
+        '      <label class="govuk-label govuk-checkboxes__label" for="toggle-confidence-circles">Confidence circles</label>',
+        '    </div>',
+        '    <div class="govuk-checkboxes__item">',
+        '      <input class="govuk-checkboxes__input" id="toggle-point-numbers" name="map-controls" type="checkbox"' + isCheckedAttr(controlsState.pointNumbers) + '>',
+        '      <label class="govuk-label govuk-checkboxes__label" for="toggle-point-numbers">Point numbers</label>',
+        '    </div>',
+        '    <div class="govuk-checkboxes__item">',
+        '      <input class="govuk-checkboxes__input" id="toggle-exclusion-zone" name="map-controls" type="checkbox"' + isCheckedAttr(controlsState.exclusionZones) + '>',
+        '      <label class="govuk-label govuk-checkboxes__label" for="toggle-exclusion-zone">Exclusion zones</label>',
+        '    </div>',
+        '  </div>',
+        '</fieldset>'
+      ].join('');
+    }
+
+    function mountIntoLayersPanel() {
+      var layersContent = document.querySelector('.im-c-datasets-layers');
+      if (!layersContent) return false;
+
+      var layersPanel = layersContent.parentElement;
+      if (!layersPanel) return false;
+      if (layersPanel.querySelector('.emdi-layers-extra')) return true;
+
+      var section = document.createElement('section');
+      section.className = 'emdi-layers-extra';
+      section.innerHTML = createControlsMarkup();
+      layersPanel.appendChild(section);
+
+      return true;
+    }
+
+    mountIntoLayersPanel();
+
+    if (window.__emdiLayersPanelObserver) return;
+
+    var shell = document.querySelector('.emdi-map-shell');
+    if (!shell) return;
+
+    var observer = new MutationObserver(function () {
+      mountIntoLayersPanel();
+    });
+
+    observer.observe(shell, { childList: true, subtree: true });
+    window.__emdiLayersPanelObserver = observer;
+  }
+
+  async function plotGpsDataOnMap(map) {
+    var mapStatus = document.getElementById('map-status');
+    var LAYER_LINES = 'emdi-gps-lines-layer';
+    var LAYER_POINTS = 'emdi-gps-points-layer';
+    var LAYER_CONFIDENCE = 'emdi-gps-confidence-layer';
+    var LAYER_NUMBERS = 'emdi-gps-point-numbers-layer';
+    var LAYER_EXCLUSION_FILL = 'emdi-exclusion-zone-fill-layer';
+    var LAYER_EXCLUSION_LINE = 'emdi-exclusion-zone-line-layer';
+
+    function setLayerVisibility(layerId, isVisible) {
+      if (!map.getLayer(layerId)) return;
+      map.setLayoutProperty(layerId, 'visibility', isVisible ? 'visible' : 'none');
+    }
+
+    function setupMapLayerToggles() {
+      ensureLayersPanelControls();
+
+      var streetToggle = document.getElementById('toggle-base-street');
+      var satelliteToggle = document.getElementById('toggle-base-satellite');
+      var linesToggle = document.getElementById('toggle-direction-lines');
+      var circlesToggle = document.getElementById('toggle-confidence-circles');
+      var numbersToggle = document.getElementById('toggle-point-numbers');
+      var exclusionToggle = document.getElementById('toggle-exclusion-zone');
+      var controlsState = window.__emdiLayersControlsState || {};
+
+      function setSatelliteVisibility(isVisible) {
+        ensureSatelliteBasemapLayer(map);
+        if (!map.getLayer('emdi-satellite-layer')) return;
+        map.setLayoutProperty('emdi-satellite-layer', 'visibility', isVisible ? 'visible' : 'none');
+      }
+
+      if (streetToggle && !streetToggle.dataset.bound) {
+        streetToggle.dataset.bound = 'true';
+        streetToggle.addEventListener('change', function () {
+          if (!streetToggle.checked) return;
+          controlsState.base = 'street';
+          setSatelliteVisibility(false);
+        });
+      }
+
+      if (satelliteToggle && !satelliteToggle.dataset.bound) {
+        satelliteToggle.dataset.bound = 'true';
+        satelliteToggle.addEventListener('change', function () {
+          if (!satelliteToggle.checked) return;
+          controlsState.base = 'satellite';
+          setSatelliteVisibility(true);
+        });
+      }
+
+      if (linesToggle && !linesToggle.dataset.bound) {
+        linesToggle.dataset.bound = 'true';
+        linesToggle.addEventListener('change', function () {
+          controlsState.directionInfo = linesToggle.checked;
+          setLayerVisibility(LAYER_LINES, linesToggle.checked);
+        });
+      }
+
+      if (circlesToggle && !circlesToggle.dataset.bound) {
+        circlesToggle.dataset.bound = 'true';
+        circlesToggle.addEventListener('change', function () {
+          controlsState.confidenceCircles = circlesToggle.checked;
+          setLayerVisibility(LAYER_CONFIDENCE, circlesToggle.checked);
+        });
+      }
+
+      if (numbersToggle && !numbersToggle.dataset.bound) {
+        numbersToggle.dataset.bound = 'true';
+        numbersToggle.addEventListener('change', function () {
+          controlsState.pointNumbers = numbersToggle.checked;
+          setLayerVisibility(LAYER_NUMBERS, numbersToggle.checked);
+        });
+      }
+
+      if (exclusionToggle && !exclusionToggle.dataset.bound) {
+        exclusionToggle.dataset.bound = 'true';
+        exclusionToggle.addEventListener('change', function () {
+          controlsState.exclusionZones = exclusionToggle.checked;
+          setLayerVisibility(LAYER_EXCLUSION_FILL, exclusionToggle.checked);
+          setLayerVisibility(LAYER_EXCLUSION_LINE, exclusionToggle.checked);
+        });
+      }
+
+      if (streetToggle && streetToggle.checked) setSatelliteVisibility(false);
+      if (satelliteToggle && satelliteToggle.checked) setSatelliteVisibility(true);
+
+      if (linesToggle) setLayerVisibility(LAYER_LINES, linesToggle.checked);
+      if (circlesToggle) setLayerVisibility(LAYER_CONFIDENCE, circlesToggle.checked);
+      if (numbersToggle) setLayerVisibility(LAYER_NUMBERS, numbersToggle.checked);
+      if (exclusionToggle) {
+        setLayerVisibility(LAYER_EXCLUSION_FILL, exclusionToggle.checked);
+        setLayerVisibility(LAYER_EXCLUSION_LINE, exclusionToggle.checked);
+      }
+    }
+
+    ensureExclusionZoneLayers(map);
+    setupMapLayerToggles();
+
+    var activeRange = getActiveFilterRange();
+    if (activeRange.invalid) {
+      if (mapStatus) {
+        mapStatus.textContent = 'Invalid date or time filter values. Please check the entered range.';
+      }
+      return;
+    }
+
+    // If no date/time filters are set, continue and plot all available points.
+
+    try {
+      if (!allGpsPoints.length) {
+        var payload = null;
+        var dataUrls = [
+          '/public/data/gps-traces-bh-demo-nov03.json',
+          '/assets/data/gps-traces-bh-demo-nov03.json',
+          '/data/gps-traces-bh-demo-nov03.json'
+        ];
+        var loadError = null;
+
+        for (var i = 0; i < dataUrls.length; i++) {
+          try {
+            var response = await fetch(dataUrls[i], { cache: 'no-store' });
+            if (!response.ok) throw new Error('HTTP ' + response.status + ' from ' + dataUrls[i]);
+            payload = await response.json();
+            loadError = null;
+            break;
+          } catch (err) {
+            loadError = err;
+          }
+        }
+
+        if (!payload) {
+          throw new Error('Failed to load GPS data from known paths. ' + (loadError ? loadError.message : 'No response.'));
+        }
+
+        allGpsPoints = flattenTracePoints(payload);
+      }
+      if (!allGpsPoints.length) throw new Error('No valid GPS points found in dataset.');
+
+      var points = filterPointsByForm(allGpsPoints);
+      var usedFallbackPoints = false;
+      if (!points.length && allGpsPoints.length) {
+        points = allGpsPoints.slice();
+        usedFallbackPoints = true;
+      }
+      var geojson = buildFeatureCollections(points);
+
+      if (!map.getSource('emdi-gps-lines')) {
+        map.addSource('emdi-gps-lines', { type: 'geojson', data: geojson.lines });
+        map.addLayer({
+          id: LAYER_LINES,
+          type: 'line',
+          source: 'emdi-gps-lines',
+          paint: {
+            'line-color': '#1d70b8',
+            'line-width': 2,
+            'line-opacity': 0.85
+          }
+        });
+      }
+
+      if (!map.getSource('emdi-gps-points')) {
+        map.addSource('emdi-gps-points', { type: 'geojson', data: geojson.points });
+
+        map.addLayer({
+          id: LAYER_CONFIDENCE,
+          type: 'circle',
+          source: 'emdi-gps-points',
+          paint: {
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              6, ['*', ['coalesce', ['get', 'accuracy'], 10], 0.18],
+              12, ['*', ['coalesce', ['get', 'accuracy'], 10], 0.55],
+              16, ['*', ['coalesce', ['get', 'accuracy'], 10], 1.3]
+            ],
+            'circle-color': '#1d70b8',
+            'circle-opacity': 0.12,
+            'circle-stroke-color': '#1d70b8',
+            'circle-stroke-opacity': 0.35,
+            'circle-stroke-width': 1
+          }
+        });
+
+        map.addLayer({
+          id: LAYER_POINTS,
+          type: 'circle',
+          source: 'emdi-gps-points',
+          paint: {
+            'circle-radius': 4,
+            'circle-color': '#d4351c',
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': 1.5
+          }
+        });
+
+        map.addLayer({
+          id: LAYER_NUMBERS,
+          type: 'symbol',
+          source: 'emdi-gps-points',
+          layout: {
+            'text-field': ['to-string', ['coalesce', ['get', 'label'], ['get', 'index']]],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 11,
+            'text-offset': [0, 1.2],
+            'text-allow-overlap': true
+          },
+          paint: {
+            'text-color': '#0b0c0c',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 1.5
+          }
+        });
+      }
+
+      updateGeoJsonLayers(map, geojson);
+
+      setupMapLayerToggles();
+
+      var minLng = Infinity;
+      var minLat = Infinity;
+      var maxLng = -Infinity;
+      var maxLat = -Infinity;
+
+      points.forEach(function (pt) {
+        if (pt.lng < minLng) minLng = pt.lng;
+        if (pt.lat < minLat) minLat = pt.lat;
+        if (pt.lng > maxLng) maxLng = pt.lng;
+        if (pt.lat > maxLat) maxLat = pt.lat;
+      });
+
+      if (points.length) {
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+          padding: 40,
+          maxZoom: 15,
+          duration: 0
+        });
+      }
+
+      if (!map.__emdiPointHandlersBound) {
+        map.__emdiPointHandlersBound = true;
+        var PopupCtor = (window.maplibregl && window.maplibregl.Popup) ? window.maplibregl.Popup : null;
+        var popup = PopupCtor ? new PopupCtor({
+          closeButton: true,
+          closeOnClick: true,
+          className: 'gps-point-popup',
+          maxWidth: '370px'
+        }) : null;
+        var inlineCard = popup ? null : ensureInlinePingCard(map);
+
+        function openPingCard(e) {
+          var feature = e && e.features && e.features[0];
+          if (!feature) return;
+
+          var html = buildPingCardHtml(feature);
+
+          if (popup) {
+            popup
+              .setLngLat(feature.geometry.coordinates)
+              .setHTML(html)
+              .addTo(map);
+            return;
+          }
+
+          if (inlineCard) {
+            inlineCard.showHtml(html, e && e.point ? e.point : null);
+          }
+        }
+
+        map.on('click', LAYER_POINTS, openPingCard);
+        map.on('click', LAYER_NUMBERS, openPingCard);
+        map.on('click', LAYER_CONFIDENCE, openPingCard);
+
+        function setPointerCursor() {
+          map.getCanvas().style.cursor = 'pointer';
+        }
+
+        function clearPointerCursor() {
+          map.getCanvas().style.cursor = '';
+        }
+
+        map.on('mouseenter', LAYER_POINTS, setPointerCursor);
+        map.on('mouseenter', LAYER_NUMBERS, setPointerCursor);
+        map.on('mouseenter', LAYER_CONFIDENCE, setPointerCursor);
+
+        map.on('mouseleave', LAYER_POINTS, clearPointerCursor);
+        map.on('mouseleave', LAYER_NUMBERS, clearPointerCursor);
+        map.on('mouseleave', LAYER_CONFIDENCE, clearPointerCursor);
+      }
+
+      if (mapStatus) {
+        if (usedFallbackPoints) {
+          mapStatus.textContent = 'No GPS points matched the selected date/time filters. Showing all available points.';
+        } else if (points.length) {
+          mapStatus.textContent = 'Map updated. ' + points.length + ' GPS points plotted.';
+        } else {
+          mapStatus.textContent = 'No GPS points match the selected date and time filters.';
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      if (mapStatus) {
+        mapStatus.textContent = 'Unable to plot GPS data on the map.';
+      }
+    }
+  }
+
+  function bindMapFilterHandlers() {
+    var form = document.getElementById('bh-map-filters');
+    var clearLink = document.getElementById('bh-clear-filters');
+    var updateBtn = document.getElementById('bh-apply-filters');
+    var mapStatus = document.getElementById('map-status');
+
+    if (form && !form.dataset.mapFilterBound) {
+      form.dataset.mapFilterBound = 'true';
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
+      }, true);
+    }
+
+    if (clearLink && !clearLink.dataset.mapFilterBound) {
+      clearLink.dataset.mapFilterBound = 'true';
+      clearLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (form && typeof form.reset === 'function') form.reset();
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
+      });
+    }
+
+    if (updateBtn && !updateBtn.dataset.mapFilterBound) {
+      updateBtn.dataset.mapFilterBound = 'true';
+      updateBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!activeMapInstance && interactiveMap) {
+          if (typeof interactiveMap.getMap === 'function') {
+            activeMapInstance = interactiveMap.getMap() || activeMapInstance;
+          }
+          if (!activeMapInstance && interactiveMap.map) {
+            activeMapInstance = interactiveMap.map;
+          }
+          if (!activeMapInstance && interactiveMap._map) {
+            activeMapInstance = interactiveMap._map;
+          }
+        }
+
+        if (!activeMapInstance) {
+          if (mapStatus) mapStatus.textContent = 'Map is still loading. Please try again.';
+          return;
+        }
+
+        plotGpsDataOnMap(activeMapInstance);
+      });
+    }
+  }
+
+  // Bind immediately so button clicks are always captured.
+  bindMapFilterHandlers();
+
+  function initializeActiveMap(map) {
+    if (!map || activeMapInstance === map) return;
+
+    activeMapInstance = map;
+    ensureLayersPanelControls();
+    showUkOverview(map);
+    ensureExclusionZoneLayers(map);
+
+    var mapStatus = document.getElementById('map-status');
+    if (mapStatus) {
+      mapStatus.textContent = 'Enter Date from/to and Time from/to, then select Update map to load pings.';
+    }
+
+    bindMapFilterHandlers();
+  }
+
+  function readMapFromEvent(event) {
+    if (!event) return null;
+    if (event.map && typeof event.map.getSource === 'function') return event.map;
+    if (typeof event.getSource === 'function') return event;
+    return null;
+  }
+
+  interactiveMap.on('map:ready', function (event) {
+    initializeActiveMap(readMapFromEvent(event));
+  });
+
+  interactiveMap.on('ready', function (event) {
+    initializeActiveMap(readMapFromEvent(event));
+  });
+
+  // Fallback for environments where ready events are inconsistent.
+  setTimeout(function tryMapFallback() {
+    if (activeMapInstance) return;
+
+    var candidate = null;
+    if (interactiveMap && typeof interactiveMap.getMap === 'function') {
+      candidate = interactiveMap.getMap();
+    }
+    if (!candidate && interactiveMap && interactiveMap.map) {
+      candidate = interactiveMap.map;
+    }
+    if (!candidate && interactiveMap && interactiveMap._map) {
+      candidate = interactiveMap._map;
+    }
+
+    if (candidate && typeof candidate.getSource === 'function') {
+      initializeActiveMap(candidate);
+      return;
+    }
+
+    setTimeout(tryMapFallback, 400);
+  }, 400);
+
+  window.interactiveMap = interactiveMap;
+});
+</script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Duration calculator -->
+<script src="/public/javascripts/duration-helper.js"></script>
+
+<script src="/public/javascripts/bh-filters-align.js"></script>
+<script src="/public/javascripts/bh-map-filters.js"></script>
+<script src="/public/javascripts/bh-date-sync.js"></script>
+<script src="/public/javascripts/bh-loi-row-highlight.js"></script>
+
+<script src="/public/javascripts/bh-location-init.js"></script>
+<script src="/public/javascripts/map-overlaysv3.js"></script>
+<script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
+
+<!-- Table filtering -->
+<script src="/public/javascripts/loi-filters.js"></script>
+
+<script>
+
+
+// routes.js (or app.js)
+
+// Handle the form POST
+app.post('/mvp-add-location3', (req, res) => {
+  const { loiName1 } = req.body;
+
+  // TODO: persist loiName + selected address (e.g. req.session or DB)
+  // Example using session:
+  req.session.loi = {
+    name: loiName1,
+    selectedAddress: req.session.selectedAddress // wherever you stored it from prior step
+  };
+
+  // On success, redirect using PRG to avoid resubmission
+  res.redirect('/mvp-location?saved=1');
+});
+
+// Render the destination page
+app.get('/mvp-location', (req, res) => {
+  const saved = req.query.saved === '1';
+  res.render('mvp-location.njk', {
+    saved,
+    data: {
+      loiName1: req.session?.loi?.name,
+      selectedAddress: req.session?.loi?.selectedAddress
+    }
+   });
+
+
+  // Enhancements only — map is created in /public/javascripts/bh-location-init.js
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.map) return;
+
+    // Give LOI areas their own pane above lines/circles but under tooltips/popups
+if (!window.map.getPane('loi-areas')) {
+  const pane = window.map.createPane('loi-areas');
+  // Leaflet default z-indexes: overlayPane=400, markerPane=600, tooltip=650, popup=700
+  // Put polygons above lines/circles (400) but just under tooltips (650)
+  pane.style.zIndex = 645;
+}
+
+    // Restore previously chosen base (Street/Satellite)
+    try {
+      var lastBase = (localStorage.getItem('loi-base') || 'street').toLowerCase();
+      var base = (lastBase === 'satellite') ? window.satelliteLayer : window.streetLayer;
+      if (base && !window.map.hasLayer(base)) base.addTo(window.map);
+
+      // Persist choice when user switches base layers
+      window.map.on('baselayerchange', function (e) {
+        if (e && e.name) localStorage.setItem('loi-base', e.name.toLowerCase());
+      });
+    } catch (e) {
+      console.warn('[bh] base layer restore skipped:', e);
+    }
+
+    // IMPORTANT: do NOT call setupMapOverlays() here — it’s already called in bh-location-init.js
+  });
+
+
+// Open and close the filters panel
+
+jQuery(document).ready(function($) {
+
+  // Open / close the accordions.
+
+  $(".filters-accordion__button").click(function(){
+    if ($(this).attr('aria-expanded') === "false") {
+      $(this).attr('aria-expanded', 'true');
+      $(this).closest(".filters-accordion").toggleClass("js-closed");
+    } else {
+      // alert ("it's closed");
+      $(this).attr('aria-expanded', 'false');
+      $(this).closest(".filters-accordion").toggleClass("js-closed");
+    }
+  })
+
+
+  // Show and hide the filters column
+
+  $('#toggle-filters').on('click', function() {
+    if ($(this).attr('data-click-state') == 1) {
+      $(this).attr('data-click-state', 0);
+      $(this).html("Hide filters");
+      $('#filters-column').show();
+      $('#table-column').removeClass('govuk-grid-column-full');
+      $('#table-column').addClass('govuk-grid-column-three-quarters');
+    } else {
+      $(this).attr('data-click-state', 1);
+      $(this).html("Open filters");
+      $('#filters-column').hide();
+      $('#table-column').removeClass('govuk-grid-column-three-quarters');
+      $('#table-column').addClass('govuk-grid-column-full');
+    }
+  });
+
+
+
+// open and close the accordion panels
+
+$(".app-c-option-select__button").click(function(){
+  if ($(this).attr('aria-expanded') === "false") {
+    $(this).attr('aria-expanded', 'true');
+    $(this).closest(".app-c-option-select").toggleClass("js-closed");
+  } else {
+    // alert ("it's closed");
+    $(this).attr('aria-expanded', 'false');
+    $(this).closest(".app-c-option-select").toggleClass("js-closed");
+  }
+})
+
+  // filter the checkboxes by the input
+
+    $(".filterCheckboxes").keyup(function () {
+        var re = new RegExp($(this).val(), "i")
+        $(this).closest(".app-c-option-select").find('.filter__checkbox .govuk-checkboxes__label').each(function () {
+            var text = $(this).text(),
+                matches = !! text.match(re);
+            $(this).parent().toggle(matches)
+        })
+    })
+
+  // Create the tags
+
+  $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section, #date-range-tags-section").hide()
+
+
+  // When you click the green filter button
+
+  $("button#actionFilter").click(function(){
+
+    // Reset any hidden rows
+    var filterSelected = "";
+    $("tbody tr").show()
+
+    // Set the variables
+    var $tasksChecked = $("input[name='taskType']");
+    var countTasksChecked = $tasksChecked.filter(':checked').length;
+
+    var $assignedChecked = $("input[name='assigedTo']");
+    var countAssignedChecked = $assignedChecked.filter(':checked').length;
+
+    $('ul.task-type-filter-tags, ul.assigned-filter-tags, ul.case-owner-filter-tags').html("");
+
+    // Check if any of the filters are selected
+    if (countTasksChecked <= 0) {
+      $('#task-type-tags-section').hide();
+    } else {
+      $('#task-type-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if (countAssignedChecked <= 0) {
+      $('#assigned-tags-section').hide();
+    } else {
+      $('#assigned-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if (countcaseOwnerChecked <= 0) {
+      $('#case-owner-tags-section').hide();
+    } else {
+      $('#case-owner-tags-section').show();
+      $("#none-selected").hide();
+    }
+    if ($('#dateRangeFrom').val() != '' || ($('#dateRangeTo').val() != '')) {
+      $('#date-range-tags-section').show();
+      $("#none-selected").hide();
+    };
+
+    // Add the task type tags to the list
+    $('input.task-type:checkbox:checked').each(function () {
+      var task = $(this).val();
+      $('ul.task-type-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+task+'</a></li>');
+    });
+
+    // Add the assigned to tags to the list
+    $("input.assigned:checkbox:checked").each(function(){
+      var assigned = $(this).val();
+        $('ul.assigned-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+assigned+'</a></li>')
+    });
+
+    // Add the case owner tags to the list
+    $("input.case-owner:checkbox:checked").each(function(){
+      var caseOwner = $(this).val();
+        $('ul.case-owner-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>'+caseOwner+'</a></li>')
+    });
+
+    // Add the date range tags to the list
+    if ($('#dateRangeFrom').val() != '') {
+        $('ul.date-range-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>From:'+ $('#dateRangeFrom').val() +'</a></li>')
+    };
+    if ($('#dateRangeTo').val() != '') {
+        $('ul.date-range-filter-tags').append('<li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>To:'+ $('#dateRangeTo').val() +'</a></li>')
+    };
+
+    // Hide the table rows
+    $("input.govuk-checkboxes__input:checkbox:checked").each(function(){
+      $("tbody tr").hide()
+      var filterSelected = $(this).val();
+      $("tbody td:contains("+filterSelected+")").closest('tr').show();
+
+      if (filterSelected == "Not assigned") {
+        $("tbody td:contains(–)").closest('tr').show();
+        //alert ('working');
+      }
+
+
+    });
+
+  });
+
+
+
+  // Clear all the task filters
+  $("#clear-filters").click(function (){
+    // delete the tags
+    $('ul.task-type-filter-tags, ul.assigned-filter-tags, ul.case-owner-filter-tags, ul.date-range-filter-tags').html("");
+    // deselect all the checboxes
+    $('.moj-filter__options input:checkbox').each(function() {
+        this.checked = false;
+    })
+    $('#dateRangeFrom').val(null);
+    $('#dateRangeTo').val(null);
+    // hide the tags sections
+    $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section").hide()
+    // Display the no filters selected message
+    $("#none-selected").show();
+    // Show all the table rows
+    $("tbody tr").show()
+    return false;
+  })
+});
+
+// Delete an individual filter when you click a tag
+
+$(document).on("click", "a.moj-filter__tag",function() {
+  $(this).closest('li').remove()
+  var deleteThisTag = $(this).text();
+  var deleteThisCorrect = deleteThisTag.replace('Remove this filter', '');
+  $('.moj-filter__options input[value="' + deleteThisCorrect +'"]:checkbox').each(function() {
+      this.checked = false;
+  })
+
+  if ($('.moj-filter__options input:checkbox:checked').length === 0){
+    $("tbody tr").show();
+    // Display the no filters selected message
+    $("#none-selected").show();
+    $("#task-type-tags-section, #assigned-tags-section, #case-owner-tags-section").hide()
+  }
+
+
+  return false;
+  // alert (deleteThisCorrect);
+});
+
+});
+</script>
+
+<style>
+
+.emdi-map-shell {
+  position: relative;
+}
+
+.emdi-layers-extra .govuk-fieldset__legend {
+  margin-bottom: 10px;
+}
+
+.emdi-map-controls__divider {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #b1b4b6;
+}
+
+.emdi-layers-extra .govuk-radios__item,
+.emdi-layers-extra .govuk-checkboxes__item {
+  margin-bottom: 8px;
+}
+
+.emdi-layers-extra .govuk-checkboxes {
+  display: block;
+}
+
+.emdi-layers-extra .govuk-radios__label,
+.emdi-layers-extra .govuk-checkboxes__label {
+  font-size: 16px;
+}
+
+/* Place built-in DEFRA controls on the right and align panel with map controls */
+.emdi-map-shell .im-o-app__right {
+  left: auto;
+  right: var(--primary-gap);
+}
+
+.emdi-map-shell .im-o-app__right-top,
+.emdi-map-shell .im-o-app__right-bottom {
+  align-items: flex-end;
+}
+
+.emdi-map-shell .im-c-datasets-layers {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #b1b4b6;
+}
+
+
+
+  .govuk-service-navigation__link {
+    font-weight: bold;
+  }
+
+  .govuk-grid-column-full {
+    padding-top: 40px ;
+  }
+
+  .govuk-main-wrapper {
+    padding-top: 10px;
+  }
+
+/* Hide the existing × character */
+.emdi-layers-close {
+  font-size: 0;               /* hides the character */
+}
+
+/* Add replacement text */
+.emdi-layers-close::after {
+  content: "Close map controls ▾";
+  font-size: 16px;
+  line-height: 1.4;
+  color: #0b0c0c;
+  margin-top: 10px;
+}
+
+
+/* Optional GOV.UK hover/focus polish */
+.emdi-layers-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.emdi-layers-close:hover::after {
+  text-decoration: underline;
+}
+
+.emdi-layers-close:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+
+/* Add replacement text */
+.emdi-layers-opener::after {
+  content: "Open map controls ▸";
+  font-size: 16px;
+  line-height: 1.4;
+  color: #0b0c0c;
+  margin-left: 5px;
+  margin-top: 5px;
+  position: absolute;
+  font-family: GDS Transport,arial,sans-serif;
+}
+
+.emdi-layers-opener:hover::after {
+  text-decoration: underline;
+}
+
+
+
+
+/* Dedicated exclusion-zone hook: safe place for per-zone styling */
+.emdi-exclusion-zone-path {
+  stroke: #f47738 !important;
+  stroke-width: 0 !important;
+  fill: #f47738 !important;
+  fill-opacity: 0.35 !important;
+}
+
+path[stroke-width="1"]
+ {
+  stroke: #1d70b8 !important;
+}
+
+
+
+/* Remove the browser's checkbox/radio entirely */
+.leaflet-control-layers-selector {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+
+}
+
+
+
+
+/* Checkbox label */
+.leaflet-control-layers-selector[type="checkbox"] + span {
+  position: relative;
+  padding-left: 34px;
+  cursor: pointer;
+  display: inline-block;
+  padding-top: 4px;
+  padding-bottom: 12px;
+
+}
+
+/* Checkbox box */
+.leaflet-control-layers-selector[type="checkbox"] + span::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: 1px;
+  box-sizing: border-box;
+
+
+}
+
+/* Checkbox tick */
+.leaflet-control-layers-selector[type="checkbox"]:checked + span::after {
+  content: "";
+    position: absolute;
+    left: 7px;
+    top: 2px;
+    width: 4px;
+    height: 12px;
+    margin-left: 2px;
+    margin-top: 2.3px;
+    border: solid #0b0c0c;
+    border-width: 0px 3.5px 3.5px 0;
+    transform: rotate(45deg);
+}
+
+
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="checkbox"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline-offset: 0px;
+}
+
+
+
+/* Radio label */
+.leaflet-control-layers-selector[type="radio"] + span {
+  position: relative;
+  padding-left: 34px;
+  padding-top: 4px;
+  padding-bottom: 12px;
+  cursor: pointer;
+  display: inline-block;
+
+
+}
+
+
+/* Only affect the FIRST RADIO OPTION */
+.leaflet-control-layers-base label:first-child {
+    padding-top: 40px;
+}
+
+
+/* Radio outer circle */
+.leaflet-control-layers-selector[type="radio"] + span::before {
+  content: "";
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: -2px;
+  box-sizing: border-box;
+}
+
+/* Radio inner dot */
+.leaflet-control-layers-selector[type="radio"]:checked + span::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0b0c0c;
+  position: absolute;
+  left: 7px;
+  top: 5px;
+}
+
+/* Input receives focus, so style the box using the sibling selector */
+.leaflet-control-layers-selector[type="radio"]:focus + span::before {
+  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline-offset: 0px;
+}
+
+
+
+.leaflet-container {
+ font-family: "GDS Transport", arial, sans-serif;
+}
+  
+.filters-accordion {
+    position: relative;
+    padding: 0 0 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #b1b4b6;
+}
+
+
+
+.filters-accordion__heading {
+    position: relative;
+    padding: 10px 8px 5px 30px;
+    margin: 0;
+}
+
+
+[aria-expanded="true"]~.filters-accordion__icon--up {
+    display: block;
+}
+
+[aria-expanded="false"]~.filters-accordion__icon--down {
+    display: block;
+}
+
+.govuk-checkboxes .govuk-checkboxes--small {
+  background-color: white;
+}
+
+.moj-filter .govuk-grid-column-one-third {
+  background: #ffffff;
+  background-color: white;
+  border: none;
+
+}
+
+/* Header spacing (optional refinement) */
+.moj-filter__header {
+  padding: 16px 16px 0;
+}
+
+/* Content area */
+.moj-filter__content {
+  padding: 0 16px 16px;
+}
+
+.moj-filter__options {
+    margin-top: -1px;
+    padding: 20px;
+    box-shadow: none;
+    }
+
+/* Keep grid spacing tight inside the white inner panel */
+.moj-filter .govuk-grid-row {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Provide a visual card effect to each group (optional) */
+.moj-filter .govuk-grid-column-one-third {
+  padding: 8px 12px;
+  background: #f8f8f8;            /* very light grey */
+  border-radius: 3px;
+}
+
+/* Headings and hints spacing inside each group */
+.moj-filter .govuk-heading-s {
+  margin-bottom: 4px;
+}
+.moj-filter .govuk-hint {
+  margin-bottom: 8px;
+}
+
+/* Scrollable list specifically for checkbox stacks (per group) */
+.moj-filter .govuk-checkboxes {
+  max-height: 200px;              /* set per-group scroll area */
+  overflow-y: auto;
+  padding-right: 4px;             /* space for scrollbar */
+}
+
+/* Keep small checkboxes compact */
+.moj-filter .govuk-checkboxes--small .govuk-checkboxes__item {
+  margin-bottom: 8px;
+  margin-left: 10px;
+}
+
+/* Button group on a pale grey “footer” strip, like screenshot */
+.moj-filter__actions {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f3f2f1;
+  border-top: 1px solid #b1b4b6;
+}
+
+/* Ensure link and button align nicely */
+.moj-filter__actions .govuk-button-group {
+  margin-bottom: 0;
+}
+
+/* High-contrast/focus refinement: keep GOV.UK focus ring visible
+   when focus moves inside scrollable lists */
+.moj-filter .govuk-checkboxes__input:focus + .govuk-label {
+  outline: 3px solid transparent; /* allow default GDS focus styles to show  outline: 3px solid transparent; /* allow default GDS focus styles to show */
+}
+
+.govuk-hint { 
+  margin-bottom: 10px;
+
+ }
+
+.gps-number-marker span {
+  color: #000 !important;
+  font-weight: 700 !important;
+  -webkit-text-stroke: 1px white; /* width and color */
+  font-size: 19px;
+  padding-left: 20px;
+}
+
+.gps-point-popup .leaflet-popup-content-wrapper {
+  min-width: 250px;
+}
+
+.gps-point-popup .maplibregl-popup-content {
+  min-width: 250px;
+  max-width: 370px;
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 6px;
+}
+
+.gps-point-popup .maplibregl-popup-tip {
+  background: #ffffff;
+}
+
+.gps-point-popup .leaflet-popup-content {
+  margin: 12px 18px;
+}
+
+.gps-point-popup .maplibregl-popup-close-button {
+  font-size: 18px;
+  line-height: 1;
+  right: 6px;
+  top: 4px;
+}
+
+.emdi-inline-ping-card {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 20;
+  width: min(370px, calc(100% - 24px));
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(11, 12, 12, 0.18);
+}
+
+.emdi-inline-ping-card__close {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  border: 0;
+  background: transparent;
+  color: #0b0c0c;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.emdi-inline-ping-card__content {
+  margin: 0;
+  padding: 12px 18px;
+}
+
+.gps-point-popup .govuk-heading-s {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.gps-point-popup .govuk-summary-list {
+  margin-bottom: 0;
+}
+
+.gps-point-popup .govuk-summary-list__key,
+.gps-point-popup .govuk-summary-list__value {
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.gps-point-popup .govuk-summary-list__row {
+  margin-bottom: 2px;
+}
+
+.gps-point-popup code {
+  font-size: 12px;
+  background: #f3f2f1;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.gps-point-popup__nav {
+  display: flex;
+  gap: 16px;
+}
+
+.govuk-summary-list__value {
+  padding-left: 5px;
+}
+
+</style>
+
+
+
+{% endblock %}

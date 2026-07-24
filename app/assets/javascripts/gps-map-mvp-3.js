@@ -78,6 +78,7 @@
 
   // MarkerCluster group for numbered points (enabled per-page via CFG)
   let pointClusters = null;
+  let directionArrowLayers = [];
 
   // ---------- overlay group helpers ----------
   function getGroups(map) {
@@ -106,8 +107,48 @@
     groups.pointDots.clearLayers();
     groups.numbers.clearLayers();
     groups.areas.clearLayers();
+    directionArrowLayers = [];
     if (oms) { oms.clearMarkers(); }
     pointClusters = null;
+  }
+
+  function ensureArrowZoomHandler(map) {
+    if (!map || map.__emdiArrowZoomHandlerBound) return;
+    map.on('zoomend', function () {
+      updateArrowVisibilityForZoom(map);
+    });
+    map.__emdiArrowZoomHandlerBound = true;
+  }
+
+  function updateArrowVisibilityForZoom(map) {
+    if (!map || !Array.isArray(directionArrowLayers)) return;
+    const zoom = map.getZoom();
+
+    directionArrowLayers.forEach(function (entry) {
+      if (!entry || !entry.group || !entry.layer) return;
+      const minZoom = Number.isFinite(entry.minZoomToShow) ? entry.minZoomToShow : 0;
+      const shouldShow = zoom >= minZoom;
+      const hasLayer = entry.group.hasLayer(entry.layer);
+
+      if (shouldShow && !hasLayer) {
+        entry.group.addLayer(entry.layer);
+      } else if (!shouldShow && hasLayer) {
+        entry.group.removeLayer(entry.layer);
+      }
+    });
+  }
+
+  function registerArrowLayer(map, group, layer, arrowConfig) {
+    if (!map || !group || !layer) return;
+    ensureArrowZoomHandler(map);
+
+    directionArrowLayers.push({
+      group,
+      layer,
+      minZoomToShow: Number(arrowConfig.minZoomToShow || 0)
+    });
+
+    updateArrowVisibilityForZoom(map);
   }
 
   window.clearMapTrace = function () {
@@ -371,6 +412,25 @@
   // If points array provided, uses time gaps to create dotted lines for >5 min gaps
   function addPolylineWithArrows(map, latlngs, groups, points) {
     const targetGroup = groups.directionInfo || L.layerGroup().addTo(map);
+    const arrowConfig = Object.assign({
+      offset: 12,
+      repeat: 80,
+      pixelSize: 8,
+      pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' },
+      minSegmentDistanceMeters: 1,
+      minZoomToShow: 0
+    }, window.emdiDirectionArrowConfig || {});
+
+    function shouldDrawArrowForSegment(startPoint, endPoint) {
+      if (!startPoint || !endPoint) return true;
+
+      if (typeof map.distance === 'function') {
+        const segmentDistance = map.distance([startPoint.lat, startPoint.lng], [endPoint.lat, endPoint.lng]);
+        return segmentDistance > Number(arrowConfig.minSegmentDistanceMeters || 1);
+      }
+
+      return startPoint.lat !== endPoint.lat || startPoint.lng !== endPoint.lng;
+    }
 
     // If no points array, fall back to single solid line (legacy)
     if (!points || !Array.isArray(points) || points.length < 2) {
@@ -379,15 +439,15 @@
       if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         const arrows = L.polylineDecorator(line, {
           patterns: [{
-            offset: 12,
-            repeat: 80,
+            offset: arrowConfig.offset,
+            repeat: arrowConfig.repeat,
             symbol: L.Symbol.arrowHead({
-              pixelSize: 8,
-              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+              pixelSize: arrowConfig.pixelSize,
+              pathOptions: arrowConfig.pathOptions
             })
           }]
         });
-        targetGroup.addLayer(arrows);
+        registerArrowLayer(map, targetGroup, arrows, arrowConfig);
       }
       return line;
     }
@@ -417,18 +477,18 @@
       targetGroup.addLayer(line);
 
       // Add arrows to each segment
-      if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+      if (shouldDrawArrowForSegment(curr, next) && L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         const arrows = L.polylineDecorator(line, {
           patterns: [{
-            offset: 12,
-            repeat: 80,
+            offset: arrowConfig.offset,
+            repeat: arrowConfig.repeat,
             symbol: L.Symbol.arrowHead({
-              pixelSize: 8,
-              pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+              pixelSize: arrowConfig.pixelSize,
+              pathOptions: arrowConfig.pathOptions
             })
           }]
         });
-        targetGroup.addLayer(arrows);
+        registerArrowLayer(map, targetGroup, arrows, arrowConfig);
       }
     }
 

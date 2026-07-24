@@ -1,0 +1,221 @@
+{#
+For guidance on how to use layouts see:
+https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
+#}
+
+{% extends "govuk-prototype-kit/layouts/govuk-branded.njk" %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
+
+{% block header %}
+<link rel="stylesheet" href="/public/stylesheets/bh-curfew.css">
+
+{%- from "moj/components/domain-specific/probation/header/macro.njk" import pdsHeader -%}
+
+{{ pdsHeader({
+  environmentName: 'Prototype',
+  environmentNameColour: 'govuk-tag--blue',
+  name: 'J. Smith',
+  manageDetailsLink: '/',
+  servicesLink: '#',
+  services: [
+    {
+      heading: 'Manage people on probation',
+      href: '#',
+      target: '_self'
+    },
+    {
+      heading: 'Electronic monitoring',
+      href: '#',
+      target: '_self'
+    }
+  ]
+}) }}
+
+<div class="govuk-phase-banner govuk-width-container" style="border-bottom:0px ;" >
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag">
+      Beta
+    </strong>
+    <span class="govuk-phase-banner__text">
+      This is a new service. <a class="govuk-link" target="_blank" href="https://www.smartsurvey.co.uk/t/CF3MFT/">Give feedback (opens in new tab)</a> to help us improve it, or  <a class="govuk-link" href="mailto:emdisupport@justice.gov.uk?subject=EMDI problem">report a problem</a>.
+    </span>
+  </p>
+</div>
+
+<div class="govuk-grid-row technical-updates-banner" id="technical-updates-banner" data-banner-version="30 May 2025">
+  <div class="govuk-grid-column-full" style="padding-top: 0px;height: 25px;">
+    <div class="govuk-width-container govuk-body technical-updates-container">
+      <div class="technical-updates-content">
+        <strong class="technical-updates-whats-new">New features</strong>
+        <span>
+            We’re updating the service all the time, <a class="govuk-link govuk-link--inverse" href="whats-new">find out more on the What’s new page.</a>
+        </span>
+      </div>
+      <a id="hide-message" class="technical-updates-hide-message govuk-link govuk-link--inverse" href="#" aria-current="page">Hide message</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var banner = document.getElementById('technical-updates-banner');
+    var hideLink = document.getElementById('hide-message');
+    if (!banner) return;
+
+    var bannerVersion = banner.getAttribute('data-banner-version') || 'default';
+    var storageKey = 'technical-updates-banner-dismissed:' + bannerVersion;
+    var storageKeyPrefix = 'technical-updates-banner-dismissed:';
+
+    function clearBannerDismissalState() {
+      try {
+        for (var i = sessionStorage.length - 1; i >= 0; i--) {
+          var key = sessionStorage.key(i);
+          if (key && key.indexOf(storageKeyPrefix) === 0) {
+            sessionStorage.removeItem(key);
+          }
+        }
+      } catch (e) {
+        // Ignore storage errors and continue with navigation.
+      }
+    }
+
+    function isDismissed() {
+      try {
+        return sessionStorage.getItem(storageKey) === 'true';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function applyBannerVisibility() {
+      banner.style.display = isDismissed() ? 'none' : '';
+    }
+
+    function setDismissedState() {
+      try {
+        sessionStorage.setItem(storageKey, 'true');
+      } catch (e) {
+        // Ignore storage errors (private mode / disabled storage).
+      }
+      applyBannerVisibility();
+    }
+
+    applyBannerVisibility();
+
+    window.addEventListener('pageshow', function () {
+      applyBannerVisibility();
+    });
+
+    if (hideLink) {
+      hideLink.addEventListener('click', function (event) {
+        event.preventDefault();
+        setDismissedState();
+      });
+    }
+
+    var whatsNewLink = banner.querySelector('a[href="whats-new"]');
+    if (whatsNewLink) {
+      whatsNewLink.addEventListener('click', function () {
+        setDismissedState();
+      });
+    }
+
+    var clearDataLinks = document.querySelectorAll('a[href="/manage-prototype/clear-data"], a[href="manage-prototype/clear-data"]');
+    clearDataLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        clearBannerDismissalState();
+        applyBannerVisibility();
+      });
+    });
+  });
+</script>
+
+      
+{% if currentNav is not defined %}{% set currentNav = 'home' %}{% endif %}
+
+{{ govukServiceNavigation({
+  serviceName: "",
+  serviceUrl: "/",
+  navigation: [
+    { href: "/",  text: "Home",  active: currentNav == "home" },
+    { href: "/",  text: "Cases",  active: currentNav == "cases" },
+    { href: "/", text: "Search", active: currentNav == "search" },
+    { href: "/", html: 'Alerts', active: currentNav == "alerts" }
+    
+  ]
+}) }}
+
+{% endblock %}
+
+{% block footer %}
+
+
+
+  <!-- BEGIN PDS FOOTER (pasted from component service /footer page) -->
+<footer class="probation-common-footer govuk-!-display-none-print" role="contentinfo">
+  <div class="govuk-width-container">
+    
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="probation-common-footer__support-links">
+          <h2 class="govuk-visually-hidden">Support links</h2>
+          <ul class="probation-common-footer__inline-list">
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/accessibility">Accessibility</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/cookies-policy">Cookies policy</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk/privacy-policy">Privacy policy</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="/design-history">Design history</a>
+            </li>
+            <li class="probation-common-footer__inline-list-item">
+              <a class="probation-common-footer__link" href="/manage-prototype/clear-data">Clear data</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style> 
+
+
+.technical-updates-banner {
+  background-color: #44247b;
+    padding: 10px 0 10px 0;
+}
+
+.technical-updates-whats-new {
+    padding-right: 20px;
+}
+
+ .govuk-link--inverse {
+padding-right: 30px;
+}
+
+.govuk-grid-row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.technical-updates-container {
+    color: #fff;
+}
+
+.technical-updates-content {
+    float: left;
+}
+
+</style>
+
+
+  <!-- END PDS FOOTER -->
+{% endblock %}
+

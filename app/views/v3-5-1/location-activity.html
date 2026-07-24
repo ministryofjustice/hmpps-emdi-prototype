@@ -804,6 +804,14 @@
 
 <script src="/public/javascripts/bh-location-init.js"></script>
 <script src="/public/javascripts/map-overlaysv2.js"></script>
+<script>
+  window.emdiDirectionArrowConfig = {
+    offset: 32,
+    repeat: 80,
+    pixelSize: 8,
+    pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+  };
+</script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 
 <script>
@@ -1250,6 +1258,11 @@ a[aria-label="North arrow"] {
   stroke: black;
   color: white;
 
+}
+
+path[stroke-width="3"][stroke="black"],
+path[stroke-width="3"][stroke="#000000"] {
+  stroke: #1d70b8 !important;
 }
 
 path[stroke-width="1"]

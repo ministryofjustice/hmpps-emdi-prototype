@@ -1,4 +1,4 @@
-{% extends "layouts/main2.html" %}
+{% extends "layouts/main3.html" %}
 
 {% set currentNav = "cases" %}
 
@@ -45,8 +45,8 @@
 
 {% set pageName="Location activity" %}
 
-
 {% block content %}
+
 
 <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
   <ol class="govuk-breadcrumbs__list">
@@ -85,23 +85,7 @@
 
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
-<div class="moj-page-header-actions">
-  <div class="moj-page-header-actions__title">
-    <h3 class="govuk-heading-s">Search map by date and time</h3>
-  </div>
-  <div class="moj-page-header-actions__actions">
-    <div class="moj-button-group moj-button-group--inline">
-        <a href="save-record"
-          id="bh-save-search-link"
-          class="govuk-button govuk-button--secondary"
-          role="button"
-          data-module="govuk-button">
-          Save search
-        </a>
 
-    </div>
-  </div>
-</div>
 
 
 <div class="loi-filters govuk-!-margin-bottom-3">
@@ -253,7 +237,7 @@
     pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
   };
 </script>
-<script src="/public/javascripts/gps-map-mvp-3.js"></script>
+<script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
 
@@ -1015,7 +999,7 @@ path[stroke-width="1"]
 }
 
 .gps-point-popup .leaflet-popup-content-wrapper {
-  min-width: 250px;
+  min-width: 320px;
 }
 
 .gps-point-popup .leaflet-popup-content {
@@ -1088,6 +1072,26 @@ path[stroke-width="1"]
   .govuk-width-container {
     max-width: 1280px;
   }
+
+
+.technical-updates-banner {
+    background-color: #44247b;
+    padding: 10px 0 10px 0;
+}
+
+.govuk-grid-row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.technical-updates-container {
+    color: #fff;
+}
+
+.technical-updates-content {
+    float: left;
+}
+
 
 </style>
 

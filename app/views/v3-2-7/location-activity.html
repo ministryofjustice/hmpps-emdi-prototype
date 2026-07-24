@@ -662,6 +662,12 @@ a[aria-label="North arrow"] {
   outline-offset: 2px;
 }
 
+ .bh-date-from .govuk-label,
+ .bh-date-to .govuk-label,
+ .bh-time-from > .govuk-form-group > .govuk-label,
+ .bh-time-to > .govuk-form-group > .govuk-label {
+    font-weight: 700 !important;
+  }
 
 /* Add replacement text */
 .emdi-layers-opener::after {
@@ -806,26 +812,11 @@ path[stroke-width="1"]
     padding: 10px;
 }
 
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out {
-  font: bold 19px "GDS Transport", arial, sans-serif, monospace !important;
-  font-size: 24px !important;
-  text-indent: 0;
-  line-height: 40px !important;
-  width: 19px !important;
-  height: 19px !important;
-}
-
-.leaflet-control-zoom a {
-  width: 56px !important;
-  height: 56px !important;
-  line-height: 50px !important;
-}
-
-.leaflet-touch .leaflet-control-zoom a {
-  width: 56px !important;
-  height: 56px !important;
-  line-height: 50px !important;
+.leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-zoom a, .leaflet-touch .leaflet-control-zoom a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 24px !important;
 }
 
 .leaflet-control-layers-expanded {

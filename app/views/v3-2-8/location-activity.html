@@ -1,4 +1,4 @@
-{% extends "layouts/main2.html" %}
+{% extends "layouts/main3.html" %}
 
 {% set currentNav = "cases" %}
 
@@ -45,8 +45,8 @@
 
 {% set pageName="Location activity" %}
 
-
 {% block content %}
+
 
 <nav class="govuk-breadcrumbs" aria-label="Breadcrumb">
   <ol class="govuk-breadcrumbs__list">
@@ -64,24 +64,26 @@
  
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-full case-summary-banner" style="background: #1D70B8; color: #fff;">
           <span class="govuk-caption-m govuk-!-margin-bottom-2">
-        <abbr title="Case reference number" style="text-decoration: none">CRN</abbr>: {{ persondata.crn  }}
-        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Date of birth: {{ persondata.dateOfBirth  }}
-        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile">|</span>
-        Sentence: {{ persondata.sentence  }}
-      </span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+             <h1 class="govuk-heading-l govuk-!-margin-bottom-4" style="color: #fff;">
       {{ persondata.name  }}
     </h1>
+        <span class="case-summary-crn"><abbr title="Case reference number" style="text-decoration: none; color: #fff;"><strong>CRN</strong></abbr>: {{ persondata.crn  }}</span> <br> <br>
+        <strong>Date of birth</strong>: {{ persondata.dateOfBirth  }}
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile"></span>
+        <strong>Tier</strong>: B1
+        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile"></span>
+        <strong>Managed by</strong>: Probation officer one
+      </span>
+   
   </div>
 </div>
 
 
  
 <!-- This is the header for the page and start of page content -->
-<h2 class="govuk-heading-m" id="map-header">Location activity</h2>
+<h2 class="govuk-heading-m" id="map-header" style="padding-top: 20px;">Location activity</h2>
 
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
@@ -231,7 +233,7 @@
 <script src="/public/javascripts/map-overlaysv3.js"></script>
 <script>
   window.emdiDirectionArrowConfig = {
-    offset: 0,
+    offset: 32,
     repeat: 80,
     pixelSize: 8,
     pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
@@ -860,6 +862,17 @@ path[stroke-width="1"]
   outline-offset: 0px;
 }
 
+ .bh-date-from .govuk-label,
+ .bh-date-to .govuk-label,
+ .bh-time-from > .govuk-form-group > .govuk-label,
+ .bh-time-to > .govuk-form-group > .govuk-label {
+    font-weight: 700 !important;
+  }
+
+ .bh-time-from .govuk-date-input__label,
+ .bh-time-to .govuk-date-input__label {
+    font-weight: 400 !important;
+  }
 
 
 .leaflet-container {
@@ -1053,17 +1066,40 @@ path[stroke-width="1"]
   }
 }
 
- .bh-date-from .govuk-label,
- .bh-date-to .govuk-label,
- .bh-time-from > .govuk-form-group > .govuk-label,
- .bh-time-to > .govuk-form-group > .govuk-label {
-    font-weight: 700 !important;
-  }
-
  /* Page width override for this version: +50px each side (100px total). */
   .govuk-width-container {
     max-width: 1280px;
   }
+
+
+.technical-updates-banner {
+    background-color: #44247b;
+    padding: 10px 0 10px 0;
+}
+
+.govuk-grid-row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.technical-updates-container {
+    color: #fff;
+}
+
+.technical-updates-content {
+    float: left;
+}
+
+.case-summary-banner,
+.case-summary-banner * {
+  color: #fff !important;
+}
+
+.case-summary-crn {
+  font-size: 24px;
+  line-height: 1.2;
+}
+
 
 </style>
 

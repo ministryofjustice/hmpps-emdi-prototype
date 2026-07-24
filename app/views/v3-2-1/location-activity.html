@@ -63,6 +63,15 @@
 </nav>
  
 
+<div id="feedback-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">
+  <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
+    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+      <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z" />
+    </svg>
+    <div class="moj-banner__message">You have successfully added 1 question.</div>
+  </div>
+</div>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
           <span class="govuk-caption-m govuk-!-margin-bottom-2">
@@ -229,12 +238,31 @@
 
 <script src="/public/javascripts/bh-location-init.js"></script>
 <script src="/public/javascripts/map-overlaysv2.js"></script>
+<script>
+  window.emdiDirectionArrowConfig = {
+    offset: 32,
+    repeat: 80,
+    pixelSize: 8,
+    pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
+  };
+</script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
 
 <!-- Table filtering -->
 <script src="/public/javascripts/loi-filters.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (sessionStorage.getItem('v321LocationActivitySuccessBanner') !== '1') return;
+
+    var banner = document.getElementById('feedback-success-banner');
+    if (banner) banner.classList.remove('govuk-!-display-none');
+
+    sessionStorage.removeItem('v321LocationActivitySuccessBanner');
+  });
+</script>
 
 <script>
 
@@ -498,6 +526,14 @@ $(document).on("click", "a.moj-filter__tag",function() {
 <style>
 
   .govuk-service-navigation__link {
+<div id="feedback-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">
+  <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
+    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+      <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z" />
+    </svg>
+    <div class="moj-banner__message">You have successfully added 1 question.</div>
+  </div>
+</div>
     font-weight: bold;
   }
 
@@ -565,6 +601,11 @@ $(document).on("click", "a.moj-filter__tag",function() {
   stroke: black;
   color: white;
 
+}
+
+path[stroke-width="3"][stroke="black"],
+path[stroke-width="3"][stroke="#000000"] {
+  stroke: #1d70b8 !important;
 }
 
 path[stroke-width="1"]

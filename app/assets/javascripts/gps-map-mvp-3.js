@@ -434,7 +434,7 @@
 
     // If no points array, fall back to single solid line (legacy)
     if (!points || !Array.isArray(points) || points.length < 2) {
-      const line = L.polyline(latlngs, { color: 'black', weight: 3, opacity: 0.9 });
+      const line = L.polyline(latlngs, { color: '#1d70b8', weight: 3, opacity: 0.9 });
       targetGroup.addLayer(line);
       if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         const arrows = L.polylineDecorator(line, {
@@ -468,7 +468,7 @@
       // Dotted line for large gaps, solid for small gaps
       const isDottedSegment = gapMins > GAP_THRESHOLD_MINS;
       const line = L.polyline(segment, {
-        color: 'black',
+        color: '#1d70b8',
         weight: 3,
         opacity: 0.9,
         dashArray: isDottedSegment ? '5, 5' : null,  // dashed if gap > 5 mins

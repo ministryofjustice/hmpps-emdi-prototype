@@ -655,6 +655,10 @@
 
   const lat = fmtCoord(pt.lat);
   const lng = fmtCoord(pt.lng);
+  const hasCoords = lat !== '—' && lng !== '—';
+  const streetViewUrl = hasCoords
+    ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(`${lat},${lng}`)}`
+    : '';
   const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
   const lastIndex = Math.max(0, totalPoints - 1);
@@ -698,10 +702,7 @@
           <dd class="govuk-summary-list__value">${dateTime}</dd>
         </div>
 
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Lat, long</dt>
-          <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
-        </div>
+       
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Speed</dt>
@@ -711,6 +712,10 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Signal type</dt>
           <dd class="govuk-summary-list__value" style="margin-left: 1rem;">${geolocationMechanism}</dd>
+        </div>
+
+         <div class="govuk-summary-list__row">
+          <dd class="govuk-summary-list__value">${hasCoords ? `<a class="govuk-link" href="${streetViewUrl}" target="_blank" rel="noopener noreferrer">Open in street view</a>` : '—'}</dd>
         </div>
 
         

@@ -45,6 +45,8 @@
 
 {% set pageName="Location activity" %}
 
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
 
 {% block content %}
 
@@ -61,6 +63,15 @@
     </li>
   </ol>
 </nav>
+
+<div id="v325-save-search-success" class="govuk-!-display-none govuk-!-margin-bottom-4">
+  {{ mojAlert({
+    variant: "success",
+    title: "Upload successful",
+    dismissible: true,
+    html: 'Search saved to MPoP successfully.'
+  }) }}
+</div>
  
 
 <div class="govuk-grid-row">
@@ -262,6 +273,12 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    var saveSearchSuccessBanner = document.getElementById('v325-save-search-success');
+    if (saveSearchSuccessBanner && sessionStorage.getItem('v325SaveSearchUploadSuccess') === '1') {
+      saveSearchSuccessBanner.classList.remove('govuk-!-display-none');
+      sessionStorage.removeItem('v325SaveSearchUploadSuccess');
+    }
+
     var form = document.getElementById('bh-map-filters');
     var saveLink = document.getElementById('bh-save-search-link');
 

@@ -169,7 +169,7 @@
 <div class="govuk-button-group">
 {{ govukButton({
   text: "Save search",
-  href: "save-confirmation",
+  href: "location-activity",
   attributes: { id: "send-to-ndelius-btn" }
 }) }}
   <a class="govuk-link" href="bh-location">Cancel and go back</a>
@@ -297,6 +297,8 @@
       saveBtn.addEventListener('click', function (e) {
         e.preventDefault();
 
+        sessionStorage.setItem('v325SaveSearchUploadSuccess', '1');
+
         var out = new URLSearchParams();
         out.set('description', readValue('#description'));
         out.set('dateFrom', readDate('breach-date'));
@@ -305,7 +307,7 @@
         out.set('timeTo', readTime('breach-hour-to', 'breach-min-to'));
         out.set('notes', readValue('#notes'));
 
-        window.location.href = 'save-confirmation?' + out.toString();
+        window.location.href = 'location-activity?' + out.toString();
       });
     }
   });

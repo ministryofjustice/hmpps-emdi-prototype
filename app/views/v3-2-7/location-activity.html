@@ -43,7 +43,7 @@
 
     {% endif %}
 
-{% set pageName="Location activity" %}
+{% set pageName="Location activity, " + persondata.name %}
 
 {% block content %}
 
@@ -57,7 +57,7 @@
       <a class="govuk-breadcrumbs__link" href="#">{{ persondata.name }}</a>
     </li>
     <li class="govuk-breadcrumbs__list-item" aria-current="page">
-      Electronic monitoring - Location activity
+      Electronic monitoring - GPS data
     </li>
   </ol>
 </nav>

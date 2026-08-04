@@ -306,6 +306,43 @@
       window.map.addLayer(window.mapLayers.heatmap);
     }
 
+    // This version does not offer the exclusion zone overlay.
+    function removeOverlayOptionByText(textToMatch) {
+      var labels = document.querySelectorAll('.leaflet-control-layers-overlays label');
+      labels.forEach(function (label) {
+        var text = (label.textContent || '').trim().toLowerCase();
+        if (text === textToMatch) {
+          label.remove();
+        }
+      });
+    }
+
+    function pruneExclusionZoneControl() {
+      removeOverlayOptionByText('exclusion zone');
+    }
+
+    function removeExclusionZoneFromMap() {
+      if (window.mapLayers && window.mapLayers.exclusionZone && window.map.hasLayer(window.mapLayers.exclusionZone)) {
+        window.map.removeLayer(window.mapLayers.exclusionZone);
+      }
+    }
+
+    pruneExclusionZoneControl();
+    removeExclusionZoneFromMap();
+
+    var controlContainer = document.querySelector('.leaflet-control-layers');
+    if (controlContainer && typeof MutationObserver === 'function') {
+      var exclusionZoneObserver = new MutationObserver(function () {
+        pruneExclusionZoneControl();
+      });
+      exclusionZoneObserver.observe(controlContainer, { childList: true, subtree: true });
+    }
+
+    window.map.on('overlayadd', function () {
+      removeExclusionZoneFromMap();
+      pruneExclusionZoneControl();
+    });
+
     var keyControl = L.control({ position: 'topright' });
     keyControl.onAdd = function () {
       var container = L.DomUtil.create('div', 'leaflet-control emdi-heatmap-key');

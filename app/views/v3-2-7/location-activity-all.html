@@ -359,6 +359,34 @@
     var activeTab = null;
     var tabButtons = {};
 
+    function resetSharedPanelHeight() {
+      sharedPanel.style.removeProperty('--emdi-panel-height');
+      sharedPanel.classList.remove('emdi-shared-panel--layers');
+    }
+
+    function syncSharedPanelHeight() {
+      if (activeTab !== 'layers') {
+        resetSharedPanelHeight();
+        return;
+      }
+
+      var mapEl = document.getElementById('map');
+      if (!mapEl) return;
+
+      var mapRect = mapEl.getBoundingClientRect();
+      var panelRect = sharedPanel.getBoundingClientRect();
+      var mapHeight = mapRect.height;
+      if (!mapHeight) return;
+
+      var panelTopOffset = Math.max(0, panelRect.top - mapRect.top);
+      var panelHeight = Math.max(Math.round(mapHeight - panelTopOffset - 20), 240);
+      sharedPanel.style.setProperty('--emdi-panel-height', panelHeight + 'px');
+      sharedPanel.classList.add('emdi-shared-panel--layers');
+    }
+
+    syncSharedPanelHeight();
+    window.addEventListener('resize', syncSharedPanelHeight);
+
     function updateTabButtons() {
       Object.keys(tabButtons).forEach(function (tab) {
         var btn = tabButtons[tab];
@@ -375,10 +403,17 @@
       keySlot.hidden = tab !== 'key';
       layersSlot.hidden = tab !== 'layers';
       updateTabButtons();
+
+      if (tab === 'layers' && typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(syncSharedPanelHeight);
+      } else {
+        syncSharedPanelHeight();
+      }
     }
 
     function closePanel() {
       activeTab = null;
+      resetSharedPanelHeight();
       sharedPanel.hidden = true;
       updateTabButtons();
     }
@@ -1715,13 +1750,20 @@ path[stroke-width="1"]
   border: 1px solid #b1b4b6;
   padding: 12px;
   width: 250px;
-  max-height: 70vh;
-  overflow-y: auto;
+  height: auto;
+  max-height: none;
+  overflow: visible;
   overflow-x: hidden;
   box-sizing: border-box;
   z-index: 1000;
   display: flex;
   flex-direction: column;
+}
+
+.emdi-shared-panel--layers {
+  height: var(--emdi-panel-height, 600px);
+  max-height: var(--emdi-panel-height, 600px);
+  overflow: hidden;
 }
 
 .emdi-shared-panel[hidden],
@@ -1773,14 +1815,24 @@ path[stroke-width="1"]
 .emdi-shared-panel__layers-content {
   display: block;
   flex: 1 1 auto;
+  min-height: 0;
+}
+
+.emdi-shared-panel--layers .emdi-shared-panel__layers-content {
+  height: calc(0% - 40px);
+  max-height: calc(100% - 44px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  padding-bottom: 50px;
+  box-sizing: border-box;
 }
 
 .emdi-custom-layer-controls {
-  height: calc(70vh - 250px);
-  max-height: calc(70vh - 120px);
-  overflow-y: scroll;
-  overflow-x: hidden;
-  padding-right: 6px;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .emdi-heatmap-key__empty {
@@ -2204,10 +2256,17 @@ path[stroke-width="1"]
     max-width: 1280px;
   }
 
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
 
 .technical-updates-banner {
     background-color: #44247b;
-    padding: 10px 0 10px 0;
+    padding: 10px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .govuk-grid-row {
@@ -2217,10 +2276,14 @@ path[stroke-width="1"]
 
 .technical-updates-container {
     color: #fff;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .technical-updates-content {
-    float: left;
+    float: none;
+    max-width: 100%;
+    min-width: 0;
 }
 
 

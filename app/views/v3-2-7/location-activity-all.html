@@ -991,77 +991,36 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('bh:map-ready', function () {
     if (!window.map) return;
 
-    function getOrderedPointMarkers() {
-      var group = window.mapLayers && window.mapLayers.numbers;
-      if (!group || typeof group.getLayers !== 'function') return [];
-      return group.getLayers()
-        .filter(function (layer) { return layer && typeof layer._pointIndex === 'number'; })
-        .sort(function (a, b) { return a._pointIndex - b._pointIndex; });
-    }
-
-    function goToPoint(targetIndex) {
-      var markers = getOrderedPointMarkers();
-      var marker = markers.filter(function (m) { return m._pointIndex === targetIndex; })[0];
-      if (!marker) return;
-
-      if (typeof window.map.panTo === 'function' && typeof marker.getLatLng === 'function') {
-        window.map.panTo(marker.getLatLng(), { animate: true });
-      }
-      marker.openPopup();
-    }
-
-    function buildNavButton(nav, targetIndex, label, iconHtml) {
-      var button = document.createElement('a');
-      button.className = 'govuk-link gps-point-popup__nav-button';
-      button.href = '#';
-      button.setAttribute('aria-label', label);
-      button.dataset.nav = nav;
-      button.dataset.pointIndex = String(targetIndex);
-      button.innerHTML = iconHtml;
-
-      button.addEventListener('click', function (event) {
-        event.preventDefault();
-        goToPoint(targetIndex);
-      });
-
-      return button;
-    }
-
     window.map.on('popupopen', function (e) {
       var popup = e.popup;
       var popupEl = popup && typeof popup.getElement === 'function' && popup.getElement();
       var card = popupEl && popupEl.querySelector('.gps-point-card');
-      if (!card || card.querySelector('.gps-point-popup__header')) return;
+      if (!card) return;
 
-      var heading = card.querySelector('h4');
-      var match = heading && heading.textContent.match(/Point (\d+) of (\d+)/);
+      var latLngRow = null;
+      card.querySelectorAll('.govuk-summary-list__row').forEach(function (row) {
+        var key = row.querySelector('.govuk-summary-list__key');
+        if (key && key.textContent.trim() === 'Lat, long') latLngRow = row;
+      });
+      if (!latLngRow || latLngRow.dataset.emdiAddressAdded) return;
+      latLngRow.dataset.emdiAddressAdded = 'true';
+
+      var value = latLngRow.querySelector('.govuk-summary-list__value');
+      var match = value && value.textContent.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
       if (!match) return;
 
-      var currentIndex = Number(match[1]) - 1;
-      var total = Number(match[2]);
-      var lastIndex = Math.max(0, total - 1);
-      var hasPrev = currentIndex > 0;
-      var hasNext = currentIndex < lastIndex;
+      var lat = parseFloat(match[1]);
+      var lng = parseFloat(match[2]);
 
-      var header = document.createElement('div');
-      header.className = 'gps-point-popup__header';
+      var addressRow = document.createElement('div');
+      addressRow.className = 'govuk-summary-list__row';
+      addressRow.innerHTML = '<dt class="govuk-summary-list__key">Address</dt><dd class="govuk-summary-list__value">Looking up address…</dd>';
+      latLngRow.insertAdjacentElement('afterend', addressRow);
 
-      if (hasPrev) {
-        header.appendChild(buildNavButton('first', 0, 'Go to first point', '&laquo;'));
-        header.appendChild(buildNavButton('prev', currentIndex - 1, 'Go to previous point', '&lsaquo;'));
-      }
-
-      header.appendChild(heading);
-      heading.classList.add('gps-point-popup__title');
-
-      if (hasNext) {
-        header.appendChild(buildNavButton('next', currentIndex + 1, 'Go to next point', '&rsaquo;'));
-        header.appendChild(buildNavButton('last', lastIndex, 'Go to last point', '&raquo;'));
-      }
-
-      card.insertBefore(header, card.firstChild);
-
-      if (popup.update) popup.update();
+      reverseGeocodeLookup(lat, lng, function (address) {
+        var dd = addressRow.querySelector('.govuk-summary-list__value');
+        if (dd) dd.textContent = address || 'Address unavailable';
+      });
     });
   });
 </script>
@@ -1750,7 +1709,7 @@ path[stroke-width="1"]
 .emdi-shared-panel {
   position: absolute;
   top: 100%;
-  right: 0;
+  right: 10px;
   margin-top: 8px;
   background: #ffffff;
   border: 1px solid #b1b4b6;
@@ -1758,8 +1717,17 @@ path[stroke-width="1"]
   width: 250px;
   max-height: 70vh;
   overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.emdi-shared-panel[hidden],
+.emdi-shared-panel__key-content[hidden],
+.emdi-shared-panel__layers-content[hidden] {
+  display: none !important;
 }
 
 .emdi-shared-panel__header {
@@ -1794,6 +1762,25 @@ path[stroke-width="1"]
 .emdi-shared-panel__close:focus {
   outline: 3px solid #ffdd00;
   outline-offset: 2px;
+}
+
+.emdi-shared-panel__key-content,
+.emdi-shared-panel__layers-content {
+  min-height: 0;
+  overflow: visible;
+}
+
+.emdi-shared-panel__layers-content {
+  display: block;
+  flex: 1 1 auto;
+}
+
+.emdi-custom-layer-controls {
+  height: calc(70vh - 250px);
+  max-height: calc(70vh - 120px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 6px;
 }
 
 .emdi-heatmap-key__empty {
@@ -1964,6 +1951,12 @@ path[stroke-width="1"]
 .leaflet-control-layers-expanded {
   padding: 12px 30px 10px 12px;
   color: #0b0c0c;
+  max-height: calc(100vh - 120px);
+  overflow: hidden;
+}
+
+.emdi-layers-panel {
+  margin-right: 10px;
 }
 
 .leaflet-control-layers label {
@@ -1976,7 +1969,7 @@ path[stroke-width="1"]
   margin-top: 40px;
   margin-right: -30px;
   padding-right: 30px;
-  max-height: 460px;
+  max-height: calc(100vh - 190px);
   overflow-y: auto;
   overflow-x: hidden;
 }

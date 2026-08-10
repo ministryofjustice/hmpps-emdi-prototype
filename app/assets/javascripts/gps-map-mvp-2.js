@@ -715,10 +715,31 @@
   const lng = fmtCoord(pt.lng);
   const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
+  const lastIndex = Math.max(0, totalPoints - 1);
+
+  function buildNavButton(nav, targetIndex, label, iconHtml, isDisabled) {
+    if (isDisabled) return '';
+
+    return `
+      <a class="govuk-link gps-point-popup__nav-button" href="#" aria-label="${label}" data-nav="${nav}" data-point-index="${targetIndex}">
+        ${iconHtml}
+      </a>
+    `;
+  }
+
+  const headerNav = `
+    <div class="gps-point-popup__header">
+      ${buildNavButton('first', 0, 'Go to first point', '&laquo;', !hasPrev)}
+      ${buildNavButton('prev', idx - 1, 'Go to previous point', '&lsaquo;', !hasPrev)}
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Point ${pointNumber} of ${totalPoints}</h4>
+      ${buildNavButton('next', idx + 1, 'Go to next point', '&rsaquo;', !hasNext)}
+      ${buildNavButton('last', lastIndex, 'Go to last point', '&raquo;', !hasNext)}
+    </div>
+  `;
 
   return `
     <div class="gps-point-card">
-      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Point ${pointNumber} of ${totalPoints}</h4>
+      ${headerNav}
       <dl class="govuk-summary-list govuk-!-margin-bottom-0">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Accuracy</dt>
@@ -1214,7 +1235,16 @@
       });
     });
 
-    // 2) Delegated navigation for GPS point popups — removed.
+    // 2) Delegated navigation for GPS point popups.
+    document.addEventListener('click', function (e) {
+      const button = e.target.closest && e.target.closest('.gps-point-popup__nav-button');
+      if (!button) return;
+      e.preventDefault();
+
+      const pointIndex = Number(button.dataset.pointIndex);
+      if (!Number.isFinite(pointIndex) || pointIndex < 0) return;
+      showPointPopup(pointIndex);
+    });
 
     // 3) Missing-data table links to exact map points.
     document.addEventListener('click', function (e) {

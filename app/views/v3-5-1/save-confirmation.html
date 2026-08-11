@@ -1,0 +1,137 @@
+{% extends "layouts/main3.html" %}
+
+{% set currentNav = "cases" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: true },
+  { text: "Search", href: "#", active: false },
+  { text: "Alerts", href: "#", active: false }
+] %}
+
+{% if data['personselected']=='billyhoskins' %}
+
+      {% set persondata=data['billyhoskins'] %}
+
+    {% elif data['personselected']=='pennyjordan' %}
+
+        {% set persondata=data['pennyjordan'] %}
+
+    {% elif data['personselected']=='mikeknight' %}
+
+        {% set persondata=data['mikeknight'] %}
+
+    {% elif data['personselected']=='richardmarks' %}
+
+        {% set persondata=data['richardmarks'] %}
+
+    {% elif data['personselected']=='terrymedford' %}
+
+        {% set persondata=data['terrymedford'] %}
+
+    {% elif data['personselected']=='chrispost' %}
+
+        {% set persondata=data['chrispost'] %}
+
+    {% elif data['personselected']=='jasonscott' %}
+
+        {% set persondata=data['jasonscott'] %}
+
+    {% elif data['personselected']=='mikevanpeebles' %}
+
+        {% set persondata=data['mikevanpeebles'] %}
+
+    {% endif %}
+
+{% block pageTitle %}
+  Confirmation – {{ serviceName }} – GOV.UK Prototype Kit
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Search has been successfully saved
+        </h1>
+        <div class="govuk-panel__body">
+          {{ persondata.name  }}<br>
+          {{ persondata.crn  }}
+        </div>
+      </div>
+
+      <p class="govuk-body">
+        The search has been saved.
+      </p>
+
+      <h2 class="govuk-heading-m">What you saved</h2>
+
+      <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Description</dt>
+          <dd class="govuk-summary-list__value" id="conf-description">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Date from</dt>
+          <dd class="govuk-summary-list__value" id="conf-date-from">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Date to</dt>
+          <dd class="govuk-summary-list__value" id="conf-date-to">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Time from</dt>
+          <dd class="govuk-summary-list__value" id="conf-time-from">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Time to</dt>
+          <dd class="govuk-summary-list__value" id="conf-time-to">—</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Notes</dt>
+          <dd class="govuk-summary-list__value" id="conf-notes">—</dd>
+        </div>
+      </dl>
+
+      <h2 class="govuk-heading-m">What you want to do next</h2>
+      <p class="govuk-body">
+        <a href="location-activity" class="govuk-link">Return to location activity</a>
+      </p>
+      <p class="govuk-body">
+        <a href="cases" class="govuk-link">View all cases</a>
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var params = new URLSearchParams(window.location.search);
+
+      function textOrDash(value) {
+        var v = String(value == null ? '' : value).trim();
+        return v || '—';
+      }
+
+      function setText(id, value) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = textOrDash(value);
+      }
+
+      setText('conf-description', params.get('description'));
+      setText('conf-date-from', params.get('dateFrom'));
+      setText('conf-date-to', params.get('dateTo'));
+      setText('conf-time-from', params.get('timeFrom'));
+      setText('conf-time-to', params.get('timeTo'));
+      setText('conf-notes', params.get('notes'));
+    });
+  </script>
+{% endblock %}

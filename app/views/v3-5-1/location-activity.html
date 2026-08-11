@@ -1,4 +1,4 @@
-{% extends "layouts/main2.html" %}
+{% extends "layouts/main3.html" %}
 
 {% set currentNav = "cases" %}
 
@@ -73,6 +73,15 @@
   }) }}
 </div>
 
+<div id="save-search-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">  
+  {{ mojAlert({
+    variant: "success",
+    title: "Upload successful",
+    dismissible: true,
+    html: 'Search saved to MPoP successfully.'
+  }) }}
+</div>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
           <span class="govuk-caption-m govuk-!-margin-bottom-2" >
@@ -110,6 +119,25 @@
 <h2 class="govuk-heading-m" id="map-header">GPS data</h2>
 
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+<div class="govuk-inset-text">
+  Service data is updated every 15 minutes.
+</div>
+
+
+<div class="moj-page-header-actions">
+  <div class="moj-page-header-actions__actions">
+    <div class="moj-button-group moj-button-group--inline">
+      <a href="save-record"
+        id="bh-save-search-link"
+        class="govuk-button govuk-button--secondary"
+        role="button"
+        data-module="govuk-button">
+        Save search
+      </a>
+    </div>
+  </div>
+</div>
 
 
 
@@ -785,7 +813,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Leaflet Heatmap -->
-<!-- <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script> -->
+<script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
 
 <!-- PolylineDecorator -->
 <script src="/public/javascripts/leaflet.polylineDecorator.js"></script>
@@ -802,8 +830,20 @@
 <script src="/public/javascripts/bh-loi-row-highlight.js"></script>
 
 <script src="/public/javascripts/bh-location-init.js"></script>
-<script src="/public/javascripts/map-overlaysv2.js"></script>
+<script src="/public/javascripts/map-overlaysv3.js"></script>
 <script>
+  window.emdiHeatmapGradient = {
+    0.00: '#440154',
+    0.13: '#482475',
+    0.25: '#414487',
+    0.33: '#3b528b',
+    0.50: '#2a788e',
+    0.66: '#5ec962',
+    0.75: '#7ad151',
+    0.88: '#bddf26',
+    1.00: '#fde725'
+  };
+
   window.emdiDirectionArrowConfig = {
     offset: 0,
     repeat: 80,
@@ -814,17 +854,590 @@
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 
 <script>
-  // v3-5-1 only: remove Heatmap checkbox from the layers control panel
   document.addEventListener('DOMContentLoaded', function () {
-    // The map may not be fully set up yet, so wait a tick
-    setTimeout(function () {
-      var overlayLabels = document.querySelectorAll('.leaflet-control-layers-overlays label');
-      overlayLabels.forEach(function (label) {
-        if (label.textContent.trim().indexOf('Heatmap') !== -1) {
-          label.parentNode.removeChild(label);
+    var form = document.getElementById('bh-map-filters');
+    var saveLink = document.getElementById('bh-save-search-link');
+
+    if (!form) return;
+
+    if (saveLink) {
+      saveLink.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        var params = new URLSearchParams();
+        var formData = new FormData(form);
+
+        formData.forEach(function (value, key) {
+          var strVal = String(value == null ? '' : value).trim();
+          if (strVal) params.set(key, strVal);
+        });
+
+        window.location.href = 'save-record?' + params.toString();
+      });
+    }
+  });
+</script>
+
+<!-- Filters heatmap points by dwell-time intensity level (very high/high/medium/low) -->
+<script>
+  document.addEventListener('bh:map-ready', function () {
+    if (typeof window.addHeatmapLayer !== 'function' || window.__emdiHeatmapFilterInstalled) return;
+    window.__emdiHeatmapFilterInstalled = true;
+
+    var originalAddHeatmapLayer = window.addHeatmapLayer;
+    var rawHeatData = [];
+    var levels = { veryHigh: true, high: true, medium: true, low: true };
+
+    function classifyHeatmapIntensity(intensity) {
+      if (intensity > 0.75) return 'veryHigh';
+      if (intensity > 0.5) return 'high';
+      if (intensity > 0.25) return 'medium';
+      return 'low';
+    }
+
+    function applyHeatmapLevelFilter() {
+      var filtered = rawHeatData.filter(function (entry) {
+        return levels[classifyHeatmapIntensity(entry[2])];
+      });
+      originalAddHeatmapLayer(filtered);
+    }
+
+    window.addHeatmapLayer = function (heatData) {
+      rawHeatData = Array.isArray(heatData) ? heatData : [];
+      applyHeatmapLevelFilter();
+    };
+
+    window.emdiSetHeatmapLevel = function (level, visible) {
+      levels[level] = !!visible;
+      applyHeatmapLevelFilter();
+    };
+  });
+</script>
+
+<script>
+  // v3-5-1: shared Key + Map controls panel matching v3-2-7.
+  document.addEventListener('bh:map-ready', function () {
+    if (!window.map) return;
+
+    var topRightControls = document.querySelector('.leaflet-top.leaflet-right');
+    if (!topRightControls) return;
+    topRightControls.classList.add('emdi-top-right-controls');
+
+    var sharedPanel = L.DomUtil.create('div', 'leaflet-control emdi-shared-panel', topRightControls);
+    sharedPanel.hidden = true;
+    sharedPanel.innerHTML = [
+      '<div class="emdi-shared-panel__header">',
+      '  <h2 class="emdi-shared-panel__heading"></h2>',
+      '  <button type="button" class="emdi-shared-panel__close" aria-label="Close panel">×</button>',
+      '</div>',
+      '<div class="emdi-shared-panel__key-content"></div>',
+      '<div class="emdi-shared-panel__layers-content"></div>'
+    ].join('');
+    L.DomEvent.disableClickPropagation(sharedPanel);
+    L.DomEvent.disableScrollPropagation(sharedPanel);
+
+    var panelHeading = sharedPanel.querySelector('.emdi-shared-panel__heading');
+    var panelCloseBtn = sharedPanel.querySelector('.emdi-shared-panel__close');
+    var keySlot = sharedPanel.querySelector('.emdi-shared-panel__key-content');
+    var layersSlot = sharedPanel.querySelector('.emdi-shared-panel__layers-content');
+    var activeTab = null;
+    var tabButtons = {};
+
+    function resetSharedPanelHeight() {
+      sharedPanel.style.removeProperty('--emdi-panel-height');
+      sharedPanel.classList.remove('emdi-shared-panel--layers');
+    }
+
+    function syncSharedPanelHeight() {
+      if (activeTab !== 'layers') {
+        resetSharedPanelHeight();
+        return;
+      }
+
+      var mapEl = document.getElementById('map');
+      if (!mapEl) return;
+
+      var mapRect = mapEl.getBoundingClientRect();
+      var panelRect = sharedPanel.getBoundingClientRect();
+      var mapHeight = mapRect.height;
+      if (!mapHeight) return;
+
+      var panelTopOffset = Math.max(0, panelRect.top - mapRect.top);
+      var panelHeight = Math.max(Math.round(mapHeight - panelTopOffset - 20), 240);
+      sharedPanel.style.setProperty('--emdi-panel-height', panelHeight + 'px');
+      sharedPanel.classList.add('emdi-shared-panel--layers');
+    }
+
+    syncSharedPanelHeight();
+    window.addEventListener('resize', syncSharedPanelHeight);
+
+    function updateTabButtons() {
+      Object.keys(tabButtons).forEach(function (tab) {
+        var btn = tabButtons[tab];
+        var isActive = activeTab === tab;
+        btn.classList.toggle('emdi-panel-toggle--active', isActive);
+        btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      });
+    }
+
+    function openTab(tab) {
+      activeTab = tab;
+      sharedPanel.hidden = false;
+      panelHeading.textContent = tab === 'key' ? 'Key' : 'Map controls';
+      keySlot.hidden = tab !== 'key';
+      layersSlot.hidden = tab !== 'layers';
+      updateTabButtons();
+
+      if (tab === 'layers' && typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(syncSharedPanelHeight);
+      } else {
+        syncSharedPanelHeight();
+      }
+    }
+
+    function closePanel() {
+      activeTab = null;
+      resetSharedPanelHeight();
+      sharedPanel.hidden = true;
+      updateTabButtons();
+    }
+
+    function toggleTab(tab) {
+      if (activeTab === tab) {
+        closePanel();
+      } else {
+        openTab(tab);
+      }
+    }
+
+    panelCloseBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      closePanel();
+    });
+
+    window.emdiSharedPanelLayersSlot = layersSlot;
+
+    var keyControl = L.control({ position: 'topright' });
+    keyControl.onAdd = function () {
+      var container = L.DomUtil.create('div', 'leaflet-control emdi-heatmap-key');
+      container.innerHTML = '<button type="button" class="emdi-panel-toggle emdi-key-toggle" aria-expanded="false">Key</button>';
+
+      var toggleBtn = container.querySelector('.emdi-key-toggle');
+      tabButtons.key = toggleBtn;
+
+      keySlot.innerHTML = [
+        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--heatmap">',
+        '  <div class="emdi-heatmap-key__title">Heatmap</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--very-high"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--very-high"></span>Very High Activity</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--high"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--high"></span>High Activity</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--medium"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--medium"></span>Medium Activity</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--low"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--low"></span>Low Activity</div>',
+        '</div>',
+        '<hr class="emdi-heatmap-key__divider">',
+        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--exclusion">',
+        '  <div class="emdi-heatmap-key__title">Exclusion zone</div>',
+        '  <div class="emdi-heatmap-key__item"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Zone</div>',
+        '</div>',
+        '<div class="emdi-heatmap-key__empty">No map layers selected</div>'
+      ].join('');
+
+      var heatmapSection = keySlot.querySelector('.emdi-heatmap-key__section--heatmap');
+      var exclusionSection = keySlot.querySelector('.emdi-heatmap-key__section--exclusion');
+      var keyDivider = keySlot.querySelector('.emdi-heatmap-key__divider');
+      var emptyMessage = keySlot.querySelector('.emdi-heatmap-key__empty');
+      var heatmapKeyItems = {
+        'very-high': keySlot.querySelector('.emdi-heatmap-key__item--very-high'),
+        'high': keySlot.querySelector('.emdi-heatmap-key__item--high'),
+        'medium': keySlot.querySelector('.emdi-heatmap-key__item--medium'),
+        'low': keySlot.querySelector('.emdi-heatmap-key__item--low')
+      };
+
+      function updateKeyVisibility() {
+        var heatmapOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.heatmap));
+        var exclusionOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.exclusionZone));
+
+        var anyLevelVisible = false;
+        Object.keys(heatmapKeyItems).forEach(function (id) {
+          var item = heatmapKeyItems[id];
+          if (!item) return;
+          var checkbox = document.getElementById('emdi-toggle-heatmap-' + id);
+          var levelVisible = heatmapOn && !!(checkbox && checkbox.checked);
+          item.hidden = !levelVisible;
+          if (levelVisible) anyLevelVisible = true;
+        });
+
+        var heatmapSectionVisible = heatmapOn && anyLevelVisible;
+        if (heatmapSection) heatmapSection.hidden = !heatmapSectionVisible;
+        if (exclusionSection) exclusionSection.hidden = !exclusionOn;
+        if (keyDivider) keyDivider.hidden = !(heatmapSectionVisible && exclusionOn);
+        if (emptyMessage) emptyMessage.hidden = heatmapSectionVisible || exclusionOn;
+      }
+      window.emdiUpdateHeatmapKeyVisibility = updateKeyVisibility;
+      updateKeyVisibility();
+
+      toggleBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleTab('key');
+      });
+
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+      return container;
+    };
+    keyControl.addTo(window.map);
+
+    var mapOpener = document.querySelector('.emdi-layers-opener');
+    if (mapOpener) {
+      mapOpener.classList.add('leaflet-control', 'emdi-panel-toggle', 'emdi-layers-toggle');
+      mapOpener.textContent = 'Map controls';
+      mapOpener.setAttribute('aria-expanded', 'false');
+      mapOpener.style.display = '';
+      if (mapOpener.parentNode !== topRightControls) {
+        topRightControls.insertBefore(mapOpener, sharedPanel);
+      }
+      tabButtons.layers = mapOpener;
+
+      mapOpener.onclick = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleTab('layers');
+      };
+    }
+
+    var layersPanel = document.querySelector('.leaflet-control-layers.emdi-layers-panel');
+    if (layersPanel) layersPanel.classList.add('emdi-layers-panel--hidden');
+  });
+
+  function normaliseMapControlsToV325() {
+    var panel = document.querySelector('.leaflet-control-layers.emdi-layers-panel');
+    if (!panel) return;
+
+    var map = window.map;
+    if (!map) return;
+
+    var list = panel.querySelector('.leaflet-control-layers-list');
+    if (!list) return;
+
+    var base = panel.querySelector('.leaflet-control-layers-base');
+    var overlays = panel.querySelector('.leaflet-control-layers-overlays');
+    var separators = panel.querySelectorAll('.leaflet-control-layers-separator');
+
+    if (base) base.style.display = 'none';
+    if (overlays) overlays.style.display = 'none';
+    separators.forEach(function (sep) { sep.style.display = 'none'; });
+
+    if (!window.mapLayers) return;
+    if (window.L && typeof window.L.layerGroup === 'function') {
+      if (!window.mapLayers.inclusionZone || window.mapLayers.inclusionZone === window.mapLayers.areas) {
+        window.mapLayers.inclusionZone = window.L.layerGroup();
+      }
+      if (!window.mapLayers.restrictionZone) {
+        window.mapLayers.restrictionZone = window.L.layerGroup();
+      }
+    }
+
+    var westminsterBoundary = [
+      [51.5346, -0.2174],
+      [51.5319, -0.1633],
+      [51.5278, -0.1205],
+      [51.5108, -0.1102],
+      [51.4932, -0.1168],
+      [51.4848, -0.1328],
+      [51.4841, -0.1634],
+      [51.4926, -0.2058],
+      [51.5112, -0.2231],
+      [51.5346, -0.2174]
+    ];
+
+    var waterlooBoundary = [
+      [51.5078, -0.1262],
+      [51.5069, -0.1155],
+      [51.5031, -0.1116],
+      [51.4997, -0.1167],
+      [51.5003, -0.1245],
+      [51.5037, -0.1284],
+      [51.5078, -0.1262]
+    ];
+
+    function hasLayer(layer) {
+      return !!(layer && map.hasLayer(layer));
+    }
+
+    function createZonePolygon(layerGroup, coordinates, color, label, forceRebuild, className) {
+      if (!layerGroup || typeof layerGroup.clearLayers !== 'function') return;
+      var hasExisting = typeof layerGroup.getLayers === 'function' && layerGroup.getLayers().length > 0;
+      if (hasExisting && !forceRebuild) return;
+
+      layerGroup.clearLayers();
+      if (!Array.isArray(coordinates) || coordinates.length < 3) return;
+
+      var polygon = L.polygon(coordinates, {
+        className: className,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.35,
+        weight: 2,
+        pane: 'loi-areas',
+        interactive: true
+      });
+
+      polygon.bindPopup(label, {
+        closeButton: true,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'app-area-popup'
+      });
+
+      polygon.addTo(layerGroup);
+    }
+
+    function syncZonePolygons(forceRebuild) {
+      var inclusionZone = window.mapLayers && window.mapLayers.inclusionZone;
+      var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
+      createZonePolygon(inclusionZone, westminsterBoundary, '#d4351c', 'Inclusion Zone<br/>Westminster', !!forceRebuild, 'emdi-inclusion-zone-path');
+      createZonePolygon(restrictionZone, waterlooBoundary, '#d4351c', 'Restriction Zone<br/>Waterloo', !!forceRebuild, 'emdi-restriction-zone-path');
+    }
+
+    function setLayerVisible(layer, visible) {
+      if (!layer) return;
+      if ((layer === window.mapLayers.inclusionZone || layer === window.mapLayers.restrictionZone) && visible) {
+        syncZonePolygons(true);
+      }
+      if (visible) {
+        if (!map.hasLayer(layer)) map.addLayer(layer);
+      } else if (map.hasLayer(layer)) {
+        map.removeLayer(layer);
+      }
+      if (typeof window.emdiUpdateHeatmapKeyVisibility === 'function') {
+        window.emdiUpdateHeatmapKeyVisibility();
+      }
+    }
+
+    var HEATMAP_LEVELS = [
+      { id: 'very-high', key: 'veryHigh' },
+      { id: 'high', key: 'high' },
+      { id: 'medium', key: 'medium' },
+      { id: 'low', key: 'low' }
+    ];
+
+    function setHeatmapLevelControlsEnabled(enabled) {
+      HEATMAP_LEVELS.forEach(function (level) {
+        var input = document.getElementById('emdi-toggle-heatmap-' + level.id);
+        if (!input) return;
+        input.disabled = !enabled;
+        var row = input.closest('.emdi-control-row');
+        if (row) row.classList.toggle('emdi-control-row--disabled', !enabled);
+      });
+    }
+
+    function setBase(type) {
+      var street = window.streetLayer;
+      var satellite = window.satelliteLayer;
+
+      if (type === 'satellite') {
+        if (street && map.hasLayer(street)) map.removeLayer(street);
+        if (satellite && !map.hasLayer(satellite)) map.addLayer(satellite);
+      } else {
+        if (satellite && map.hasLayer(satellite)) map.removeLayer(satellite);
+        if (street && !map.hasLayer(street)) map.addLayer(street);
+      }
+    }
+
+    var existing = document.querySelector('.emdi-custom-layer-controls');
+    if (!existing) {
+      var wrapper = document.createElement('section');
+      wrapper.className = 'emdi-custom-layer-controls';
+      wrapper.innerHTML = [
+        '<div class="emdi-control-group emdi-control-group--view">',
+        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Map view</div>',
+        '  <label class="emdi-control-row">',
+        '    <input type="radio" name="emdi-base" id="emdi-base-street">',
+        '    <span>Street</span>',
+        '  </label>',
+        '  <label class="emdi-control-row">',
+        '    <input type="radio" name="emdi-base" id="emdi-base-satellite">',
+        '    <span>Satellite</span>',
+        '  </label>',
+        '</div>',
+        '<hr class="emdi-map-controls-divider">',
+        '<div class="emdi-control-group emdi-control-group--map-controls">',
+        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Map controls</div>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-direction">',
+        '    <span>Direction info</span>',
+        '  </label>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-confidence">',
+        '    <span>Confidence circles</span>',
+        '  </label>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-points">',
+        '    <span>Point numbers</span>',
+        '  </label>',
+        '</div>',
+        '<hr class="emdi-map-controls-divider">',
+        '<div class="emdi-control-group emdi-control-group--heatmap">',
+        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Heatmap</div>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-heatmap">',
+        '    <span>Heatmap</span>',
+        '  </label>',
+        '  <label class="emdi-control-row emdi-control-row--sub">',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-very-high" checked disabled>',
+        '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--very-high"></span>',
+        '    <span>Very high activity</span>',
+        '  </label>',
+        '  <label class="emdi-control-row emdi-control-row--sub">',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-high" checked disabled>',
+        '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--high"></span>',
+        '    <span>High activity</span>',
+        '  </label>',
+        '  <label class="emdi-control-row emdi-control-row--sub">',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-medium" checked disabled>',
+        '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--medium"></span>',
+        '    <span>Medium activity</span>',
+        '  </label>',
+        '  <label class="emdi-control-row emdi-control-row--sub">',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-low" checked disabled>',
+        '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--low"></span>',
+        '    <span>Low activity</span>',
+        '  </label>',
+        '</div>',
+        '<hr class="emdi-map-controls-divider">',
+        '<div class="emdi-control-group emdi-control-group--zones">',
+        '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Zones</div>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-exclusion">',
+        '    <span>Exclusion</span>',
+        '  </label>',
+        '</div>'
+      ].join('');
+
+      (window.emdiSharedPanelLayersSlot || list).appendChild(wrapper);
+
+      wrapper.querySelector('#emdi-base-street').addEventListener('change', function () {
+        if (this.checked) setBase('street');
+      });
+
+      wrapper.querySelector('#emdi-base-satellite').addEventListener('change', function () {
+        if (this.checked) setBase('satellite');
+      });
+
+      wrapper.querySelector('#emdi-toggle-direction').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.directionInfo, this.checked);
+      });
+
+      wrapper.querySelector('#emdi-toggle-confidence').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.accuracy, this.checked);
+      });
+
+      wrapper.querySelector('#emdi-toggle-points').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.numbers, this.checked);
+      });
+
+      wrapper.querySelector('#emdi-toggle-heatmap').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.heatmap, this.checked);
+        setHeatmapLevelControlsEnabled(this.checked);
+      });
+
+      HEATMAP_LEVELS.forEach(function (level) {
+        var input = wrapper.querySelector('#emdi-toggle-heatmap-' + level.id);
+        if (!input) return;
+        input.addEventListener('change', function () {
+          if (typeof window.emdiSetHeatmapLevel === 'function') {
+            window.emdiSetHeatmapLevel(level.key, this.checked);
+          }
+          if (typeof window.emdiUpdateHeatmapKeyVisibility === 'function') {
+            window.emdiUpdateHeatmapKeyVisibility();
+          }
+        });
+      });
+
+      wrapper.querySelector('#emdi-toggle-exclusion').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.exclusionZone, this.checked);
+      });
+    }
+
+    var streetInput = document.getElementById('emdi-base-street');
+    var satelliteInput = document.getElementById('emdi-base-satellite');
+    var directionInput = document.getElementById('emdi-toggle-direction');
+    var confidenceInput = document.getElementById('emdi-toggle-confidence');
+    var pointsInput = document.getElementById('emdi-toggle-points');
+    var heatmapInput = document.getElementById('emdi-toggle-heatmap');
+    var exclusionInput = document.getElementById('emdi-toggle-exclusion');
+
+    var satelliteActive = window.satelliteLayer && map.hasLayer(window.satelliteLayer);
+    if (streetInput) streetInput.checked = !satelliteActive;
+    if (satelliteInput) satelliteInput.checked = !!satelliteActive;
+    if (directionInput) directionInput.checked = hasLayer(window.mapLayers.directionInfo);
+    if (confidenceInput) confidenceInput.checked = hasLayer(window.mapLayers.accuracy);
+    if (pointsInput) pointsInput.checked = hasLayer(window.mapLayers.numbers);
+    syncZonePolygons(false);
+
+    if (!window.__emdiZonesInitialised) {
+      setLayerVisible(window.mapLayers.heatmap, false);
+      setLayerVisible(window.mapLayers.exclusionZone, false);
+      setLayerVisible(window.mapLayers.inclusionZone, false);
+      setLayerVisible(window.mapLayers.restrictionZone, false);
+
+      if (heatmapInput) heatmapInput.checked = false;
+      if (exclusionInput) exclusionInput.checked = false;
+
+      window.__emdiZonesInitialised = true;
+    } else {
+      if (heatmapInput) heatmapInput.checked = hasLayer(window.mapLayers.heatmap);
+      if (exclusionInput) exclusionInput.checked = hasLayer(window.mapLayers.exclusionZone);
+    }
+
+    setHeatmapLevelControlsEnabled(!!(heatmapInput && heatmapInput.checked));
+  }
+
+  document.addEventListener('bh:map-ready', function () {
+    if (window.mapLayers && window.mapLayers.exclusionZone) {
+      window.mapLayers.exclusionZone.eachLayer(function (layer) {
+        if (layer && typeof layer.bindPopup === 'function') {
+          var popupHtml = [
+            '<div class="gps-point-popup">',
+            '  <div class="gps-point-popup__header">',
+            '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Exclusion zone</h4>',
+            '  </div>',
+            '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+            '    <div class="govuk-summary-list__row">',
+            '      <dt class="govuk-summary-list__key">Date, time</dt>',
+            '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00</dd>',
+            '    </div>',
+            '    <div class="govuk-summary-list__row">',
+            '      <dt class="govuk-summary-list__key">Address</dt>',
+            '      <dd class="govuk-summary-list__value">St James Park,<br> Westminster, <br> SW1A 2BJ</dd>',
+            '    </div>',
+            '  </dl>',
+            '</div>'
+          ].join('');
+
+          layer.bindPopup(popupHtml, {
+            closeButton: true,
+            autoClose: false,
+            closeOnClick: false,
+            className: 'gps-point-popup'
+          });
         }
       });
-    }, 500);
+    }
+
+    normaliseMapControlsToV325();
+
+    if (!window.__emdiV325ControlObserver) {
+      var mapEl = document.getElementById('map');
+      if (mapEl && typeof MutationObserver !== 'undefined') {
+        var observer = new MutationObserver(function () {
+          normaliseMapControlsToV325();
+        });
+        observer.observe(mapEl, { childList: true, subtree: true });
+        window.__emdiV325ControlObserver = observer;
+      }
+    }
   });
 </script>
 <script src="/public/javascripts/bh-update-map.js"></script>
@@ -835,13 +1448,17 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    if (sessionStorage.getItem('v351LocationActivitySuccessBanner') !== '1') return;
+    if (sessionStorage.getItem('v351LocationActivitySuccessBanner') === '1') {
+      var feedbackBanner = document.getElementById('feedback-success-banner');
+      if (feedbackBanner) feedbackBanner.classList.remove('govuk-!-display-none');
+      sessionStorage.removeItem('v351LocationActivitySuccessBanner');
+    }
 
-    var banner = document.getElementById('feedback-success-banner');
-
-    if (banner) banner.classList.remove('govuk-!-display-none');
-
-    sessionStorage.removeItem('v351LocationActivitySuccessBanner');
+    if (sessionStorage.getItem('v351SaveSearchUploadSuccess') === '1') {
+      var saveSearchBanner = document.getElementById('save-search-success-banner');
+      if (saveSearchBanner) saveSearchBanner.classList.remove('govuk-!-display-none');
+      sessionStorage.removeItem('v351SaveSearchUploadSuccess');
+    }
   });
 </script>
 
@@ -1169,9 +1786,10 @@ $(document).on("click", "a.moj-filter__tag",function() {
   }
   
   .leaflet-control-layers-expanded {
-    padding: 0px 45px 0px 10px;
-    color: #333;
-    background: #fff;
+    padding: 12px 30px 10px 12px;
+    color: #0b0c0c;
+    max-height: calc(100vh - 120px);
+    overflow: hidden;
 }
 
 /* Page-specific: remove north arrow control */
@@ -1184,71 +1802,424 @@ a[aria-label="North arrow"] {
 }
 
 
-/* Hide the existing × character */
-.emdi-layers-close {
-  font-size: 0;               /* hides the character */
+/* Panel-specific control layout and input visibility */
+.emdi-layers-panel .leaflet-control-layers-base label,
+.emdi-layers-panel .leaflet-control-layers-overlays label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 10px;
+  line-height: 1.35;
+  min-height: 24px;
 }
 
-/* Add replacement text */
-.emdi-layers-close::after {
-  content: "Close map controls ▾";
-  font-size: 19px;
-  line-height: 1.4;
-  color: #0b0c0c;
-  margin-top: 10px;
+.emdi-layers-panel .leaflet-control-layers-base label:last-child,
+.emdi-layers-panel .leaflet-control-layers-overlays label:last-child {
+  margin-bottom: 0;
 }
 
-
-/* Optional GOV.UK hover/focus polish */
-.emdi-layers-close {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
+.emdi-layers-panel .leaflet-control-layers-selector {
+  position: static !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 1px 0 0 0 !important;
+  pointer-events: auto !important;
+  flex: 0 0 18px;
 }
 
-.emdi-layers-close:hover::after {
-  text-decoration: underline;
+.emdi-layers-panel .leaflet-control-layers-base label span,
+.emdi-layers-panel .leaflet-control-layers-overlays label span {
+  display: inline-block;
+  padding: 0 !important;
+  margin: 0 !important;
+  white-space: normal;
 }
 
-.emdi-layers-close:focus {
+.emdi-layers-panel .leaflet-control-layers-selector:focus-visible {
   outline: 3px solid #ffdd00;
   outline-offset: 2px;
 }
 
-.leaflet-touch .leaflet-control-layers-toggle {
-    width: 205px;
-    height: 45px;
-    padding-top: 10px;
-    padding-left: 10px;
-}
-
-.emdi-layers-close {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    padding-top: 10px;
-    padding-right: 25px;
-    border: none;
-    background: transparent;
-
-}
-
-
-/* Add replacement text */
-.emdi-layers-opener::after {
-  content: "Open map controls ▸";
+.emdi-map-controls-heading {
+  font-weight: 700;
   font-size: 19px;
-  line-height: 1.4;
-  color: #0b0c0c;
-  margin-left: 5px;
-  margin-top: 5px;
-  position: absolute;
-  font-family: GDS Transport,arial,sans-serif;
+  line-height: 1.3;
+  margin-bottom: 10px;
 }
 
-.emdi-layers-opener:hover::after {
+.emdi-map-controls-heading--controls {
+  margin-top: 0;
+}
+
+.emdi-map-controls-divider {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #b1b4b6;
+}
+
+.emdi-custom-layer-controls {
+  margin-top: 4px;
+}
+
+.emdi-control-group {
+  display: block;
+}
+
+.emdi-custom-layer-controls .emdi-control-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 10px;
+  line-height: 1.35;
+  font-size: 19px;
+}
+
+.emdi-control-row:last-child {
+  margin-bottom: 0;
+}
+
+.emdi-control-row--sub {
+  margin-left: 34px;
+  gap: 8px;
+}
+
+.emdi-control-row--sub .emdi-heatmap-key__swatch {
+  margin-top: 3px;
+}
+
+.emdi-control-row--disabled {
+  opacity: 0.5;
+}
+
+.emdi-control-row input[type="radio"],
+.emdi-control-row input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  margin: 1px 0 0;
+  flex: 0 0 24px;
+  accent-color: #0b0c0c;
+}
+
+.emdi-control-row input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #ffffff;
+  border: 2px solid #0b0c0c;
+  border-radius: 50%;
+  position: relative;
+}
+
+.emdi-control-row input[type="radio"]:checked {
+  background-color: #ffffff;
+}
+
+.emdi-control-row input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0b0c0c;
+}
+
+.emdi-control-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #ffffff;
+  border: 2px solid #0b0c0c;
+  border-radius: 0;
+  position: relative;
+}
+
+.emdi-control-row input[type="checkbox"]:checked {
+  background-color: #ffffff;
+}
+
+.emdi-control-row input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid #0b0c0c;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.emdi-control-row input:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+.emdi-control-row input:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0px;
+}
+
+.emdi-layers-panel .leaflet-control-layers-base,
+.emdi-layers-panel .leaflet-control-layers-overlays {
+  margin-left: 0;
+}
+
+.emdi-top-right-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  padding-right: 10px;
+}
+
+.emdi-top-right-controls.leaflet-right .leaflet-control {
+  clear: none;
+  float: none;
+  margin: 10px 0 0 0;
+}
+
+.emdi-top-right-controls .emdi-heatmap-key {
+  order: 1;
+}
+
+.emdi-top-right-controls .emdi-layers-toggle {
+  order: 2;
+}
+
+.emdi-top-right-controls .emdi-layers-opener {
+  pointer-events: auto;
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+  width: auto;
+  height: auto;
+  background-image: none !important;
+  color: #0b0c0c;
+  padding: 8px 14px;
+  box-sizing: border-box;
+}
+
+.emdi-layers-panel--hidden {
+  display: none !important;
+}
+
+.emdi-heatmap-key {
+  margin-top: 0;
+}
+
+.emdi-panel-toggle {
+  display: inline-block;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  padding: 8px 14px;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.3;
+  color: #0b0c0c;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.emdi-panel-toggle:hover {
   text-decoration: underline;
+}
+
+.emdi-panel-toggle:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.emdi-panel-toggle--active {
+  box-shadow: none;
+  background: #f3f2f1;
+}
+
+.emdi-panel-toggle--active:focus {
+  background-color: #f3f2f1;
+  box-shadow: none;
+}
+
+.emdi-shared-panel {
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  padding: 12px;
+  width: 250px;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.emdi-shared-panel--layers {
+  height: var(--emdi-panel-height, 600px);
+  max-height: var(--emdi-panel-height, 600px);
+  overflow: hidden;
+}
+
+.emdi-shared-panel[hidden],
+.emdi-shared-panel__key-content[hidden],
+.emdi-shared-panel__layers-content[hidden] {
+  display: none !important;
+}
+
+.emdi-shared-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.emdi-shared-panel__heading {
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.emdi-shared-panel__close {
+  background: transparent;
+  border: none;
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0b0c0c;
+  padding: 0;
+}
+
+.emdi-shared-panel__close:hover {
+  text-decoration: underline;
+}
+
+.emdi-shared-panel__close:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+.emdi-shared-panel__key-content,
+.emdi-shared-panel__layers-content {
+  min-height: 0;
+  overflow: visible;
+}
+
+.emdi-shared-panel__layers-content {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.emdi-shared-panel--layers .emdi-shared-panel__layers-content {
+  height: calc(0% - 40px);
+  max-height: calc(100% - 44px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  padding-bottom: 0px;
+  box-sizing: border-box;
+}
+
+.emdi-custom-layer-controls {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
+}
+
+.emdi-heatmap-key__empty {
+  font-size: 19px;
+  color: #0b0c0c;
+}
+
+.emdi-heatmap-key__title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.emdi-heatmap-key__divider {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #b1b4b6;
+}
+
+.emdi-heatmap-key__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 19px;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.emdi-heatmap-key__item[hidden] {
+  display: none;
+}
+
+.emdi-heatmap-key__item:last-child {
+  margin-bottom: 0;
+}
+
+.emdi-heatmap-key__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  flex: 0 0 12px;
+}
+
+.emdi-heatmap-key__swatch--very-high { background: #fde725; }
+.emdi-heatmap-key__swatch--high { background: #5ec962; }
+.emdi-heatmap-key__swatch--medium { background: #3b528b; }
+.emdi-heatmap-key__swatch--low { background: #440154; }
+.emdi-heatmap-key__swatch--exclusion-zone { background: #d4351c; }
+
+@media (max-width: 740px) {
+  .emdi-top-right-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .emdi-shared-panel {
+    min-width: 180px;
+  }
+}
+
+/* Dedicated zone hooks: keep zone fills visible when toggled on. */
+.emdi-exclusion-zone-path {
+  stroke: #d4351c !important;
+  stroke-width: 2 !important;
+  fill: #d4351c !important;
+  fill-opacity: 0.35 !important;
+}
+
+.emdi-inclusion-zone-path {
+  stroke: #d4351c !important;
+  stroke-width: 2 !important;
+  fill: url(#emdi-dot-fill) !important;
+  fill-opacity: 1 !important;
+}
+
+.emdi-restriction-zone-path {
+  stroke: #d4351c !important;
+  stroke-width: 2 !important;
+  fill: url(#emdi-horizontal-line-fill) !important;
+  fill-opacity: 1 !important;
 }
 
 
@@ -1350,7 +2321,41 @@ path[stroke-width="1"]
 
 /* Only affect the FIRST RADIO OPTION */
 .leaflet-control-layers-base label:first-child {
-    padding-top: 60px;
+    padding-top: 50px;
+}
+
+.leaflet-control-layers {
+  font-size: 19px;
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.emdi-layers-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.emdi-layers-panel {
+  margin-right: 10px;
+}
+
+.leaflet-control-layers label {
+  font-size: 19px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.leaflet-control-layers-list {
+  margin-top: 40px;
+  margin-right: -30px;
+  padding-right: 30px;
+  max-height: calc(100vh - 190px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
@@ -1515,11 +2520,44 @@ path[stroke-width="1"]
 }
 
 .gps-point-popup .leaflet-popup-content-wrapper {
-  min-width: 325px;
+  min-width: 320px;
 }
 
 .gps-point-popup .leaflet-popup-content {
   margin: 12px 18px;
+}
+
+.gps-point-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.gps-point-popup__title {
+  flex: 0 1 auto;
+  text-align: center;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.gps-point-popup__nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 22px;
+  font-size: 24px;
+  line-height: 1;
+  text-decoration: none;
+  color: #0b0c0c !important;
+}
+
+.gps-point-popup__nav-button--disabled {
+  color: #b1b4b6;
+  cursor: default;
+  text-decoration: none;
 }
 
 .gps-point-popup__nav {
@@ -1560,6 +2598,35 @@ path[stroke-width="1"]
   align-items: center;
   min-height: 40px;
   margin-bottom: 0;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+.technical-updates-banner {
+  background-color: #44247b;
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.govuk-grid-row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.technical-updates-container {
+  color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.technical-updates-content {
+  float: none;
+  max-width: 100%;
+  min-width: 0;
 }
 
 </style>

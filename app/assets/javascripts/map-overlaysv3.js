@@ -91,18 +91,22 @@
       if (!heatData || heatData.length === 0) return;
       
       if (typeof L.heatLayer === 'function') {
+        const defaultGradient = {
+          0.0: '#440154',
+          0.33: '#3b528b',
+          0.66: '#5ec962',
+          1.0: '#fde725'
+        };
+        const heatmapGradient = (window.emdiHeatmapGradient && typeof window.emdiHeatmapGradient === 'object')
+          ? window.emdiHeatmapGradient
+          : defaultGradient;
+
         const heat = L.heatLayer(heatData, {
           radius: 40,
           blur: 25,
           maxZoom: 17,
           minOpacity: 0.3,
-          gradient: {
-            0.0: '#0000ff',
-            0.25: '#00ffff',
-            0.5: '#00ff00',
-            0.75: '#ffff00',
-            1.0: '#ff0000'
-          }
+          gradient: heatmapGradient
         }).addTo(heatmap);
       }
     }

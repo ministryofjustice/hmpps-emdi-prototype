@@ -414,9 +414,26 @@
       repeat: 80,
       pixelSize: 8,
       pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' },
+      betweenPointsOnly: false,
       minSegmentDistanceMeters: 1,
       minZoomToShow: 0
     }, window.emdiDirectionArrowConfig || {});
+
+    function buildArrowPattern() {
+      const pattern = {
+        offset: arrowConfig.betweenPointsOnly ? '50%' : arrowConfig.offset,
+        symbol: L.Symbol.arrowHead({
+          pixelSize: arrowConfig.pixelSize,
+          pathOptions: arrowConfig.pathOptions
+        })
+      };
+
+      if (!arrowConfig.betweenPointsOnly) {
+        pattern.repeat = arrowConfig.repeat;
+      }
+
+      return pattern;
+    }
 
     function shouldDrawArrowForSegment(startPoint, endPoint) {
       if (!startPoint || !endPoint) return true;
@@ -435,14 +452,7 @@
       targetGroup.addLayer(line);
       if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         const arrows = L.polylineDecorator(line, {
-          patterns: [{
-            offset: arrowConfig.offset,
-            repeat: arrowConfig.repeat,
-            symbol: L.Symbol.arrowHead({
-              pixelSize: arrowConfig.pixelSize,
-              pathOptions: arrowConfig.pathOptions
-            })
-          }]
+          patterns: [buildArrowPattern()]
         });
         registerArrowLayer(map, targetGroup, arrows, arrowConfig);
       }
@@ -476,14 +486,7 @@
       // Add arrows to each segment
       if (shouldDrawArrowForSegment(curr, next) && L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         const arrows = L.polylineDecorator(line, {
-          patterns: [{
-            offset: arrowConfig.offset,
-            repeat: arrowConfig.repeat,
-            symbol: L.Symbol.arrowHead({
-              pixelSize: arrowConfig.pixelSize,
-              pathOptions: arrowConfig.pathOptions
-            })
-          }]
+          patterns: [buildArrowPattern()]
         });
         registerArrowLayer(map, targetGroup, arrows, arrowConfig);
       }

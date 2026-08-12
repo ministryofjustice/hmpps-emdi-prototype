@@ -935,6 +935,7 @@
 
     function resetSharedPanelHeight() {
       sharedPanel.style.removeProperty('--emdi-panel-height');
+      sharedPanel.style.removeProperty('--emdi-panel-max-height');
       sharedPanel.classList.remove('emdi-shared-panel--layers');
     }
 
@@ -953,8 +954,17 @@
       if (!mapHeight) return;
 
       var panelTopOffset = Math.max(0, panelRect.top - mapRect.top);
-      var panelHeight = Math.max(Math.round(mapHeight - panelTopOffset - 20), 240);
+      var availableHeight = Math.max(Math.round(mapHeight - panelTopOffset - 20), 240);
+      var headerHeight = panelCloseBtn && panelCloseBtn.parentElement ? panelCloseBtn.parentElement.offsetHeight : 0;
+      var verticalPadding = 24;
+      var bottomBuffer = 20;
+      var controlsContent = layersSlot ? layersSlot.querySelector('.emdi-custom-layer-controls') : null;
+      var contentHeight = controlsContent ? controlsContent.scrollHeight : (layersSlot ? layersSlot.scrollHeight : 0);
+      var desiredHeight = Math.max(headerHeight + contentHeight + verticalPadding + bottomBuffer, 160);
+      var panelHeight = Math.min(desiredHeight, availableHeight);
+
       sharedPanel.style.setProperty('--emdi-panel-height', panelHeight + 'px');
+      sharedPanel.style.setProperty('--emdi-panel-max-height', availableHeight + 'px');
       sharedPanel.classList.add('emdi-shared-panel--layers');
     }
 
@@ -1004,6 +1014,15 @@
       event.preventDefault();
       event.stopPropagation();
       closePanel();
+    });
+
+    sharedPanel.addEventListener('emdi:controls-toggled', function () {
+      if (activeTab !== 'layers') return;
+      if (typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(syncSharedPanelHeight);
+      } else {
+        syncSharedPanelHeight();
+      }
     });
 
     window.emdiSharedPanelLayersSlot = layersSlot;
@@ -1235,6 +1254,67 @@
       }
     }
 
+    function makeMapControlGroupsCollapsible(wrapper) {
+      if (!wrapper || wrapper.__emdiCollapsibleInitialised) return;
+
+      var groups = wrapper.querySelectorAll('.emdi-control-group');
+      groups.forEach(function (group, index) {
+        var heading = group.querySelector('.emdi-map-controls-heading');
+        if (!heading) return;
+
+        var sectionTitle = heading.textContent || '';
+        var sectionId = 'emdi-collapsible-content-' + index;
+
+        var trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'emdi-collapsible-trigger';
+        trigger.setAttribute('aria-controls', sectionId);
+
+        var title = document.createElement('span');
+        title.className = 'emdi-collapsible-title';
+        title.textContent = sectionTitle;
+
+        var icon = document.createElement('span');
+        icon.className = 'emdi-collapsible-icon';
+        icon.setAttribute('aria-hidden', 'true');
+
+        trigger.appendChild(title);
+        trigger.appendChild(icon);
+
+        var content = document.createElement('div');
+        content.className = 'emdi-collapsible-content';
+        content.id = sectionId;
+
+        var node = heading.nextSibling;
+        while (node) {
+          var next = node.nextSibling;
+          content.appendChild(node);
+          node = next;
+        }
+
+        heading.parentNode.removeChild(heading);
+        group.insertBefore(trigger, group.firstChild);
+        group.appendChild(content);
+
+        var expandedByDefault = false;
+
+        function setExpanded(expanded) {
+          trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          content.hidden = !expanded;
+          group.classList.toggle('emdi-control-group--collapsed', !expanded);
+        }
+
+        trigger.addEventListener('click', function () {
+          setExpanded(trigger.getAttribute('aria-expanded') !== 'true');
+          wrapper.dispatchEvent(new CustomEvent('emdi:controls-toggled', { bubbles: true }));
+        });
+
+        setExpanded(expandedByDefault);
+      });
+
+      wrapper.__emdiCollapsibleInitialised = true;
+    }
+
     var existing = document.querySelector('.emdi-custom-layer-controls');
     if (!existing) {
       var wrapper = document.createElement('section');
@@ -1306,6 +1386,7 @@
       ].join('');
 
       (window.emdiSharedPanelLayersSlot || list).appendChild(wrapper);
+  makeMapControlGroupsCollapsible(wrapper);
 
       wrapper.querySelector('#emdi-base-street').addEventListener('change', function () {
         if (this.checked) setBase('street');
@@ -1857,6 +1938,55 @@ a[aria-label="North arrow"] {
   display: block;
 }
 
+.emdi-collapsible-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0 0 10px;
+  text-align: left;
+  cursor: pointer;
+  color: #0b0c0c;
+}
+
+.emdi-collapsible-title {
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.emdi-collapsible-icon {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #0b0c0c;
+  border-bottom: 2px solid #0b0c0c;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  margin-top: -2px;
+  flex: 0 0 10px;
+}
+
+.emdi-control-group--collapsed .emdi-collapsible-icon {
+  transform: rotate(-45deg);
+}
+
+.emdi-collapsible-trigger:focus {
+  outline: none;
+}
+
+.emdi-collapsible-trigger:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+.emdi-collapsible-content[hidden] {
+  display: none !important;
+}
+
 .emdi-custom-layer-controls .emdi-control-row {
   display: flex;
   align-items: flex-start;
@@ -2071,7 +2201,7 @@ a[aria-label="North arrow"] {
 
 .emdi-shared-panel--layers {
   height: var(--emdi-panel-height, 600px);
-  max-height: var(--emdi-panel-height, 600px);
+  max-height: var(--emdi-panel-max-height, 600px);
   overflow: hidden;
 }
 
@@ -2128,8 +2258,8 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-shared-panel--layers .emdi-shared-panel__layers-content {
-  height: calc(0% - 40px);
-  max-height: calc(100% - 44px);
+  height: auto;
+  max-height: calc(var(--emdi-panel-height, 600px) - 44px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 6px;

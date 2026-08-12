@@ -43,7 +43,7 @@
 
     {% endif %}
 
-{% set pageName="Location activity, " + persondata.name %}
+{% set pageName="GPS data, " + persondata.name %}
 
 
 {% block content %}
@@ -101,7 +101,7 @@
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
-    text: "Location activity",
+    text: "GPS data",
     href: "",
     active: true
   },
@@ -561,32 +561,9 @@
       <div class="loi-filters__group">
         <label class="govuk-label" for="filter-type" style="font-weight: bold;">Location</label>
 
-{% set allTypes = [
-  { value: "anywhere outside the uk", label: "Anywhere outside the UK" },
-  { value: "betting shops",           label: "Betting shops" },
-  { value: "places of worship",       label: "Places of worship" },
-  { value: "playgrounds",          label: "Playgrounds and play areas" },
-  { value: "police stations",         label: "Police stations" },
-  { value: "pubs",                    label: "Pubs, bars and clubs" },
-  { value: "schools",                 label: "Schools and nurseries" },
-  { value: "swimming pools",          label: "Swimming pools and leisure centres" }  
-] %}
-
-
 <select class="govuk-select" id="filter-type" name="filter-type">
   <option value="" selected>All location types</option>
-
-  {# If user has saved a list, only show those; otherwise show all #}
-  {% for t in allTypes %}
-    {% if not (data.loiTypes and (data.loiTypes | length)) or (t.value in data.loiTypes) %}
-      <option value="{{ t.value }}">{{ t.label }}</option>
-    {% endif %}
-  {% endfor %}
-
-  {# Add Custom if a custom address exists and has a name/address #}
-  {% if data.selectedAddress and (data.selectedAddress | trim | length) > 0 %}
-    <option value="custom">Custom</option>
-  {% endif %}
+  <option value="pubs">Pubs, bars and clubs</option>
 
 </select>
 

@@ -76,7 +76,7 @@
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [{
-    text: "Location activity",
+    text: "GPS data",
     href: "location-activity"
   },
   {
@@ -292,6 +292,7 @@
   "
 }) }}
 
+{% if data['personselected'] != 'richardmarks' %}
 <section class="bh-curfew-overview govuk-!-margin-bottom-7">
   <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
   <div class="bh-curfew-grid govuk-width-container">
@@ -336,6 +337,7 @@
   </div>
   <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 </section>
+{% endif %}
 
 {# Chart.js #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>

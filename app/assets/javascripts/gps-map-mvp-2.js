@@ -124,6 +124,7 @@
 
     directionArrowLayers.forEach(function (entry) {
       if (!entry || !entry.group || !entry.layer) return;
+
       const minZoom = Number.isFinite(entry.minZoomToShow) ? entry.minZoomToShow : 0;
       const shouldShow = zoom >= minZoom;
       const hasLayer = entry.group.hasLayer(entry.layer);
@@ -754,10 +755,12 @@
           <dd class="govuk-summary-list__value">${dateTime}</dd>
         </div>
 
+        <!--
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Lat, long</dt>
           <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
         </div>
+        -->
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Speed</dt>

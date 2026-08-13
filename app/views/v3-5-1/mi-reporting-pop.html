@@ -1,0 +1,344 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="MI reporting" %}
+
+{% block content %}
+
+<a href="location-activity" class="govuk-back-link">Back</a>
+
+<h2 class="govuk-heading-l">MI reporting</h2>
+
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "POP view",
+    href: "#1",
+    active: true
+  }, {
+    text: "User view",
+    href: "mi-reporting-user"
+  }]
+}) }}
+
+<h2 id="violation-minutes" class="govuk-heading-m">POP view</h2>
+
+<div class="loi-filters govuk-!-margin-bottom-3">
+  <div class="loi-filters__row" style="grid-template-columns: 1.3fr 1fr 1.1fr;">
+    <div class="loi-filters__group">
+      <label class="govuk-label" for="curfewdropdown">Date range</label>
+      <select class="govuk-select" id="curfewdropdown" name="filter-date">
+        <option value="43" id="all-dates-option" selected>Last searched</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group">
+      <label class="govuk-label" for="curfewdurationdropdown">Duration</label>
+      <select class="govuk-select" id="curfewdurationdropdown" name="filter-duration">
+        <option value="0" selected>All</option>
+        <option value="1">Over 1 minute</option>
+        <option value="5">Over 5 minutes</option>
+        <option value="15">Over 15 minutes</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__actions">
+      <button class="govuk-button" data-module="govuk-button" id="curfewdropdownbutton">
+        Update
+      </button>
+    </div>
+  </div>
+
+  <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+</div>
+
+
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{{ govukTable({
+  caption: "",
+  captionClasses: "govuk-table__caption--m",
+  firstCellIsHeader: false,
+  head: [
+    {
+      text: "CRN"
+    },
+     {
+      text: "PDU"
+    },
+     {
+      text: "Region"
+    },
+     {
+      text: "Searches"
+    },
+     {
+      text: "Users"
+    },
+    {
+      text: "Last viewed"
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Q482917"
+      },
+      {
+        text: "Essex South"
+      },
+      {
+        text: "East of England"
+      },
+      {
+        text: "3"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "12 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "M739205"
+      },
+      {
+        text: "Kent and Medway "
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "10 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "R160834"
+      },
+      {
+        text: "Surrey"
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "5"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "8 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "B951472"
+      },
+      {
+        text: "Sussex North"
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "6 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "T304689"
+      },
+      {
+        text: "West Midlands Central"
+      },
+      {
+        text: "West Midlands"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "4 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "H827561"
+      },
+      {
+        text: "Merseyside"
+      },
+      {
+        text: "North West"
+      },
+      {
+        text: "4"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "2 Aug 2026"
+      }
+    ],
+     [
+      {
+        text: "N415298"
+      },
+      {
+        text: "Greater Manchester North"
+      },
+      {
+        text: "North West"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "31 Jul 2026"
+      }
+    ],
+     [
+      {
+        text: "C672940"
+      },
+      {
+        text: "South Yorkshire"
+      },
+      {
+        text: "Yorkshire and The Humber"
+      },
+      {
+        text: "5"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "5 Aug 2026"
+      }
+    ],
+    [
+      {
+        text: "L508173"
+      },
+      {
+        text: "West Yorkshire"
+      },
+      {
+        text: "Yorkshire and The Humber"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "1 Aug 2026"
+      }
+    ],
+    [
+      {
+        text: "P294760"
+      },
+      {
+        text: "Hampshire and Isle of Wight"
+      },
+      {
+        text: "South Central"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "7 Aug 2026"
+      }
+    ]
+  ]
+}) }}
+
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+
+{{ mojPagination({
+  items: [{
+    text: "1",
+    href: "#",
+    selected: true
+  }, {
+    text: "2",
+    href: "#"
+    
+  }, {
+    text: "3",
+    href: "#"
+  }, {
+    type: "dots"
+  }, {
+    text: "7",
+    href: "#"
+  }],
+  results: {
+    count: 157,
+    from: 1,
+    to: 50,
+    text: "results"
+  },
+  previous: {
+    text: "Previous",
+    href: "#"
+  },
+  next: {
+    text: "Next",
+    href: "#"
+  }
+}) }}
+
+</div>
+
+
+
+</div>
+
+
+{% endblock %}
+

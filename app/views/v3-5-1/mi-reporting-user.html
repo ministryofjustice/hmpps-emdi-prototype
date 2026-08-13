@@ -34,28 +34,21 @@
 <h2 id="violation-minutes" class="govuk-heading-m">User view</h2>
 
 <div class="loi-filters govuk-!-margin-bottom-3">
-  <div class="loi-filters__row" style="grid-template-columns: 1.3fr 1fr 1.1fr;">
+  <div class="loi-filters__row" style="grid-template-columns: minmax(220px, 320px); row-gap: 12px;">
     <div class="loi-filters__group">
-      <label class="govuk-label" for="curfewdropdown">Date range</label>
-      <select class="govuk-select" id="curfewdropdown" name="filter-date">
-        <option value="43" id="all-dates-option" selected>Last searched</option>
+      <label class="govuk-label" for="last-viewed-filter">Last viewed</label>
+      <select class="govuk-select" id="last-viewed-filter" name="lastViewed">
+        <option value="all" selected>All time</option>
+        <option value="today">Today</option>
         <option value="7">Last 7 days</option>
         <option value="30">Last 30 days</option>
+        <option value="90">Last 90 days</option>
+        
       </select>
     </div>
 
-    <div class="loi-filters__group">
-      <label class="govuk-label" for="curfewdurationdropdown">Duration</label>
-      <select class="govuk-select" id="curfewdurationdropdown" name="filter-duration">
-        <option value="0" selected>All</option>
-        <option value="1">Over 1 minute</option>
-        <option value="5">Over 5 minutes</option>
-        <option value="15">Over 15 minutes</option>
-      </select>
-    </div>
-
-    <div class="loi-filters__actions">
-      <button class="govuk-button" data-module="govuk-button" id="curfewdropdownbutton">
+    <div class="loi-filters__actions" style="justify-self: start;">
+      <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="last-viewed-filter-button">
         Update
       </button>
     </div>
@@ -72,6 +65,9 @@
   caption: "",
   captionClasses: "govuk-table__caption--m",
   firstCellIsHeader: false,
+  attributes: {
+    id: "mi-reporting-table"
+  },
   head: [
     {
       text: "User"
@@ -333,6 +329,83 @@
     href: "#"
   }
 }) }}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var filter = document.getElementById('last-viewed-filter');
+    var button = document.getElementById('last-viewed-filter-button');
+    var status = document.getElementById('loi-filter-status');
+    var table = document.getElementById('mi-reporting-table');
+    var tbody = table && table.tBodies ? table.tBodies[0] : null;
+
+    if (!filter || !button || !tbody) return;
+
+    function startOfDay(date) {
+      var next = new Date(date);
+      next.setHours(0, 0, 0, 0);
+      return next;
+    }
+
+    function parseDisplayDate(text) {
+      var match = String(text || '').trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+      if (!match) return null;
+
+      var months = {
+        Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+        Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+      };
+
+      var monthIndex = months[match[2]];
+      if (monthIndex === undefined) return null;
+
+      return new Date(Number(match[3]), monthIndex, Number(match[1]));
+    }
+
+    function matchesFilter(rowDate, filterValue) {
+      if (filterValue === 'all') return true;
+      if (!rowDate) return false;
+
+      var today = startOfDay(new Date());
+
+      if (filterValue === 'today') {
+        return rowDate.getTime() === today.getTime();
+      }
+
+      var days = Number(filterValue);
+      if (!Number.isFinite(days)) return true;
+
+      var threshold = new Date(today);
+      threshold.setDate(threshold.getDate() - (days - 1));
+      return rowDate >= threshold && rowDate <= today;
+    }
+
+    function applyLastViewedFilter() {
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+      var filterValue = filter.value;
+      var visibleCount = 0;
+
+      rows.forEach(function (row) {
+        var lastCell = row.cells && row.cells.length ? row.cells[row.cells.length - 1] : null;
+        var rowDate = parseDisplayDate(lastCell ? lastCell.textContent : '');
+        var showRow = matchesFilter(rowDate, filterValue);
+        row.hidden = !showRow;
+        if (showRow) visibleCount += 1;
+      });
+
+      if (status) {
+        var label = filter.options[filter.selectedIndex] ? filter.options[filter.selectedIndex].text : 'All time';
+        status.textContent = label + ': ' + visibleCount + ' row' + (visibleCount === 1 ? '' : 's') + ' shown';
+      }
+    }
+
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      applyLastViewedFilter();
+    });
+
+    applyLastViewedFilter();
+  });
+</script>
 
 </div>
 

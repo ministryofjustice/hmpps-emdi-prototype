@@ -1,0 +1,51 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Help with the map" %}
+
+{% block content %}
+
+<a href="javascript:history.back()" class="govuk-back-link">Back</a>
+
+<h2 class="govuk-heading-l">What's new</h2>
+
+<h3 class="govuk-heading-s">Welcome to our service updates</h3>
+
+<p>View highlights of what's new and what's improved for Electronic monitoring.</p>
+
+<p>If you have any feedback or questions on the service or any of these updates, email <a href="mailto:mpop-digital-team@justice.gov.uk">emdisupport@justice.gov.uk</a>.</p>
+
+
+<div class="moj-timeline">
+  <div class="moj-timeline__item">
+    <div class="moj-timeline__header">
+      <h2 class="moj-timeline__title">Navigating trail map points</h2>
+      <p class="moj-timeline__byline"></p>
+    </div>
+    <p class="moj-timeline__date">
+      <time datetime="2026-06-14T14:01:00.000Z">6 August 2026</time>
+    </p>
+    <div class="moj-timeline__description">
+      <p>It is now easier to move through the points of a trail map. When any
+      point is clicked, this will bring up a 'ping card' of information. On
+      this card you can now reach the start and end points of the trail data
+      (using the double arrows &lt;&lt; &gt;&gt;) and all points in between
+      (using the single arrows &lt; &gt;).</p>
+    </div>
+  </div>
+ 
+</div>
+
+
+
+</div>
+
+
+{% endblock %}

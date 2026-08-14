@@ -33,8 +33,43 @@
 <h2 id="violation-minutes" class="govuk-heading-m">POP view</h2>
 
 <div class="loi-filters govuk-!-margin-bottom-3">
-  <div class="loi-filters__row" style="grid-template-columns: minmax(220px, 320px); row-gap: 12px;">
+  <div class="loi-filters__row" style="grid-template-columns: repeat(3, minmax(180px, 260px)); column-gap: 18px; row-gap: 16px;">
     <div class="loi-filters__group">
+      <label class="govuk-label" for="table-filter-col-0">CRN</label>
+      <select class="govuk-select" id="table-filter-col-0" name="filter-crn">
+        <option value="all" selected>All</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group">
+      <label class="govuk-label" for="table-filter-col-1">PDU</label>
+      <select class="govuk-select" id="table-filter-col-1" name="filter-pdu">
+        <option value="all" selected>All</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group" style="margin-left: 12px;">
+      <label class="govuk-label" for="table-filter-col-2">Region</label>
+      <select class="govuk-select" id="table-filter-col-2" name="filter-region">
+        <option value="all" selected>All</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group">
+      <label class="govuk-label" for="table-filter-col-3">Searches</label>
+      <select class="govuk-select" id="table-filter-col-3" name="filter-searches">
+        <option value="all" selected>All</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group">
+      <label class="govuk-label" for="table-filter-col-4">Users</label>
+      <select class="govuk-select" id="table-filter-col-4" name="filter-users">
+        <option value="all" selected>All</option>
+      </select>
+    </div>
+
+    <div class="loi-filters__group" style="margin-left: 12px;">
       <label class="govuk-label" for="last-viewed-filter">Last viewed</label>
       <select class="govuk-select" id="last-viewed-filter" name="lastViewed">
         <option value="all" selected>All time</option>
@@ -42,11 +77,10 @@
         <option value="7">Last 7 days</option>
         <option value="30">Last 30 days</option>
         <option value="90">Last 90 days</option>
-        
       </select>
     </div>
 
-    <div class="loi-filters__actions" style="justify-self: start;">
+    <div class="loi-filters__actions" style="grid-column: 1 / -1; justify-self: start;">
       <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="last-viewed-filter-button">
         Update
       </button>
@@ -65,7 +99,8 @@
   captionClasses: "govuk-table__caption--m",
   firstCellIsHeader: false,
   attributes: {
-    id: "mi-reporting-table"
+    id: "mi-reporting-table",
+    "data-module": "moj-sortable-table"
   },
   head: [
     {
@@ -84,7 +119,10 @@
       text: "Users"
     },
     {
-      text: "Last viewed"
+      text: "Last viewed",
+      attributes: {
+        "aria-sort": "none"
+      }
     }
   ],
   rows: [
@@ -105,7 +143,8 @@
         text: "2"
       },
       {
-        text: "12 Aug 2026"
+        text: "12 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-12" }
       }
     ],
      [
@@ -125,7 +164,8 @@
         text: "1"
       },
       {
-        text: "10 Aug 2026"
+        text: "10 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-10" }
       }
     ],
      [
@@ -145,7 +185,8 @@
         text: "2"
       },
       {
-        text: "8 Aug 2026"
+        text: "8 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-08" }
       }
     ],
      [
@@ -165,7 +206,8 @@
         text: "0"
       },
       {
-        text: "6 Aug 2026"
+        text: "6 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-06" }
       }
     ],
      [
@@ -185,7 +227,8 @@
         text: "1"
       },
       {
-        text: "4 Aug 2026"
+        text: "4 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-04" }
       }
     ],
      [
@@ -205,7 +248,8 @@
         text: "2"
       },
       {
-        text: "2 Aug 2026"
+        text: "2 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-02" }
       }
     ],
      [
@@ -225,7 +269,8 @@
         text: "0"
       },
       {
-        text: "31 Jul 2026"
+        text: "31 Jul 2026",
+        attributes: { "data-sort-value": "2026-07-31" }
       }
     ],
      [
@@ -245,7 +290,8 @@
         text: "1"
       },
       {
-        text: "5 Aug 2026"
+        text: "5 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-05" }
       }
     ],
     [
@@ -265,7 +311,8 @@
         text: "0"
       },
       {
-        text: "1 Aug 2026"
+        text: "1 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-01" }
       }
     ],
     [
@@ -285,7 +332,8 @@
         text: "2"
       },
       {
-        text: "7 Aug 2026"
+        text: "7 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-07" }
       }
     ]
   ]
@@ -331,13 +379,121 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    var filters = [0, 1, 2, 3, 4].map(function (index) {
+      return { col: index, el: document.getElementById('table-filter-col-' + index) };
+    });
     var filter = document.getElementById('last-viewed-filter');
     var button = document.getElementById('last-viewed-filter-button');
     var status = document.getElementById('loi-filter-status');
     var table = document.getElementById('mi-reporting-table');
     var tbody = table && table.tBodies ? table.tBodies[0] : null;
+    var targetRowCount = 50;
 
-    if (!filter || !button || !tbody) return;
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pick(list) {
+      return list[randomInt(0, list.length - 1)];
+    }
+
+    function formatDisplayDate(date) {
+      var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+    }
+
+    function toIsoDate(date) {
+      var yyyy = date.getFullYear();
+      var mm = String(date.getMonth() + 1).padStart(2, '0');
+      var dd = String(date.getDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function randomRecentDate() {
+      var date = new Date();
+      date.setDate(date.getDate() - randomInt(0, 120));
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+
+    function randomCrn() {
+      var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return letters[randomInt(0, letters.length - 1)] + String(randomInt(100000, 999999));
+    }
+
+    function createCell(text, sortValue) {
+      var cell = document.createElement('td');
+      cell.className = 'govuk-table__cell';
+      cell.textContent = text;
+      if (sortValue) {
+        cell.setAttribute('data-sort-value', sortValue);
+      }
+      return cell;
+    }
+
+    function appendRandomRowsToTarget() {
+      if (!tbody) return;
+
+      var pduRegionPairs = [
+        { pdu: 'Essex South', region: 'East of England' },
+        { pdu: 'Kent and Medway', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'Surrey', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'Sussex North', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'West Midlands Central', region: 'West Midlands' },
+        { pdu: 'Merseyside', region: 'North West' },
+        { pdu: 'Greater Manchester North', region: 'North West' },
+        { pdu: 'South Yorkshire', region: 'Yorkshire and The Humber' },
+        { pdu: 'West Yorkshire', region: 'Yorkshire and The Humber' },
+        { pdu: 'Hampshire and Isle of Wight', region: 'South Central' }
+      ];
+
+      while (tbody.rows.length < targetRowCount) {
+        var pair = pick(pduRegionPairs);
+        var searches = randomInt(0, 8);
+        var users = randomInt(0, 4);
+        var date = randomRecentDate();
+        var tr = document.createElement('tr');
+
+        tr.appendChild(createCell(randomCrn()));
+        tr.appendChild(createCell(pair.pdu));
+        tr.appendChild(createCell(pair.region));
+        tr.appendChild(createCell(String(searches)));
+        tr.appendChild(createCell(String(users)));
+        tr.appendChild(createCell(formatDisplayDate(date), toIsoDate(date)));
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    appendRandomRowsToTarget();
+    var rows = tbody ? Array.prototype.slice.call(tbody.querySelectorAll('tr')) : [];
+
+    if (!filter || !button || !tbody || filters.some(function (f) { return !f.el; })) return;
+
+    function normalize(text) {
+      return String(text || '').trim().replace(/\s+/g, ' ');
+    }
+
+    function populateOptions(selectEl, colIndex) {
+      var seen = new Set();
+      rows.forEach(function (row) {
+        var cell = row.cells && row.cells[colIndex];
+        if (!cell) return;
+        var value = normalize(cell.textContent);
+        if (value) seen.add(value);
+      });
+
+      Array.from(seen)
+        .sort(function (a, b) {
+          return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        })
+        .forEach(function (value) {
+          var option = document.createElement('option');
+          option.value = value;
+          option.textContent = value;
+          selectEl.appendChild(option);
+        });
+    }
 
     function startOfDay(date) {
       var next = new Date(date);
@@ -378,15 +534,21 @@
       return rowDate >= threshold && rowDate <= today;
     }
 
-    function applyLastViewedFilter() {
-      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+
+    function applyFilters() {
       var filterValue = filter.value;
       var visibleCount = 0;
 
       rows.forEach(function (row) {
+        var exactMatch = filters.every(function (f) {
+          if (f.el.value === 'all') return true;
+          var cell = row.cells && row.cells[f.col];
+          return normalize(cell ? cell.textContent : '') === f.el.value;
+        });
+
         var lastCell = row.cells && row.cells.length ? row.cells[row.cells.length - 1] : null;
         var rowDate = parseDisplayDate(lastCell ? lastCell.textContent : '');
-        var showRow = matchesFilter(rowDate, filterValue);
+        var showRow = exactMatch && matchesFilter(rowDate, filterValue);
         row.hidden = !showRow;
         if (showRow) visibleCount += 1;
       });
@@ -399,10 +561,14 @@
 
     button.addEventListener('click', function (event) {
       event.preventDefault();
-      applyLastViewedFilter();
+      applyFilters();
     });
 
-    applyLastViewedFilter();
+    filters.forEach(function (f) {
+      populateOptions(f.el, f.col);
+    });
+
+    applyFilters();
   });
 </script>
 

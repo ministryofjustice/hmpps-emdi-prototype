@@ -678,6 +678,18 @@
       }).join('');
     }
 
+    function updatePaginationResults(visibleCount) {
+      var paginationRoot = document.querySelector('.moj-pagination');
+      if (!paginationRoot) return;
+
+      var resultsEl = paginationRoot.querySelector('.moj-pagination__results');
+      if (!resultsEl) return;
+
+      var from = visibleCount > 0 ? 1 : 0;
+      var to = visibleCount;
+      resultsEl.textContent = 'Showing ' + from + ' to ' + to + ' of ' + visibleCount + ' results';
+    }
+
 
     function applyFilters() {
       var dateFilterValues = getCheckedValues(dateFilter.el);
@@ -710,6 +722,7 @@
         status.textContent = visibleCount + ' row' + (visibleCount === 1 ? '' : 's') + ' shown';
       }
 
+      updatePaginationResults(visibleCount);
       updateSelectedFiltersSummary();
     }
 

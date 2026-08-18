@@ -717,7 +717,9 @@
 
   const lat = fmtCoord(pt.lat);
   const lng = fmtCoord(pt.lng);
-  const speed = (pt.speed != null) ? `${pt.speed} kilometres per hour` : '—';
+  const speed = (pt.speed != null)
+    ? `${fmtNum(Number(pt.speed) * 0.621371, 1)} miles per hour`
+    : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
   const lastIndex = Math.max(0, totalPoints - 1);
 
@@ -755,12 +757,10 @@
           <dd class="govuk-summary-list__value">${dateTime}</dd>
         </div>
 
-        <!--
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Lat, long</dt>
           <dd class="govuk-summary-list__value"><code>${lat}, ${lng}</code></dd>
         </div>
-        -->
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Speed</dt>

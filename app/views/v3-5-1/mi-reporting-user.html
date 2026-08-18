@@ -33,63 +33,91 @@
 
 <h2 id="violation-minutes" class="govuk-heading-m">User view</h2>
 
-<div class="loi-filters govuk-!-margin-bottom-3">
-  <div class="loi-filters__row" style="grid-template-columns: repeat(3, minmax(180px, 260px)); column-gap: 18px; row-gap: 16px;">
-    <div class="loi-filters__group">
-      <label class="govuk-label" for="table-filter-col-0">User</label>
-      <select class="govuk-select" id="table-filter-col-0" name="filter-user">
-        <option value="all" selected>All</option>
-      </select>
-    </div>
+<div class="mi-reporting-layout">
+<div class="mi-filter-panel govuk-!-margin-bottom-5">
+  <div class="mi-filter-panel__header">
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-0">Filter the list</h3>
+  </div>
 
-    <div class="loi-filters__group">
-      <label class="govuk-label" for="table-filter-col-1">PDU</label>
-      <select class="govuk-select" id="table-filter-col-1" name="filter-pdu">
-        <option value="all" selected>All</option>
-      </select>
+  <div class="mi-filter-panel__selected">
+    <div class="mi-filter-panel__selected-header">
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-0">Selected filters</h4>
+      <a href="#" class="govuk-link" id="clear-filters">Clear filters</a>
     </div>
+    <div id="selected-filters-summary">
+      <p class="govuk-body govuk-!-margin-bottom-0">No filters selected</p>
+    </div>
+  </div>
 
-    <div class="loi-filters__group" style="margin-left: 12px;">
-      <label class="govuk-label" for="table-filter-col-2">Region</label>
-      <select class="govuk-select" id="table-filter-col-2" name="filter-region">
-        <option value="all" selected>All</option>
-      </select>
-    </div>
+  <div class="mi-filter-panel__body">
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">User</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <label class="govuk-label" for="table-filter-col-0-input">User</label>
+        <div id="table-filter-col-0-input-hint" class="govuk-hint">Type a name and press Enter to filter</div>
+        <input class="govuk-input" id="table-filter-col-0-input" name="filter-user" type="text" list="table-filter-col-0-list" placeholder="Search user" autocomplete="off" aria-describedby="table-filter-col-0-input-hint">
+        <datalist id="table-filter-col-0-list"></datalist>
+      </div>
+    </details>
 
-    <div class="loi-filters__group">
-      <label class="govuk-label" for="table-filter-col-3">Searches</label>
-      <select class="govuk-select" id="table-filter-col-3" name="filter-searches">
-        <option value="all" selected>All</option>
-      </select>
-    </div>
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">PDU</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">PDU</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="table-filter-col-1"></div>
+      </div>
+    </details>
 
-    <div class="loi-filters__group">
-      <label class="govuk-label" for="table-filter-col-4">POPs</label>
-      <select class="govuk-select" id="table-filter-col-4" name="filter-pops">
-        <option value="all" selected>All</option>
-      </select>
-    </div>
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">Region</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">Region</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="table-filter-col-2"></div>
+      </div>
+    </details>
 
-    <div class="loi-filters__group" style="margin-left: 12px;">
-      <label class="govuk-label" for="last-viewed-filter">Last viewed</label>
-      <select class="govuk-select" id="last-viewed-filter" name="lastViewed">
-        <option value="all" selected>All time</option>
-        <option value="today">Today</option>
-        <option value="7">Last 7 days</option>
-        <option value="30">Last 30 days</option>
-        <option value="90">Last 90 days</option>
-      </select>
-    </div>
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">POPs</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">POPs</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="table-filter-col-4"></div>
+      </div>
+    </details>
 
-    <div class="loi-filters__actions" style="grid-column: 1 / -1; justify-self: start;">
-      <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="last-viewed-filter-button">
-        Update
-      </button>
-    </div>
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">Last viewed</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">Last viewed</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="last-viewed-filter">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-today" name="lastViewed" type="checkbox" value="today">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-today">Today</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-7" name="lastViewed" type="checkbox" value="7">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-7">Last 7 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-30" name="lastViewed" type="checkbox" value="30">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-30">Last 30 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-90" name="lastViewed" type="checkbox" value="90">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-90">Last 90 days</label>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="last-viewed-filter-button">
+      Apply filters
+    </button>
   </div>
 
   <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
 </div>
+
+<div class="mi-reporting-layout__table">
 
 
 
@@ -340,6 +368,9 @@
   ]
 }) }}
 
+</div>
+</div>
+
 {%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
@@ -380,11 +411,23 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    var filters = [0, 1, 2, 3, 4].map(function (index) {
-      return { col: index, el: document.getElementById('table-filter-col-' + index) };
-    });
-    var filter = document.getElementById('last-viewed-filter');
+    var checkboxFilters = [
+      { col: 1, label: 'PDU', name: 'filter-pdu', el: document.getElementById('table-filter-col-1') },
+      { col: 2, label: 'Region', name: 'filter-region', el: document.getElementById('table-filter-col-2') },
+      { col: 4, label: 'POPs', name: 'filter-pops', el: document.getElementById('table-filter-col-4') }
+    ];
+    var autocompleteFilter = {
+      col: 0,
+      inputEl: document.getElementById('table-filter-col-0-input'),
+      listEl: document.getElementById('table-filter-col-0-list')
+    };
+    var dateFilter = {
+      label: 'Last viewed',
+      el: document.getElementById('last-viewed-filter')
+    };
     var button = document.getElementById('last-viewed-filter-button');
+    var clearFilters = document.getElementById('clear-filters');
+    var selectedFiltersSummary = document.getElementById('selected-filters-summary');
     var status = document.getElementById('loi-filter-status');
     var table = document.getElementById('mi-reporting-table');
     var tbody = table && table.tBodies ? table.tBodies[0] : null;
@@ -466,13 +509,55 @@
     appendRandomRowsToTarget();
     var rows = tbody ? Array.prototype.slice.call(tbody.querySelectorAll('tr')) : [];
 
-    if (!filter || !button || !tbody || filters.some(function (f) { return !f.el; })) return;
+    if (!dateFilter.el || !button || !clearFilters || !selectedFiltersSummary || !tbody || !autocompleteFilter.inputEl || !autocompleteFilter.listEl || checkboxFilters.some(function (f) { return !f.el; })) return;
 
     function normalize(text) {
       return String(text || '').trim().replace(/\s+/g, ' ');
     }
 
-    function populateOptions(selectEl, colIndex) {
+    function getCheckedValues(containerEl) {
+      return Array.prototype.slice.call(containerEl.querySelectorAll('input[type="checkbox"]:checked')).map(function (checkbox) {
+        return checkbox.value;
+      });
+    }
+
+    function populateCheckboxOptions(containerEl, colIndex, name) {
+      var seen = new Set();
+      rows.forEach(function (row) {
+        var cell = row.cells && row.cells[colIndex];
+        if (!cell) return;
+        var value = normalize(cell.textContent);
+        if (value) seen.add(value);
+      });
+
+      Array.from(seen)
+        .sort(function (a, b) {
+          return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        })
+        .forEach(function (value, index) {
+          var item = document.createElement('div');
+          var checkbox = document.createElement('input');
+          var label = document.createElement('label');
+          var optionId = name + '-' + index;
+
+          item.className = 'govuk-checkboxes__item';
+          checkbox.className = 'govuk-checkboxes__input';
+          checkbox.id = optionId;
+          checkbox.name = name;
+          checkbox.type = 'checkbox';
+          checkbox.value = value;
+
+          label.className = 'govuk-label govuk-checkboxes__label';
+          label.htmlFor = optionId;
+          label.textContent = value;
+
+          item.appendChild(checkbox);
+          item.appendChild(label);
+          containerEl.appendChild(item);
+        });
+    }
+
+    function populateAutocompleteOptions(inputEl, listEl, colIndex) {
       var seen = new Set();
       rows.forEach(function (row) {
         var cell = row.cells && row.cells[colIndex];
@@ -488,9 +573,10 @@
         .forEach(function (value) {
           var option = document.createElement('option');
           option.value = value;
-          option.textContent = value;
-          selectEl.appendChild(option);
+          listEl.appendChild(option);
         });
+
+      inputEl.setAttribute('aria-controls', 'mi-reporting-table');
     }
 
     function startOfDay(date) {
@@ -514,47 +600,124 @@
       return new Date(Number(match[3]), monthIndex, Number(match[1]));
     }
 
-    function matchesFilter(rowDate, filterValue) {
-      if (filterValue === 'all') return true;
+    function matchesDateFilter(rowDate, filterValues) {
+      if (!filterValues.length) return true;
       if (!rowDate) return false;
 
       var today = startOfDay(new Date());
 
-      if (filterValue === 'today') {
-        return rowDate.getTime() === today.getTime();
+      return filterValues.some(function (filterValue) {
+        if (filterValue === 'today') {
+          return rowDate.getTime() === today.getTime();
+        }
+
+        var days = Number(filterValue);
+        if (!Number.isFinite(days)) return false;
+
+        var threshold = new Date(today);
+        threshold.setDate(threshold.getDate() - (days - 1));
+        return rowDate >= threshold && rowDate <= today;
+      });
+    }
+
+    function getAppliedFilters() {
+      var applied = [];
+      var autoValue = normalize(autocompleteFilter.inputEl.value);
+
+      if (autoValue) {
+        applied.push({ label: 'User', value: autoValue, type: 'autocomplete' });
       }
 
-      var days = Number(filterValue);
-      if (!Number.isFinite(days)) return true;
+      checkboxFilters.forEach(function (filterDef) {
+        var values = getCheckedValues(filterDef.el);
+        if (!values.length) return;
+        values.forEach(function (value) {
+          applied.push({ label: filterDef.label, value: value, type: 'checkbox', container: filterDef.el });
+        });
+      });
 
-      var threshold = new Date(today);
-      threshold.setDate(threshold.getDate() - (days - 1));
-      return rowDate >= threshold && rowDate <= today;
+      var dateValues = getCheckedValues(dateFilter.el);
+      if (dateValues.length) {
+        dateValues.forEach(function (value) {
+          var input = dateFilter.el.querySelector('input[value="' + value + '"]');
+          var label = input ? dateFilter.el.querySelector('label[for="' + input.id + '"]') : null;
+          applied.push({
+            label: dateFilter.label,
+            value: normalize(label ? label.textContent : value),
+            rawValue: value,
+            type: 'date-checkbox',
+            container: dateFilter.el
+          });
+        });
+      }
+
+      return applied;
+    }
+
+    function updateSelectedFiltersSummary() {
+      var applied = getAppliedFilters();
+      if (!applied.length) {
+        selectedFiltersSummary.innerHTML = '<p class="govuk-body govuk-!-margin-bottom-0">No filters selected</p>';
+        return;
+      }
+
+      var grouped = applied.reduce(function (groups, item) {
+        if (!groups[item.label]) groups[item.label] = [];
+        groups[item.label].push(item);
+        return groups;
+      }, {});
+
+      selectedFiltersSummary.innerHTML = Object.keys(grouped).map(function (label) {
+        var chips = grouped[label].map(function (item) {
+          var valueAttr = encodeURIComponent(item.rawValue || item.value);
+          return '' +
+            '<button class="mi-filter-tag" type="button" data-filter-type="' + item.type + '" data-filter-label="' + label + '" data-filter-value="' + valueAttr + '">' +
+            item.value + ' <span aria-hidden="true">×</span>' +
+            '<span class="govuk-visually-hidden">Remove ' + item.value + ' filter</span>' +
+            '</button>';
+        }).join('');
+
+        return '' +
+          '<div class="mi-filter-selected-group">' +
+          '<h5 class="govuk-heading-s govuk-!-margin-bottom-2">' + label + '</h5>' +
+          '<div class="mi-filter-tags">' + chips + '</div>' +
+          '</div>';
+      }).join('');
     }
 
 
     function applyFilters() {
-      var filterValue = filter.value;
+      var dateFilterValues = getCheckedValues(dateFilter.el);
+      var autocompleteQuery = normalize(autocompleteFilter.inputEl.value).toLowerCase();
       var visibleCount = 0;
 
       rows.forEach(function (row) {
-        var exactMatch = filters.every(function (f) {
-          if (f.el.value === 'all') return true;
+        var exactMatch = checkboxFilters.every(function (f) {
+          var selectedValues = getCheckedValues(f.el);
+          if (!selectedValues.length) return true;
           var cell = row.cells && row.cells[f.col];
-          return normalize(cell ? cell.textContent : '') === f.el.value;
+          return selectedValues.indexOf(normalize(cell ? cell.textContent : '')) !== -1;
         });
+
+        var autocompleteMatch = true;
+        if (autocompleteQuery) {
+          var autoCell = row.cells && row.cells[autocompleteFilter.col];
+          var autoValue = normalize(autoCell ? autoCell.textContent : '').toLowerCase();
+          autocompleteMatch = autoValue.indexOf(autocompleteQuery) !== -1;
+        }
 
         var lastCell = row.cells && row.cells.length ? row.cells[row.cells.length - 1] : null;
         var rowDate = parseDisplayDate(lastCell ? lastCell.textContent : '');
-        var showRow = exactMatch && matchesFilter(rowDate, filterValue);
+        var showRow = exactMatch && autocompleteMatch && matchesDateFilter(rowDate, dateFilterValues);
         row.hidden = !showRow;
         if (showRow) visibleCount += 1;
       });
 
       if (status) {
-        var label = filter.options[filter.selectedIndex] ? filter.options[filter.selectedIndex].text : 'All time';
-        status.textContent = label + ': ' + visibleCount + ' row' + (visibleCount === 1 ? '' : 's') + ' shown';
+        status.textContent = visibleCount + ' row' + (visibleCount === 1 ? '' : 's') + ' shown';
       }
+
+      updateSelectedFiltersSummary();
     }
 
     button.addEventListener('click', function (event) {
@@ -562,9 +725,56 @@
       applyFilters();
     });
 
-    filters.forEach(function (f) {
-      populateOptions(f.el, f.col);
+    clearFilters.addEventListener('click', function (event) {
+      event.preventDefault();
+      autocompleteFilter.inputEl.value = '';
+      checkboxFilters.forEach(function (filterDef) {
+        Array.prototype.slice.call(filterDef.el.querySelectorAll('input[type="checkbox"]')).forEach(function (checkbox) {
+          checkbox.checked = false;
+        });
+      });
+      Array.prototype.slice.call(dateFilter.el.querySelectorAll('input[type="checkbox"]')).forEach(function (checkbox) {
+        checkbox.checked = false;
+      });
+      applyFilters();
     });
+
+    selectedFiltersSummary.addEventListener('click', function (event) {
+      var buttonEl = event.target.closest('.mi-filter-tag');
+      if (!buttonEl) return;
+
+      var filterType = buttonEl.getAttribute('data-filter-type');
+      var filterValue = decodeURIComponent(buttonEl.getAttribute('data-filter-value') || '');
+
+      if (filterType === 'autocomplete') {
+        autocompleteFilter.inputEl.value = '';
+        applyFilters();
+        return;
+      }
+
+      var containerEl = filterType === 'date-checkbox' ? dateFilter.el : checkboxFilters.reduce(function (match, filterDef) {
+        return match || (filterDef.label === buttonEl.getAttribute('data-filter-label') ? filterDef.el : null);
+      }, null);
+
+      if (!containerEl) return;
+
+      var checkbox = containerEl.querySelector('input[value="' + CSS.escape(filterValue) + '"]');
+      if (checkbox) {
+        checkbox.checked = false;
+        applyFilters();
+      }
+    });
+
+    autocompleteFilter.inputEl.addEventListener('keydown', function (event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      applyFilters();
+    });
+
+    checkboxFilters.forEach(function (f) {
+      populateCheckboxOptions(f.el, f.col, f.name);
+    });
+    populateAutocompleteOptions(autocompleteFilter.inputEl, autocompleteFilter.listEl, autocompleteFilter.col);
 
     applyFilters();
   });
@@ -581,6 +791,101 @@
   /* Page width override for this version: +50px each side (100px total). */
   .govuk-width-container {
     max-width: 1280px;
+  }
+
+  .mi-reporting-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 372px) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .mi-reporting-layout__table {
+    min-width: 0;
+  }
+
+  .mi-filter-panel {
+    border: 1px solid #b1b4b6;
+    background: #fff;
+  }
+
+  .mi-filter-panel__header {
+    padding: 16px 20px;
+    background: #b1b4b6;
+  }
+
+  .mi-filter-panel__selected {
+    padding: 20px;
+    border-bottom: 1px solid #b1b4b6;
+  }
+
+  .mi-filter-panel__selected-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .mi-filter-panel__body {
+    padding: 0 20px 20px;
+  }
+
+  .mi-filter-panel__section {
+    border-bottom: 1px solid #b1b4b6;
+    padding: 0;
+  }
+
+  .mi-filter-panel__summary {
+    cursor: pointer;
+    padding: 20px 0;
+    color: #1d70b8;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+  }
+
+  .mi-filter-panel__content {
+    padding: 0 0 20px;
+  }
+
+  .mi-filter-checkboxes .govuk-checkboxes__item + .govuk-checkboxes__item {
+    margin-top: 8px;
+  }
+
+  .mi-filter-selected-group + .mi-filter-selected-group {
+    margin-top: 20px;
+  }
+
+  .mi-filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mi-filter-tag {
+    border: 1px solid #0b0c0c;
+    background: #fff;
+    padding: 6px 8px;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .mi-filter-panel .govuk-input,
+  .mi-filter-panel .govuk-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mi-filter-panel .govuk-button {
+    margin-top: 32px;
+  }
+
+  @media (max-width: 900px) {
+    .mi-reporting-layout {
+      grid-template-columns: 1fr;
+    }
   }
   </style>
 

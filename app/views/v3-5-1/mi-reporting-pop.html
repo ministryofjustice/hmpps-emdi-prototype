@@ -822,6 +822,7 @@
   .mi-filter-panel__selected {
     padding: 20px;
     border-bottom: 1px solid #b1b4b6;
+    background-color: #f3f3f3;
   }
 
   .mi-filter-panel__selected-header {
@@ -842,11 +843,44 @@
   }
 
   .mi-filter-panel__summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
     cursor: pointer;
-    padding: 20px 0;
+    padding: 16px 0;
+    padding-left: 3px;
     color: #1d70b8;
     font-family: "GDS Transport", arial, sans-serif;
     font-size: 19px;
+  }
+
+  .mi-filter-panel__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mi-filter-panel__summary::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 3px solid #0b0c0c;
+    border-bottom: 3px solid #0b0c0c;
+    background: transparent;
+    transform: rotate(45deg);
+    transform-origin: 50% 50%;
+    transition: transform 0.15s ease;
+    margin-top: -1px;
+    flex: 0 0 8px;
+  }
+
+  .mi-filter-panel__section[open] > .mi-filter-panel__summary::before {
+    transform: rotate(-135deg);
+  }
+
+  .mi-filter-panel__summary:focus,
+  .mi-filter-panel__summary:focus-visible {
+    outline: none;
   }
 
   .mi-filter-panel__content {

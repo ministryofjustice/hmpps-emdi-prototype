@@ -1943,11 +1943,12 @@ a[aria-label="North arrow"] {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 10px;
   background: transparent;
   border: 0;
   margin: 0;
-  padding: 14px 0;
+  padding: 16px 0;
+  padding-left: 3px;
   text-align: left;
   cursor: pointer;
   color: #1d70b8;
@@ -1963,23 +1964,24 @@ a[aria-label="North arrow"] {
 
 .emdi-collapsible-icon {
   order: -1;
-  width: 12px;
-  height: 12px;
-  background: #1d70b8;
-  clip-path: polygon(0 0, 0 100%, 100% 50%);
-  transform: rotate(0deg);
+  width: 8px;
+  height: 8px;
+  border-right: 3px solid #0b0c0c;
+  border-bottom: 3px solid #0b0c0c;
+  background: transparent;
+  transform: rotate(45deg);
   transform-origin: 50% 50%;
   transition: transform 0.15s ease;
-  margin-top: 0;
-  flex: 0 0 12px;
+  margin-top: -1px;
+  flex: 0 0 8px;
 }
 
 .emdi-control-group--collapsed .emdi-collapsible-icon {
-  transform: rotate(0deg);
+  transform: rotate(45deg);
 }
 
 .emdi-control-group:not(.emdi-control-group--collapsed) .emdi-collapsible-icon {
-  transform: rotate(90deg);
+  transform: rotate(-135deg);
 }
 
 .emdi-collapsible-trigger:focus {

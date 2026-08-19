@@ -1942,36 +1942,44 @@ a[aria-label="North arrow"] {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   background: transparent;
   border: 0;
   margin: 0;
-  padding: 0 0 10px;
+  padding: 14px 0;
   text-align: left;
   cursor: pointer;
-  color: #0b0c0c;
+  color: #1d70b8;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .emdi-collapsible-title {
-  font-weight: 700;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: 400;
   font-size: 19px;
   line-height: 1.3;
 }
 
 .emdi-collapsible-icon {
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid #0b0c0c;
-  border-bottom: 2px solid #0b0c0c;
-  transform: rotate(45deg);
+  order: -1;
+  width: 12px;
+  height: 12px;
+  background: #1d70b8;
+  clip-path: polygon(0 0, 0 100%, 100% 50%);
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
   transition: transform 0.15s ease;
-  margin-top: -2px;
-  flex: 0 0 10px;
+  margin-top: 0;
+  flex: 0 0 12px;
 }
 
 .emdi-control-group--collapsed .emdi-collapsible-icon {
-  transform: rotate(-45deg);
+  transform: rotate(0deg);
+}
+
+.emdi-control-group:not(.emdi-control-group--collapsed) .emdi-collapsible-icon {
+  transform: rotate(90deg);
 }
 
 .emdi-collapsible-trigger:focus {
@@ -1979,8 +1987,7 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-collapsible-trigger:focus-visible {
-  outline: 3px solid #ffdd00;
-  outline-offset: 2px;
+  outline: none;
 }
 
 .emdi-collapsible-content[hidden] {
@@ -1989,7 +1996,7 @@ a[aria-label="North arrow"] {
 
 .emdi-custom-layer-controls .emdi-control-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   margin: 0 0 10px;
   line-height: 1.35;
@@ -2006,7 +2013,7 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-control-row--sub .emdi-heatmap-key__swatch {
-  margin-top: 3px;
+  margin-top: 0;
 }
 
 .emdi-control-row--disabled {
@@ -2017,7 +2024,7 @@ a[aria-label="North arrow"] {
 .emdi-control-row input[type="checkbox"] {
   width: 24px;
   height: 24px;
-  margin: 1px 0 0;
+  margin: 0;
   flex: 0 0 24px;
   accent-color: #0b0c0c;
 }

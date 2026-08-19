@@ -870,20 +870,17 @@
 
   .mi-filter-panel__summary::before {
     content: "";
-    width: 8px;
-    height: 8px;
-    border-right: 3px solid #0b0c0c;
-    border-bottom: 3px solid #0b0c0c;
-    background: transparent;
-    transform: rotate(45deg);
+    width: 19px;
+    height: 19px;
+    background: center / 19px 19px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 19 19' fill='none'%3E%3Cpath d='M3 7l6.5 6.5L16 7' stroke='%230b0c0c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     transform-origin: 50% 50%;
     transition: transform 0.15s ease;
-    margin-top: -1px;
-    flex: 0 0 8px;
+    margin-top: 0;
+    flex: 0 0 19px;
   }
 
   .mi-filter-panel__section[open] > .mi-filter-panel__summary::before {
-    transform: rotate(-135deg);
+    transform: rotate(180deg);
   }
 
   .mi-filter-panel__summary:focus,

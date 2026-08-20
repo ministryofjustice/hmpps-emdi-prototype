@@ -124,7 +124,7 @@
   },
   head: [
     {
-      text: "CRN"
+      text: "Name / CRN"
     },
      {
       text: "PDU"
@@ -148,7 +148,8 @@
   rows: [
     [
       {
-        text: "Q482917"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hoskins, Billy</span><span class="mi-name-crn__crn">Q482917</span></span>',
+        attributes: { "data-crn": "Q482917", "data-name": "Hoskins, Billy" }
       },
       {
         text: "Essex South"
@@ -169,7 +170,8 @@
     ],
      [
       {
-        text: "M739205"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Parker, Liam</span><span class="mi-name-crn__crn">M739205</span></span>',
+        attributes: { "data-crn": "M739205", "data-name": "Parker, Liam" }
       },
       {
         text: "Kent and Medway "
@@ -190,7 +192,8 @@
     ],
      [
       {
-        text: "R160834"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Collins, Mia</span><span class="mi-name-crn__crn">R160834</span></span>',
+        attributes: { "data-crn": "R160834", "data-name": "Collins, Mia" }
       },
       {
         text: "Surrey"
@@ -211,7 +214,8 @@
     ],
      [
       {
-        text: "B951472"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Bennett, Noah</span><span class="mi-name-crn__crn">B951472</span></span>',
+        attributes: { "data-crn": "B951472", "data-name": "Bennett, Noah" }
       },
       {
         text: "Sussex North"
@@ -232,7 +236,8 @@
     ],
      [
       {
-        text: "T304689"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Foster, Isla</span><span class="mi-name-crn__crn">T304689</span></span>',
+        attributes: { "data-crn": "T304689", "data-name": "Foster, Isla" }
       },
       {
         text: "West Midlands Central"
@@ -253,7 +258,8 @@
     ],
      [
       {
-        text: "H827561"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Ward, Ethan</span><span class="mi-name-crn__crn">H827561</span></span>',
+        attributes: { "data-crn": "H827561", "data-name": "Ward, Ethan" }
       },
       {
         text: "Merseyside"
@@ -274,7 +280,8 @@
     ],
      [
       {
-        text: "N415298"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Mitchell, Grace</span><span class="mi-name-crn__crn">N415298</span></span>',
+        attributes: { "data-crn": "N415298", "data-name": "Mitchell, Grace" }
       },
       {
         text: "Greater Manchester North"
@@ -295,7 +302,8 @@
     ],
      [
       {
-        text: "C672940"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hughes, Leo</span><span class="mi-name-crn__crn">C672940</span></span>',
+        attributes: { "data-crn": "C672940", "data-name": "Hughes, Leo" }
       },
       {
         text: "South Yorkshire"
@@ -316,7 +324,8 @@
     ],
     [
       {
-        text: "L508173"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Reed, Sophie</span><span class="mi-name-crn__crn">L508173</span></span>',
+        attributes: { "data-crn": "L508173", "data-name": "Reed, Sophie" }
       },
       {
         text: "West Yorkshire"
@@ -337,7 +346,8 @@
     ],
     [
       {
-        text: "P294760"
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hayes, Jacob</span><span class="mi-name-crn__crn">P294760</span></span>',
+        attributes: { "data-crn": "P294760", "data-name": "Hayes, Jacob" }
       },
       {
         text: "Hampshire and Isle of Wight"
@@ -455,6 +465,27 @@
       return letters[randomInt(0, letters.length - 1)] + String(randomInt(100000, 999999));
     }
 
+    function formatDisplayName(firstName, lastName) {
+      return lastName + ', ' + firstName;
+    }
+
+    function createNameCrnCell(name, crn) {
+      var cell = document.createElement('td');
+      cell.className = 'govuk-table__cell';
+      cell.setAttribute('data-crn', crn);
+      cell.setAttribute('data-name', name);
+      cell.innerHTML = '<span class="mi-name-crn"><span class="mi-name-crn__name">' + name + '</span><span class="mi-name-crn__crn">' + crn + '</span></span>';
+      return cell;
+    }
+
+    function getAutocompleteValue(cell, colIndex) {
+      if (!cell) return '';
+      if (colIndex === 0) {
+        return normalize(cell.getAttribute('data-crn') || '');
+      }
+      return normalize(cell.textContent);
+    }
+
     function createCell(text, sortValue) {
       var cell = document.createElement('td');
       cell.className = 'govuk-table__cell';
@@ -468,6 +499,8 @@
     function appendRandomRowsToTarget() {
       if (!tbody) return;
 
+      var firstNames = ['Billy', 'Liam', 'Mia', 'Noah', 'Isla', 'Ethan', 'Grace', 'Leo', 'Sophie', 'Jacob', 'Harper', 'Oscar', 'Emily', 'Freddie', 'Amelia', 'Arthur', 'Chloe', 'Henry', 'Olivia', 'Jack'];
+      var lastNames = ['Hoskins', 'Parker', 'Collins', 'Bennett', 'Foster', 'Ward', 'Mitchell', 'Hughes', 'Reed', 'Hayes', 'Brooks', 'Mason', 'Khan', 'Patel', 'Dixon', 'Murphy', 'Ellis', 'Webster', 'Ahmed', 'Cooper'];
       var pduRegionPairs = [
         { pdu: 'Essex South', region: 'East of England' },
         { pdu: 'Kent and Medway', region: 'Kent, Surrey and Sussex' },
@@ -487,8 +520,10 @@
         var users = randomInt(0, 4);
         var date = randomRecentDate();
         var tr = document.createElement('tr');
+        var displayName = formatDisplayName(pick(firstNames), pick(lastNames));
+        var crn = randomCrn();
 
-        tr.appendChild(createCell(randomCrn()));
+        tr.appendChild(createNameCrnCell(displayName, crn));
         tr.appendChild(createCell(pair.pdu));
         tr.appendChild(createCell(pair.region));
         tr.appendChild(createCell(String(searches)));
@@ -555,7 +590,7 @@
       rows.forEach(function (row) {
         var cell = row.cells && row.cells[colIndex];
         if (!cell) return;
-        var value = normalize(cell.textContent);
+        var value = getAutocompleteValue(cell, colIndex);
         if (value) seen.add(value);
       });
 
@@ -707,7 +742,7 @@
         var autocompleteMatch = true;
         if (autocompleteQuery) {
           var autoCell = row.cells && row.cells[autocompleteFilter.col];
-          var autoValue = normalize(autoCell ? autoCell.textContent : '').toLowerCase();
+          var autoValue = getAutocompleteValue(autoCell, autocompleteFilter.col).toLowerCase();
           autocompleteMatch = autoValue.indexOf(autocompleteQuery) !== -1;
         }
 
@@ -916,6 +951,29 @@
 
   .mi-filter-panel .govuk-button {
     margin-top: 32px;
+  }
+
+  .mi-name-crn {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mi-name-crn__name {
+    color: #0b0c0c;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .mi-name-crn__crn {
+    color: #505a5f;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.2;
   }
 
   @media (max-width: 900px) {

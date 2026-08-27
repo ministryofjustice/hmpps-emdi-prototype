@@ -938,7 +938,7 @@
       var reasons = entry.reasons.length ? entry.reasons : ['\u2014'];
       return [
         '<tr class="govuk-table__row">',
-        '<th scope="row" class="govuk-table__header"><a class="govuk-link js-missing-point-link" href="#" data-point-index="' + entry.index + '">Point ' + (entry.index + 1) + '</a></th>',
+        '<th scope="row" class="govuk-table__header">Point ' + (entry.index + 1) + '</th>',
         '<td class="govuk-table__cell">' + escapeHtml(dateTime(entry.point.time)) + '</td>',
         '<td class="govuk-table__cell"><code>' + escapeHtml(Number.isFinite(entry.point.lat) && Number.isFinite(entry.point.lng) ? entry.point.lat.toFixed(6) + ', ' + entry.point.lng.toFixed(6) : 'Unavailable') + '</code></td>',
         '<td class="govuk-table__cell">' + reasons.map(escapeHtml).join('<br>') + '</td>',

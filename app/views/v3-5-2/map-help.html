@@ -1,0 +1,206 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Help with the map" %}
+
+{% block content %}
+
+<a href="javascript:history.back()" class="govuk-back-link">Back</a>
+
+<h2 class="govuk-heading-l">Guide to the map</h2>
+
+<div class="govuk-!-margin-bottom-6">
+
+  <div style="overflow: hidden;">
+    <div style="float: right; width: 200px; height: 200px;" aria-hidden="true"></div>
+
+    <p class="govuk-body">
+      The map shows where the person on probation has been, using signals (‘pings’) sent from their GPS tag.
+    </p>
+    
+    <p class="govuk-body">
+     The tag uses satellite signals to record its location. It usually pings around once a minute, sending this location information to the Electronic Monitoring Service.
+    </p>
+    <p class="govuk-body">
+      Each ping appears as a point on the map that indicates the person’s most likely location. 
+    </p>
+
+     <div class="govuk-inset-text">
+    Map data is around 95% accurate. The map may sometimes show a ping in the wrong location.
+  </div>
+
+    <p class="govuk-body">
+      You can filter the map to view the person’s movements for specific dates and times. The most recent activity shown is about 5 minutes behind real time.
+    </p>
+  </div>
+</div>
+
+  <div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Location accuracy</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/confidence-circles.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Location accuracy can vary, and may be reduced if, for example, satellite signals are blocked or the tag battery is low.
+    </p>
+    <p class="govuk-body">
+      Map points are surrounded by ‘confidence circles’ that show how confident the system is that the tag pinged at or near to each location.
+    </p>
+    <p class="govuk-body">
+      Confidence circles cover the area that the person may have been in when their tag pinged. The smaller the circle,  the more confidence there is that the location shown is accurate.
+    </p>
+    <p class="govuk-body">
+      To check a circle’s exact size, select its point to open a ‘ping card’ (pop-up box). This shows the distance from the centre to the edge of the circle in metres.
+    </p>
+    <p class="govuk-body">
+      You can turn confidence circles off using the option in the top-right menu.
+    </p>
+    
+  </div>
+</div>
+
+ 
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Signal type (GPS or LBS) </h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/ping-card-newest.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      When the tag is unable to connect to GPS satellite signals, it uses local cellular network towers to estimate its location instead. 
+    </p>
+    <p class="govuk-body">
+      This is known as LBS tracking.
+    </p>
+    <p class="govuk-body">
+      Because cellular towers are spaced further apart than GPS satellites, LBS is less accurate than GPS tracking. 
+    </p>
+     <p class="govuk-body">
+      With LBS tracking, the tag will usually ping around once every 3 minutes.
+      </p>
+         <p class="govuk-body">
+      To check which signal type was used to detect a location, select the point to open its ping card.  
+      </p>
+  </div>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Time and date of activity</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/ping-card-newest.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Each point has a timestamp that shows when the tag pinged in that location.
+    </p>
+    <p class="govuk-body">
+      To check the timestamp, select the point and open its ping card.
+    </p>
+     <p class="govuk-body">
+      You can check the order of location points by turning on ‘point numbers’ in the top right-hand menu.
+    </p>
+  </div>
+</div>
+
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Time spent at a location</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/heatmap.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Heatmaps give a sense of how much time was spent at a location by showing the level of activity detected there.
+      </p>
+    
+    <p class="govuk-body">
+    Red areas show where the highest amount of activity was detected.
+      </p>
+
+      <p class="govuk-body">
+     Yellow areas indicate lower levels of activity in comparison to red areas.
+    </p>
+  <p class="govuk-body">
+     Green areas indicate the lowest levels of activity detected.
+    </p>
+
+
+  </div>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Direction of travel</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/direction-information.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Each point is joined to the next point in the sequence by a line to form a trail.
+    </p>
+
+     <div class="govuk-inset-text" style="display: inline-block;">
+      The trail shown may not reflect the actual route taken.
+    </div>
+
+     <p class="govuk-body">
+      Arrows along the trail show the estimated direction of travel, based on the order of the points.
+    </p>
+    <p class="govuk-body">
+      You can hide the arrows using the option in the top right-hand menu. 
+    </p>
+  </div>
+</div>
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Speed of travel</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/ping-card-newest.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      To check the estimated speed of travel, select a point to open its ping card.  
+    </p>
+    <p class="govuk-body">
+    The value shown reflects the estimated speed of travel at the moment the tag pinged. It does not indicate the speed of travel between points.
+    <p class="govuk-body">
+
+
+  </div>
+</div>
+
+
+<div class="govuk-!-margin-bottom-6">
+  <h2 class="govuk-heading-m">Missing trail data</h2>
+
+  <div style="overflow: hidden;">
+    <img src="/public/images/missing-data-new.png" alt="" class="govuk-!-margin-left-4 govuk-!-margin-bottom-2" style="float: right; max-width: 200px; height: auto;">
+
+    <p class="govuk-body">
+      Missing trail data usually means that either the tag is not working, or it cannot get a signal.
+    </p>
+      <p class="govuk-body">
+      Missing data is shown on the map by a dotted line. 
+      </p>
+
+    <p class="govuk-body">
+     A gap of more than 5 minutes between two points in a sequence also indicates that data is missing. 
+    </p>
+
+    </p>
+  </div>
+</div>
+
+
+</div>
+
+
+{% endblock %}

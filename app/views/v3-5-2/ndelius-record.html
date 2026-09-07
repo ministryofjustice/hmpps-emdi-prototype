@@ -1,0 +1,218 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="Send to NDelius" %}
+
+{% block content %}
+<h1 class="govuk-heading-l govuk-!-margin-bottom-6">Record location activity on NDelius</h2>
+
+<form action="#" method="post" novalidate>
+
+{# Contact type #}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{{ govukSelect({
+  id: "contact-type",
+  name: "contactType",
+  label: { text: "Contact type" },
+  items: [
+    { value: "Select contact type", text: "Select contact type" },
+    { value: "office-visit-planned", text: "Office Visit – Planned" },
+    { value: "office-visit-unplanned", text: "Office Visit – Unplanned" },
+    { value: "home-visit-planned", text: "Home Visit – Planned" },
+    { value: "home-visit-unplanned", text: "Home Visit – Unplanned" },
+    { value: "telephone-incoming", text: "Telephone Call – Incoming" },
+    { value: "telephone-outgoing", text: "Telephone Call – Outgoing" },
+    { value: "case-note", text: "Case Note – General" },
+    { value: "info-to-ems", text: "Information – To EMS Provider", selected: true },
+    { value: "info-from-ems", text: "Information – From EMS Provider" },
+    { value: "email-sent", text: "Email Sent" },
+    { value: "email-received", text: "Email Received" }
+  ]
+}) }}
+
+
+       {# Suspected licence condition breach #}
+{{ govukSelect({
+  id: "licence-breach",
+  name: "licenceBreach",
+  label: {
+    text: "Suspected licence condition breach",
+    classes: "govuk-!-margin-bottom-1"
+  },
+  hint: { text: "Select the licence condition you suspect was breached" },
+  items: [
+    { value: "Select licence condition breach", text: "Select licence condition breach" },
+    { value: "no-licensed-premises", text: "Not to enter licensed premises (pubs, bars, clubs)", selected: true },
+    { value: "no-alcohol", text: "Not to consume alcohol" },
+    { value: "no-drugs", text: "Not to take or misuse drugs" },
+    { value: "no-violent-offenders", text: "Not to associate with known violent offenders" },
+    { value: "no-domestic-violence", text: "Not to associate with known domestic violence perpetrators" },
+    { value: "no-contact-victims", text: "Not to contact known victims" },
+    { value: "no-gambling", text: "Not to enter gambling establishments (betting shops, casinos)" },
+    { value: "no-schools", text: "Not to enter schools or places of education" },
+    { value: "no-contact-named", text: "Not to contact named individuals" },
+    { value: "exclusion-zone", text: "Exclusion zone (specified area)" },
+    { value: "curfew", text: "Curfew requirement (e.g. 19:00–07:00 at approved address)" },
+    { value: "attend-probation", text: "Attend appointments at probation office" },
+    { value: "programme", text: "Participate in accredited programme" },
+    { value: "no-travel-outside-uk", text: "Not to travel outside the UK without permission" }
+  ]
+}) }}
+
+
+{# Contact outcome #}
+{{ govukSelect({
+  id: "contact-outcome",
+  name: "contactOutcome",
+  label: { text: "Contact outcome" },
+  items: [
+    { value: "Select contact outcome", text: "Select contact outcome" },
+    { value: "complied-no-action", text: "Complied – No Action Required" },
+    { value: "breach-suspected-investigate", text: "Breach Suspected – Further Investigation", selected: true },
+    { value: "breach-confirmed-enforcement", text: "Breach Confirmed – Enforcement Action" },
+    { value: "missed-acceptable", text: "Missed Appointment – Acceptable Reason" },
+    { value: "missed-unacceptable", text: "Missed Appointment – Unacceptable" },
+    { value: "info-only", text: "Information Only – No Action" },
+    { value: "referred-manager", text: "Referred to Manager for Review" }
+  ]
+}) }}
+
+
+        {# Description #}
+        {{ govukInput({
+          id: "description",
+          name: "description",
+          label: { text: "Description" },
+          classes: "govuk-!-width-two-thirds"
+        }) }}
+
+
+{# --- Precompute attribute values --- #}
+{% set addrAttr = (data.selectedAddress or "") | replace(", ", "\n") %}
+{% if data.loiName and (data.loiName | length) %}
+  {% set typeAttr = data.loiName %}
+{% else %}
+  {% set typeAttr = "Custom" %}
+{% endif %}
+
+{# --- Build a clean params object, then call the macro --- #}
+{% set notesParams = {
+  id: "notes",
+  name: "notes",
+  label: { text: "Notes" },
+  hint:  { text: "Record any notes that you think would be useful" },
+  value: data.notes or "",
+  rows: 8,
+  attributes: {
+    "data-address": addrAttr,
+    "data-type": typeAttr,
+    "data-duration": "6 hours 4 mins"
+  }
+} %}
+
+        {{ govukTextarea(notesParams) }}
+
+
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Map report</h3>
+        <p class="govuk-body govuk-hint">This PDF will be saved in Billy’s document list in NDelius</p>
+        <img src="/public/images/map-report.png" class="govuk-!-margin-bottom-4 govuk-!-margin-top-0" alt="Preview of PDF report showing map and location details">
+
+        {# Alert #}
+        {{ govukRadios({
+          idPrefix: "alert",
+          name: "alert",
+          fieldset: { legend: { text: "Alert", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "Create an alert on NDelius" },
+          items: [
+            { value: "yes", text: "Yes" },
+            { value: "no",  text: "No" }
+          ]
+        }) }}
+
+        {# Include in ViSOR extract #}
+        {{ govukRadios({
+          idPrefix: "visor",
+          name: "visor",
+          fieldset: { legend: { text: "Include in ViSOR extract", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "Include this suspected breach in the ViSOR report" },
+          items: [
+            { value: "yes", text: "Yes" },
+            { value: "no",  text: "No" }
+          ]
+        }) }}
+
+        {# Sensitive contact #}
+        {{ govukRadios({
+          idPrefix: "sensitive",
+          name: "sensitive",
+          fieldset: { legend: { text: "Sensitive contact", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "Is this a sensitive contact?" },
+          items: [
+            { value: "yes", text: "Yes" },
+            { value: "no",  text: "No" }
+          ]
+        }) }}
+
+        {# Date #}
+        {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+        {{ govukDateInput({
+          id: "breach-date",
+          namePrefix: "breachDate",
+          fieldset: { legend: { text: "Date", classes: "govuk-fieldset__legend--s" } },
+          hint: { text: "Enter the date of the suspected breach" },
+          items: [
+            { name: "day", classes: "govuk-input--width-2", value: "24" },
+            { name: "month", classes: "govuk-input--width-2", value: "07" },
+            { name: "year", classes: "govuk-input--width-4", value: "2025" }
+          ]
+        }) }}
+
+        {# Time #}
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="breach-time-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Time</legend>
+            <div id="breach-time-hint" class="govuk-hint">Enter the start time of the suspected breach</div>
+            <div class="govuk-date-input" id="breach-time">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-hour">Hours</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-hour" name="breachHour" type="number" inputmode="numeric" min="0" max="23" value="19">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="breach-min">Minutes</label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="breach-min" name="breachMin" type="number" inputmode="numeric" min="0" max="59" value="56">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+<div class="govuk-button-group">
+{{ govukButton({
+  text: "Send to NDelius",
+  href: "ndelius-confirmation",
+  attributes: { id: "send-to-ndelius-btn" }
+}) }}
+  <a class="govuk-link" href="bh-location">Cancel and go back</a>
+</div>
+
+
+      </form>
+
+    </div>
+  </div>
+
+<script src="/public/javascripts/loi-lookup.js"></script>
+<script src="/public/javascripts/ndelius-prefill.js"></script>
+
+
+{% endblock %}

@@ -1,0 +1,1023 @@
+{% extends "layouts/main.html" %}
+
+{% set currentNav = "" %}
+
+{% set navItems = [
+  { text: "Home", href: "index", active: false },
+  { text: "Cases", href: "cases", active: false },
+  { text: "Search", href: "#", active: false }
+] %}
+
+{% set pageName="MI reporting" %}
+
+{% block content %}
+
+<a href="location-activity" class="govuk-back-link">Back</a>
+
+<h2 class="govuk-heading-l">MI reporting</h2>
+
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "POP view",
+    href: "#1",
+    active: true
+  }, {
+    text: "User view",
+    href: "mi-reporting-user"
+  }]
+}) }}
+
+<h2 id="violation-minutes" class="govuk-heading-m">POP view</h2>
+
+<div class="mi-reporting-layout">
+<div class="mi-filter-panel govuk-!-margin-bottom-5">
+  <div class="mi-filter-panel__header">
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-0">Filter the list</h3>
+  </div>
+
+  <div class="mi-filter-panel__selected">
+    <div class="mi-filter-panel__selected-header">
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-0">Selected filters</h4>
+      <a href="#" class="govuk-link" id="clear-filters">Clear filters</a>
+    </div>
+    <div id="selected-filters-summary">
+      <p class="govuk-body govuk-!-margin-bottom-0">No filters selected</p>
+    </div>
+  </div>
+
+  <div class="mi-filter-panel__body">
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">CRN</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <label class="govuk-label" for="table-filter-col-0-input">CRN</label>
+        <div id="table-filter-col-0-input-hint" class="govuk-hint">Type a CRN and press Enter to filter</div>
+        <input class="govuk-input" id="table-filter-col-0-input" name="filter-crn" type="text" list="table-filter-col-0-list" placeholder="Search CRN" autocomplete="off" aria-describedby="table-filter-col-0-input-hint">
+        <datalist id="table-filter-col-0-list"></datalist>
+      </div>
+    </details>
+
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">PDU</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">PDU</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="table-filter-col-1"></div>
+      </div>
+    </details>
+
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">Region</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">Region</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="table-filter-col-2"></div>
+      </div>
+    </details>
+
+    <details class="mi-filter-panel__section">
+      <summary class="mi-filter-panel__summary">Last viewed</summary>
+      <div class="mi-filter-panel__content govuk-form-group">
+        <span class="govuk-label">Last viewed</span>
+        <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="last-viewed-filter">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-0-7" name="lastViewed" type="checkbox" value="0-7">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-0-7">0 to 7 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-8-14" name="lastViewed" type="checkbox" value="8-14">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-8-14">8 to 14 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-15-30" name="lastViewed" type="checkbox" value="15-30">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-15-30">15 to 30 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-31-90" name="lastViewed" type="checkbox" value="31-90">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-31-90">31 to 90 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-90plus" name="lastViewed" type="checkbox" value="90+">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-90plus">More than 90 days</label>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="last-viewed-filter-button">
+      Apply filters
+    </button>
+  </div>
+
+  <div id="loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>
+</div>
+
+<div class="mi-reporting-layout__table">
+
+
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{{ govukTable({
+  caption: "",
+  captionClasses: "govuk-table__caption--m",
+  firstCellIsHeader: false,
+  attributes: {
+    id: "mi-reporting-table",
+    "data-module": "moj-sortable-table"
+  },
+  head: [
+    {
+      text: "Name / CRN"
+    },
+     {
+      text: "PDU"
+    },
+     {
+      text: "Region"
+    },
+     {
+      text: "Tier"
+    },
+     {
+      text: "Searches"
+    },
+     {
+      text: "Users"
+    },
+    {
+      text: "Last viewed",
+      attributes: {
+        "aria-sort": "none"
+      }
+    }
+  ],
+  rows: [
+    [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hoskins, Billy</span><span class="mi-name-crn__crn">Q482917</span></span>',
+        attributes: { "data-crn": "Q482917", "data-name": "Hoskins, Billy" }
+      },
+      {
+        text: "Essex South"
+      },
+      {
+        text: "East of England"
+      },
+      {
+        text: "C"
+      },
+      {
+        text: "3"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "12 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-12" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Parker, Liam</span><span class="mi-name-crn__crn">M739205</span></span>',
+        attributes: { "data-crn": "M739205", "data-name": "Parker, Liam" }
+      },
+      {
+        text: "Kent and Medway "
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "A"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "10 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-10" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Collins, Mia</span><span class="mi-name-crn__crn">R160834</span></span>',
+        attributes: { "data-crn": "R160834", "data-name": "Collins, Mia" }
+      },
+      {
+        text: "Surrey"
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "E"
+      },
+      {
+        text: "5"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "8 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-08" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Bennett, Noah</span><span class="mi-name-crn__crn">B951472</span></span>',
+        attributes: { "data-crn": "B951472", "data-name": "Bennett, Noah" }
+      },
+      {
+        text: "Sussex North"
+      },
+      {
+        text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "B"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "6 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-06" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Foster, Isla</span><span class="mi-name-crn__crn">T304689</span></span>',
+        attributes: { "data-crn": "T304689", "data-name": "Foster, Isla" }
+      },
+      {
+        text: "West Midlands Central"
+      },
+      {
+        text: "West Midlands"
+      },
+      {
+        text: "G"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "4 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-04" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Ward, Ethan</span><span class="mi-name-crn__crn">H827561</span></span>',
+        attributes: { "data-crn": "H827561", "data-name": "Ward, Ethan" }
+      },
+      {
+        text: "Merseyside"
+      },
+      {
+        text: "North West"
+      },
+      {
+        text: "D"
+      },
+      {
+        text: "4"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "2 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-02" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Mitchell, Grace</span><span class="mi-name-crn__crn">N415298</span></span>',
+        attributes: { "data-crn": "N415298", "data-name": "Mitchell, Grace" }
+      },
+      {
+        text: "Greater Manchester North"
+      },
+      {
+        text: "North West"
+      },
+      {
+        text: "F"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "31 Jul 2026",
+        attributes: { "data-sort-value": "2026-07-31" }
+      }
+    ],
+     [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hughes, Leo</span><span class="mi-name-crn__crn">C672940</span></span>',
+        attributes: { "data-crn": "C672940", "data-name": "Hughes, Leo" }
+      },
+      {
+        text: "South Yorkshire"
+      },
+      {
+        text: "Yorkshire and The Humber"
+      },
+      {
+        text: "B"
+      },
+      {
+        text: "5"
+      },
+      {
+        text: "1"
+      },
+      {
+        text: "5 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-05" }
+      }
+    ],
+    [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Reed, Sophie</span><span class="mi-name-crn__crn">L508173</span></span>',
+        attributes: { "data-crn": "L508173", "data-name": "Reed, Sophie" }
+      },
+      {
+        text: "West Yorkshire"
+      },
+      {
+        text: "Yorkshire and The Humber"
+      },
+      {
+        text: "A"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "0"
+      },
+      {
+        text: "1 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-01" }
+      }
+    ],
+    [
+      {
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hayes, Jacob</span><span class="mi-name-crn__crn">P294760</span></span>',
+        attributes: { "data-crn": "P294760", "data-name": "Hayes, Jacob" }
+      },
+      {
+        text: "Hampshire and Isle of Wight"
+      },
+      {
+        text: "South Central"
+      },
+      {
+        text: "D"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "2"
+      },
+      {
+        text: "7 Aug 2026",
+        attributes: { "data-sort-value": "2026-08-07" }
+      }
+    ]
+  ]
+}) }}
+
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+
+{{ mojPagination({
+  items: [{
+    text: "1",
+    href: "#",
+    selected: true
+  }, {
+    text: "2",
+    href: "#"
+    
+  }, {
+    text: "3",
+    href: "#"
+  }, {
+    type: "dots"
+  }, {
+    text: "7",
+    href: "#"
+  }],
+  results: {
+    count: 157,
+    from: 1,
+    to: 50,
+    text: "results"
+  },
+  previous: {
+    text: "Previous",
+    href: "#"
+  },
+  next: {
+    text: "Next",
+    href: "#"
+  }
+}) }}
+
+</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var checkboxFilters = [
+      { col: 1, label: 'PDU', name: 'filter-pdu', el: document.getElementById('table-filter-col-1') },
+      { col: 2, label: 'Region', name: 'filter-region', el: document.getElementById('table-filter-col-2') }
+    ];
+    var autocompleteFilter = {
+      col: 0,
+      inputEl: document.getElementById('table-filter-col-0-input'),
+      listEl: document.getElementById('table-filter-col-0-list')
+    };
+    var dateFilter = {
+      label: 'Last viewed',
+      el: document.getElementById('last-viewed-filter')
+    };
+    var button = document.getElementById('last-viewed-filter-button');
+    var clearFilters = document.getElementById('clear-filters');
+    var selectedFiltersSummary = document.getElementById('selected-filters-summary');
+    var status = document.getElementById('loi-filter-status');
+    var table = document.getElementById('mi-reporting-table');
+    var tbody = table && table.tBodies ? table.tBodies[0] : null;
+    var targetRowCount = 50;
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pick(list) {
+      return list[randomInt(0, list.length - 1)];
+    }
+
+    function formatDisplayDate(date) {
+      var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+    }
+
+    function toIsoDate(date) {
+      var yyyy = date.getFullYear();
+      var mm = String(date.getMonth() + 1).padStart(2, '0');
+      var dd = String(date.getDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function randomRecentDate() {
+      var date = new Date();
+      date.setDate(date.getDate() - randomInt(0, 120));
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+
+    function randomCrn() {
+      var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return letters[randomInt(0, letters.length - 1)] + String(randomInt(100000, 999999));
+    }
+
+    function formatDisplayName(firstName, lastName) {
+      return lastName + ', ' + firstName;
+    }
+
+    function createNameCrnCell(name, crn) {
+      var cell = document.createElement('td');
+      cell.className = 'govuk-table__cell';
+      cell.setAttribute('data-crn', crn);
+      cell.setAttribute('data-name', name);
+      cell.innerHTML = '<span class="mi-name-crn"><span class="mi-name-crn__name">' + name + '</span><span class="mi-name-crn__crn">' + crn + '</span></span>';
+      return cell;
+    }
+
+    function getAutocompleteValue(cell, colIndex) {
+      if (!cell) return '';
+      if (colIndex === 0) {
+        return normalize(cell.getAttribute('data-crn') || '');
+      }
+      return normalize(cell.textContent);
+    }
+
+    function createCell(text, sortValue) {
+      var cell = document.createElement('td');
+      cell.className = 'govuk-table__cell';
+      cell.textContent = text;
+      if (sortValue) {
+        cell.setAttribute('data-sort-value', sortValue);
+      }
+      return cell;
+    }
+
+    function appendRandomRowsToTarget() {
+      if (!tbody) return;
+
+      var firstNames = ['Billy', 'Liam', 'Mia', 'Noah', 'Isla', 'Ethan', 'Grace', 'Leo', 'Sophie', 'Jacob', 'Harper', 'Oscar', 'Emily', 'Freddie', 'Amelia', 'Arthur', 'Chloe', 'Henry', 'Olivia', 'Jack'];
+      var lastNames = ['Hoskins', 'Parker', 'Collins', 'Bennett', 'Foster', 'Ward', 'Mitchell', 'Hughes', 'Reed', 'Hayes', 'Brooks', 'Mason', 'Khan', 'Patel', 'Dixon', 'Murphy', 'Ellis', 'Webster', 'Ahmed', 'Cooper'];
+      var pduRegionPairs = [
+        { pdu: 'Essex South', region: 'East of England' },
+        { pdu: 'Kent and Medway', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'Surrey', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'Sussex North', region: 'Kent, Surrey and Sussex' },
+        { pdu: 'West Midlands Central', region: 'West Midlands' },
+        { pdu: 'Merseyside', region: 'North West' },
+        { pdu: 'Greater Manchester North', region: 'North West' },
+        { pdu: 'South Yorkshire', region: 'Yorkshire and The Humber' },
+        { pdu: 'West Yorkshire', region: 'Yorkshire and The Humber' },
+        { pdu: 'Hampshire and Isle of Wight', region: 'South Central' }
+      ];
+
+      while (tbody.rows.length < targetRowCount) {
+        var pair = pick(pduRegionPairs);
+        var searches = randomInt(0, 8);
+        var users = randomInt(0, 4);
+        var date = randomRecentDate();
+        var tr = document.createElement('tr');
+        var displayName = formatDisplayName(pick(firstNames), pick(lastNames));
+        var crn = randomCrn();
+
+        tr.appendChild(createNameCrnCell(displayName, crn));
+        tr.appendChild(createCell(pair.pdu));
+        tr.appendChild(createCell(pair.region));
+        tr.appendChild(createCell(pick(['A', 'B', 'C', 'D', 'E', 'F', 'G'])));
+        tr.appendChild(createCell(String(searches)));
+        tr.appendChild(createCell(String(users)));
+        tr.appendChild(createCell(formatDisplayDate(date), toIsoDate(date)));
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    appendRandomRowsToTarget();
+    var rows = tbody ? Array.prototype.slice.call(tbody.querySelectorAll('tr')) : [];
+
+    if (!dateFilter.el || !button || !clearFilters || !selectedFiltersSummary || !tbody || !autocompleteFilter.inputEl || !autocompleteFilter.listEl || checkboxFilters.some(function (f) { return !f.el; })) return;
+
+    function normalize(text) {
+      return String(text || '').trim().replace(/\s+/g, ' ');
+    }
+
+    function getCheckedValues(containerEl) {
+      return Array.prototype.slice.call(containerEl.querySelectorAll('input[type="checkbox"]:checked')).map(function (checkbox) {
+        return checkbox.value;
+      });
+    }
+
+    function populateCheckboxOptions(containerEl, colIndex, name) {
+      var seen = new Set();
+      rows.forEach(function (row) {
+        var cell = row.cells && row.cells[colIndex];
+        if (!cell) return;
+        var value = normalize(cell.textContent);
+        if (value) seen.add(value);
+      });
+
+      Array.from(seen)
+        .sort(function (a, b) {
+          return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        })
+        .forEach(function (value, index) {
+          var item = document.createElement('div');
+          var checkbox = document.createElement('input');
+          var label = document.createElement('label');
+          var optionId = name + '-' + index;
+
+          item.className = 'govuk-checkboxes__item';
+          checkbox.className = 'govuk-checkboxes__input';
+          checkbox.id = optionId;
+          checkbox.name = name;
+          checkbox.type = 'checkbox';
+          checkbox.value = value;
+
+          label.className = 'govuk-label govuk-checkboxes__label';
+          label.htmlFor = optionId;
+          label.textContent = value;
+
+          item.appendChild(checkbox);
+          item.appendChild(label);
+          containerEl.appendChild(item);
+        });
+    }
+
+    function populateAutocompleteOptions(inputEl, listEl, colIndex) {
+      var seen = new Set();
+      rows.forEach(function (row) {
+        var cell = row.cells && row.cells[colIndex];
+        if (!cell) return;
+        var value = getAutocompleteValue(cell, colIndex);
+        if (value) seen.add(value);
+      });
+
+      Array.from(seen)
+        .sort(function (a, b) {
+          return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        })
+        .forEach(function (value) {
+          var option = document.createElement('option');
+          option.value = value;
+          listEl.appendChild(option);
+        });
+
+      inputEl.setAttribute('aria-controls', 'mi-reporting-table');
+    }
+
+    function startOfDay(date) {
+      var next = new Date(date);
+      next.setHours(0, 0, 0, 0);
+      return next;
+    }
+
+    function parseDisplayDate(text) {
+      var match = String(text || '').trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+      if (!match) return null;
+
+      var months = {
+        Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+        Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+      };
+
+      var monthIndex = months[match[2]];
+      if (monthIndex === undefined) return null;
+
+      return new Date(Number(match[3]), monthIndex, Number(match[1]));
+    }
+
+    function matchesDateFilter(rowDate, filterValues) {
+      if (!filterValues.length) return true;
+      if (!rowDate) return false;
+
+      var today = startOfDay(new Date());
+      var diffDays = Math.round((today - rowDate) / (1000 * 60 * 60 * 24));
+
+      return filterValues.some(function (filterValue) {
+        if (filterValue === '0-7')   return diffDays >= 0  && diffDays <= 7;
+        if (filterValue === '8-14')  return diffDays >= 8  && diffDays <= 14;
+        if (filterValue === '15-30') return diffDays >= 15 && diffDays <= 30;
+        if (filterValue === '31-90') return diffDays >= 31 && diffDays <= 90;
+        if (filterValue === '90+')   return diffDays > 90;
+        return false;
+      });
+    }
+
+    function getAppliedFilters() {
+      var applied = [];
+      var autoValue = normalize(autocompleteFilter.inputEl.value);
+
+      if (autoValue) {
+        applied.push({ label: 'CRN', value: autoValue, type: 'autocomplete' });
+      }
+
+      checkboxFilters.forEach(function (filterDef) {
+        var values = getCheckedValues(filterDef.el);
+        if (!values.length) return;
+        values.forEach(function (value) {
+          applied.push({ label: filterDef.label, value: value, type: 'checkbox', container: filterDef.el });
+        });
+      });
+
+      var dateValues = getCheckedValues(dateFilter.el);
+      if (dateValues.length) {
+        dateValues.forEach(function (value) {
+          var input = dateFilter.el.querySelector('input[value="' + value + '"]');
+          var label = input ? dateFilter.el.querySelector('label[for="' + input.id + '"]') : null;
+          applied.push({
+            label: dateFilter.label,
+            value: normalize(label ? label.textContent : value),
+            rawValue: value,
+            type: 'date-checkbox',
+            container: dateFilter.el
+          });
+        });
+      }
+
+      return applied;
+    }
+
+    function updateSelectedFiltersSummary() {
+      var applied = getAppliedFilters();
+      if (!applied.length) {
+        selectedFiltersSummary.innerHTML = '<p class="govuk-body govuk-!-margin-bottom-0">No filters selected</p>';
+        return;
+      }
+
+      var grouped = applied.reduce(function (groups, item) {
+        if (!groups[item.label]) groups[item.label] = [];
+        groups[item.label].push(item);
+        return groups;
+      }, {});
+
+      selectedFiltersSummary.innerHTML = Object.keys(grouped).map(function (label) {
+        var chips = grouped[label].map(function (item) {
+          var valueAttr = encodeURIComponent(item.rawValue || item.value);
+          return '' +
+            '<button class="mi-filter-tag" type="button" data-filter-type="' + item.type + '" data-filter-label="' + label + '" data-filter-value="' + valueAttr + '">' +
+            item.value + ' <span aria-hidden="true">×</span>' +
+            '<span class="govuk-visually-hidden">Remove ' + item.value + ' filter</span>' +
+            '</button>';
+        }).join('');
+
+        return '' +
+          '<div class="mi-filter-selected-group">' +
+          '<h5 class="govuk-heading-s govuk-!-margin-bottom-2">' + label + '</h5>' +
+          '<div class="mi-filter-tags">' + chips + '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function updatePaginationResults(visibleCount) {
+      var paginationRoot = document.querySelector('.moj-pagination');
+      if (!paginationRoot) return;
+
+      var resultsEl = paginationRoot.querySelector('.moj-pagination__results');
+      if (!resultsEl) return;
+
+      var from = visibleCount > 0 ? 1 : 0;
+      var to = visibleCount;
+      resultsEl.textContent = 'Showing ' + from + ' to ' + to + ' of ' + visibleCount + ' results';
+    }
+
+
+    function applyFilters() {
+      var dateFilterValues = getCheckedValues(dateFilter.el);
+      var autocompleteQuery = normalize(autocompleteFilter.inputEl.value).toLowerCase();
+      var visibleCount = 0;
+
+      rows.forEach(function (row) {
+        var exactMatch = checkboxFilters.every(function (f) {
+          var selectedValues = getCheckedValues(f.el);
+          if (!selectedValues.length) return true;
+          var cell = row.cells && row.cells[f.col];
+          return selectedValues.indexOf(normalize(cell ? cell.textContent : '')) !== -1;
+        });
+
+        var autocompleteMatch = true;
+        if (autocompleteQuery) {
+          var autoCell = row.cells && row.cells[autocompleteFilter.col];
+          var autoValue = getAutocompleteValue(autoCell, autocompleteFilter.col).toLowerCase();
+          autocompleteMatch = autoValue.indexOf(autocompleteQuery) !== -1;
+        }
+
+        var lastCell = row.cells && row.cells.length ? row.cells[row.cells.length - 1] : null;
+        var rowDate = parseDisplayDate(lastCell ? lastCell.textContent : '');
+        var showRow = exactMatch && autocompleteMatch && matchesDateFilter(rowDate, dateFilterValues);
+        row.hidden = !showRow;
+        if (showRow) visibleCount += 1;
+      });
+
+      if (status) {
+        status.textContent = visibleCount + ' row' + (visibleCount === 1 ? '' : 's') + ' shown';
+      }
+
+      updatePaginationResults(visibleCount);
+      updateSelectedFiltersSummary();
+    }
+
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      applyFilters();
+    });
+
+    clearFilters.addEventListener('click', function (event) {
+      event.preventDefault();
+      autocompleteFilter.inputEl.value = '';
+      checkboxFilters.forEach(function (filterDef) {
+        Array.prototype.slice.call(filterDef.el.querySelectorAll('input[type="checkbox"]')).forEach(function (checkbox) {
+          checkbox.checked = false;
+        });
+      });
+      Array.prototype.slice.call(dateFilter.el.querySelectorAll('input[type="checkbox"]')).forEach(function (checkbox) {
+        checkbox.checked = false;
+      });
+      applyFilters();
+    });
+
+    selectedFiltersSummary.addEventListener('click', function (event) {
+      var buttonEl = event.target.closest('.mi-filter-tag');
+      if (!buttonEl) return;
+
+      var filterType = buttonEl.getAttribute('data-filter-type');
+      var filterValue = decodeURIComponent(buttonEl.getAttribute('data-filter-value') || '');
+
+      if (filterType === 'autocomplete') {
+        autocompleteFilter.inputEl.value = '';
+        applyFilters();
+        return;
+      }
+
+      var containerEl = filterType === 'date-checkbox' ? dateFilter.el : checkboxFilters.reduce(function (match, filterDef) {
+        return match || (filterDef.label === buttonEl.getAttribute('data-filter-label') ? filterDef.el : null);
+      }, null);
+
+      if (!containerEl) return;
+
+      var checkbox = containerEl.querySelector('input[value="' + CSS.escape(filterValue) + '"]');
+      if (checkbox) {
+        checkbox.checked = false;
+        applyFilters();
+      }
+    });
+
+    autocompleteFilter.inputEl.addEventListener('keydown', function (event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      applyFilters();
+    });
+
+    checkboxFilters.forEach(function (f) {
+      populateCheckboxOptions(f.el, f.col, f.name);
+    });
+    populateAutocompleteOptions(autocompleteFilter.inputEl, autocompleteFilter.listEl, autocompleteFilter.col);
+
+    applyFilters();
+  });
+</script>
+
+</div>
+
+
+
+</div>
+<style>
+  /* Page width override for this version: +50px each side (100px total). */
+  .govuk-width-container {
+    max-width: 1280px;
+  }
+
+  .mi-reporting-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 372px) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .mi-reporting-layout__table {
+    min-width: 0;
+  }
+
+  .mi-filter-panel {
+    max-width: 372px;
+    border: 1px solid #b1b4b6;
+    background: #fff;
+  }
+
+  .mi-filter-panel__header {
+    padding: 16px 20px;
+    background: #b1b4b6;
+  }
+
+  .mi-filter-panel__selected {
+    padding: 20px;
+    border-bottom: 1px solid #b1b4b6;
+    background-color: #f3f3f3;
+  }
+
+  .mi-filter-panel__selected-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .mi-filter-panel__body {
+    padding: 0 20px 20px;
+  }
+
+  .mi-filter-panel__section {
+    border-bottom: 1px solid #b1b4b6;
+    padding: 0;
+  }
+
+  .mi-filter-panel__summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    padding: 16px 0;
+    padding-left: 3px;
+    color: #1d70b8;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+  }
+
+  .mi-filter-panel__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mi-filter-panel__summary::before {
+    content: "";
+    width: 19px;
+    height: 19px;
+    background: center / 19px 19px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 19 19' fill='none'%3E%3Cpath d='M3 7l6.5 6.5L16 7' stroke='%230b0c0c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    transform-origin: 50% 50%;
+    transition: transform 0.15s ease;
+    margin-top: 0;
+    flex: 0 0 19px;
+  }
+
+  .mi-filter-panel__section[open] > .mi-filter-panel__summary::before {
+    transform: rotate(180deg);
+  }
+
+  .mi-filter-panel__summary:focus,
+  .mi-filter-panel__summary:focus-visible {
+    outline: none;
+  }
+
+  .mi-filter-panel__content {
+    padding: 0 0 20px;
+  }
+
+  .mi-filter-checkboxes .govuk-checkboxes__item + .govuk-checkboxes__item {
+    margin-top: 8px;
+  }
+
+  .mi-filter-selected-group + .mi-filter-selected-group {
+    margin-top: 20px;
+  }
+
+  .mi-filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mi-filter-tag {
+    border: 1px solid #0b0c0c;
+    background: #fff;
+    padding: 6px 8px;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .mi-filter-panel .govuk-input,
+  .mi-filter-panel .govuk-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mi-filter-panel .govuk-button {
+    margin-top: 32px;
+  }
+
+  .mi-name-crn {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mi-name-crn__name {
+    color: #0b0c0c;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .mi-name-crn__crn {
+    color: #505a5f;
+    font-family: "GDS Transport", arial, sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  @media (max-width: 900px) {
+    .mi-reporting-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  </style>
+
+
+{% endblock %}
+

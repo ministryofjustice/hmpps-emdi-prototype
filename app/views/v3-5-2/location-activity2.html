@@ -288,12 +288,11 @@
         <th scope="col" class="govuk-table__header">Lat, long</th>
         <th scope="col" class="govuk-table__header">Speed</th>
         <th scope="col" class="govuk-table__header">Signal type</th>
-        <th scope="col" class="govuk-table__header">Tamper event</th>
-        <th scope="col" class="govuk-table__header">Battery status</th>
+        <th scope="col" class="govuk-table__header">Tag status</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="emdi-points-attention-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="8">Update the map to view points.</td></tr>
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">Update the map to view points.</td></tr>
     </tbody>
   </table>
   <div id="emdi-points-attention-pagination"></div>
@@ -889,6 +888,77 @@
 </script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function isInsideExclusionZone(latitude, longitude) {
+      var exclusionZone = window.mapLayers && window.mapLayers.exclusionZone;
+      var boundary = [];
+      if (!exclusionZone || typeof exclusionZone.eachLayer !== 'function') return false;
+
+      exclusionZone.eachLayer(function (layer) {
+        if (boundary.length || !layer || typeof layer.getLatLngs !== 'function') return;
+        boundary = (layer.getLatLngs()[0] || []).map(function (point) {
+          return [point.lat, point.lng];
+        });
+      });
+
+      var inside = false;
+      for (var index = 0, previousIndex = boundary.length - 1; index < boundary.length; previousIndex = index++) {
+        var current = boundary[index];
+        var previous = boundary[previousIndex];
+        var crossesBoundary = ((current[1] > longitude) !== (previous[1] > longitude)) &&
+          (latitude < (previous[0] - current[0]) * (longitude - current[1]) /
+            (previous[1] - current[1]) + current[0]);
+        if (crossesBoundary) inside = !inside;
+      }
+      return inside;
+    }
+
+    function normalisePingCard(card) {
+      if (!card || card.dataset.emdiTagStatusNormalised) return;
+      var tamperRow;
+      var batteryRow;
+      var coordinates;
+      card.querySelectorAll('.govuk-summary-list__row').forEach(function (row) {
+        var label = row.querySelector('.govuk-summary-list__key');
+        var labelText = label && label.textContent.trim();
+        if (labelText === 'Lat, long') {
+          coordinates = row.querySelector('.govuk-summary-list__value').textContent.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+          row.classList.add('emdi-ping-coordinate-row');
+        }
+        if (labelText === 'Tamper event') tamperRow = row;
+        if (labelText === 'Battery status') batteryRow = row;
+      });
+
+      if (tamperRow && batteryRow) {
+        var isExclusionBreach = coordinates && isInsideExclusionZone(Number(coordinates[1]), Number(coordinates[2]));
+        var statusRow = document.createElement('div');
+        statusRow.className = 'govuk-summary-list__row emdi-ping-tag-status-row';
+        statusRow.innerHTML = '<dt class="govuk-summary-list__key">Tag status</dt>' +
+          '<dd class="govuk-summary-list__value">' + (isExclusionBreach ? 'Exclusion breach' : 'No tamper') + '</dd>';
+        tamperRow.parentNode.insertBefore(statusRow, tamperRow);
+        tamperRow.remove();
+        batteryRow.remove();
+      }
+
+      card.dataset.emdiTagStatusNormalised = 'true';
+    }
+
+    function normalisePingCards(root) {
+      if (root.matches && root.matches('.gps-point-card')) normalisePingCard(root);
+      if (root.querySelectorAll) root.querySelectorAll('.gps-point-card').forEach(normalisePingCard);
+    }
+
+    normalisePingCards(document);
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType === Node.ELEMENT_NODE) normalisePingCards(node);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+</script>
+<script>
   (function () {
     function escapeHtml(value) {
       return String(value == null ? '' : value)
@@ -954,7 +1024,6 @@
         '<td class="govuk-table__cell"><code>' + escapeHtml(coordinates) + '</code></td>',
         '<td class="govuk-table__cell">' + escapeHtml(speed) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(signalType) + '</td>',
-        '<td class="govuk-table__cell">\u2014</td>',
         '<td class="govuk-table__cell">\u2014</td>',
         '</tr>'
       ].join('');
@@ -1028,7 +1097,7 @@
       if (!body) return;
 
       if (!attentionRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="8">No points meet these conditions in the current map view.</td></tr>';
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">No points meet these conditions in the current map view.</td></tr>';
         if (paginationSlot) paginationSlot.innerHTML = '';
         return;
       }
@@ -1407,7 +1476,6 @@
     var separators = panel.querySelectorAll('.leaflet-control-layers-separator');
 
     if (base) base.style.display = 'none';
-    if (overlays) overlays.style.display = 'none';
     separators.forEach(function (sep) { sep.style.display = 'none'; });
 
     if (!window.mapLayers) return;
@@ -1433,15 +1501,7 @@
       [51.5346, -0.2174]
     ];
 
-    var waterlooBoundary = [
-      [51.5078, -0.1262],
-      [51.5069, -0.1155],
-      [51.5031, -0.1116],
-      [51.4997, -0.1167],
-      [51.5003, -0.1245],
-      [51.5037, -0.1284],
-      [51.5078, -0.1262]
-    ];
+    var waterlooStation = [51.5033, -0.1147];
 
     function hasLayer(layer) {
       return !!(layer && map.hasLayer(layer));
@@ -1531,11 +1591,38 @@
       polygon.addTo(layerGroup);
     }
 
+    function createRestrictionZone(layerGroup, forceRebuild) {
+      if (!layerGroup || typeof layerGroup.clearLayers !== 'function') return;
+      var hasExisting = typeof layerGroup.getLayers === 'function' && layerGroup.getLayers().length > 0;
+      if (hasExisting && !forceRebuild) return;
+
+      layerGroup.clearLayers();
+      var circle = L.circle(waterlooStation, {
+        className: 'emdi-waterloo-restriction-zone',
+        color: '#d4351c',
+        fillColor: '#d4351c',
+        fillOpacity: 0.3,
+        weight: 3,
+        radius: 50,
+        pane: 'loi-areas',
+        interactive: true
+      });
+
+      circle.bindPopup('Restriction zone<br>Waterloo Station<br>50 metre radius', {
+        closeButton: true,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'app-area-popup'
+      });
+
+      circle.addTo(layerGroup);
+    }
+
     function syncZonePolygons(forceRebuild) {
       var inclusionZone = window.mapLayers && window.mapLayers.inclusionZone;
       var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
       createZonePolygon(inclusionZone, westminsterBoundary, '#d4351c', 'Inclusion Zone<br/>Westminster', !!forceRebuild, 'emdi-inclusion-zone-path');
-      createZonePolygon(restrictionZone, waterlooBoundary, '#d4351c', 'Restriction Zone<br/>Waterloo', !!forceRebuild, 'emdi-restriction-zone-path');
+      createRestrictionZone(restrictionZone, !!forceRebuild);
       updateExclusionZoneDescription();
     }
 
@@ -1712,6 +1799,10 @@
         '    <input type="checkbox" id="emdi-toggle-exclusion">',
         '    <span>Exclusion</span>',
         '  </label>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-restriction">',
+        '    <span>Restriction</span>',
+        '  </label>',
         '</div>'
       ].join('');
 
@@ -1759,6 +1850,10 @@
       wrapper.querySelector('#emdi-toggle-exclusion').addEventListener('change', function () {
         setLayerVisible(window.mapLayers.exclusionZone, this.checked);
       });
+
+      wrapper.querySelector('#emdi-toggle-restriction').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.restrictionZone, this.checked);
+      });
     }
 
     var streetInput = document.getElementById('emdi-base-street');
@@ -1768,6 +1863,7 @@
     var pointsInput = document.getElementById('emdi-toggle-points');
     var heatmapInput = document.getElementById('emdi-toggle-heatmap');
     var exclusionInput = document.getElementById('emdi-toggle-exclusion');
+    var restrictionInput = document.getElementById('emdi-toggle-restriction');
 
     var satelliteActive = window.satelliteLayer && map.hasLayer(window.satelliteLayer);
     if (streetInput) streetInput.checked = !satelliteActive;
@@ -1785,11 +1881,13 @@
 
       if (heatmapInput) heatmapInput.checked = false;
       if (exclusionInput) exclusionInput.checked = false;
+      if (restrictionInput) restrictionInput.checked = false;
 
       window.__emdiZonesInitialised = true;
     } else {
       if (heatmapInput) heatmapInput.checked = hasLayer(window.mapLayers.heatmap);
       if (exclusionInput) exclusionInput.checked = hasLayer(window.mapLayers.exclusionZone);
+      if (restrictionInput) restrictionInput.checked = hasLayer(window.mapLayers.restrictionZone);
     }
 
     setHeatmapLevelControlsEnabled(!!(heatmapInput && heatmapInput.checked));
@@ -3064,6 +3162,11 @@ path[stroke-width="1"]
 .gps-point-popup__nav {
   display: flex;
   gap: 16px;
+}
+
+/* This page's ping cards omit coordinates. */
+.gps-point-card .emdi-ping-coordinate-row {
+  display: none;
 }
 
 .govuk-summary-list__value {

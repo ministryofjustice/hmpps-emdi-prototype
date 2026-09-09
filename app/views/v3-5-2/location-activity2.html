@@ -254,28 +254,37 @@
 <div class="govuk-!-margin-bottom-6">
   <p class="govuk-!-margin-bottom-3">
     <button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-view-toggle" type="button" aria-controls="emdi-map-view emdi-table-view">
-      Show accessible table
+      Show points in a table
     </button>
   </p>
   <div id="emdi-map-view">
     <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
     <div id="map" style="height: 600px;"></div>
      <br> <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
-  </div>
+  </div> <br> <br>
   <div id="emdi-table-view" hidden>
+  <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
+  <div id="emdi-table-content" hidden>
   <h3 class="govuk-heading-m govuk-!-margin-top-6">Points</h3>
-  <p class="govuk-body">This table shows every point, and can be filtered to show missing data gaps and points inside the exclusion zone.</p>
+  <p class="govuk-body">This table shows every point except points either side of a missing data gap, and can be filtered to show points inside the exclusion zone.</p>
   <div class="loi-filters govuk-!-margin-bottom-3">
     <div class="govuk-form-group govuk-!-margin-bottom-3">
-      <label class="govuk-label" for="emdi-points-filter-type">Point type</label>
-      <select class="govuk-select" id="emdi-points-filter-type">
-        <option value="all" selected>All</option>
-        <option value="exclusion">Exclusion zone</option>
-        <option value="dotted">Missing data</option>
-      </select>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-label">Point type</legend>
+        <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios" id="emdi-points-filter-type">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="emdi-points-filter-type-all" name="emdi-points-filter-type" type="radio" value="all" checked>
+            <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-all">All</label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="emdi-points-filter-type-exclusion" name="emdi-points-filter-type" type="radio" value="exclusion">
+            <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-exclusion">Show points in exclusion zones only</label>
+          </div>
+        </div>
+      </fieldset>
     </div>
     <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-points-filter-apply" type="button">
-      Update
+      Update table
     </button>
   </div>
   <table class="govuk-table" id="emdi-points-attention-table">
@@ -285,22 +294,41 @@
         <th scope="col" class="govuk-table__header">Point</th>
         <th scope="col" class="govuk-table__header">Accuracy</th>
         <th scope="col" class="govuk-table__header">Date, time</th>
-        <th scope="col" class="govuk-table__header">Lat, long</th>
         <th scope="col" class="govuk-table__header">Speed</th>
         <th scope="col" class="govuk-table__header">Signal type</th>
         <th scope="col" class="govuk-table__header">Tag status</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="emdi-points-attention-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">Update the map to view points.</td></tr>
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">Update the map to view points.</td></tr>
     </tbody>
   </table>
   <div id="emdi-points-attention-pagination"></div>
+  <h3 class="govuk-heading-m govuk-!-margin-top-6">Missing data</h3>
+  <p class="govuk-body">This table shows the gaps between points where the map uses a dotted line.</p>
+  <table class="govuk-table" id="emdi-missing-data-table">
+    <caption class="govuk-table__caption govuk-visually-hidden">Missing data gaps between GPS points</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Gap start point</th>
+        <th scope="col" class="govuk-table__header">Gap start time</th>
+        <th scope="col" class="govuk-table__header">Gap end point</th>
+        <th scope="col" class="govuk-table__header">Gap end time</th>
+        <th scope="col" class="govuk-table__header">Duration</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body" id="emdi-missing-data-table-body">
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">Update the map to view missing data.</td></tr>
+    </tbody>
+  </table>
+  <div id="emdi-missing-data-pagination"></div>
+  </div>
   </div>
  
   <br>
  
 </div>
+
 
 <hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
 
@@ -891,26 +919,28 @@
   document.addEventListener('DOMContentLoaded', function () {
     function isInsideExclusionZone(latitude, longitude) {
       var exclusionZone = window.mapLayers && window.mapLayers.exclusionZone;
-      var boundary = [];
       if (!exclusionZone || typeof exclusionZone.eachLayer !== 'function') return false;
 
+      var inAnyZone = false;
       exclusionZone.eachLayer(function (layer) {
-        if (boundary.length || !layer || typeof layer.getLatLngs !== 'function') return;
-        boundary = (layer.getLatLngs()[0] || []).map(function (point) {
+        if (inAnyZone || !layer || typeof layer.getLatLngs !== 'function') return;
+        var boundary = (layer.getLatLngs()[0] || []).map(function (point) {
           return [point.lat, point.lng];
         });
-      });
+        if (boundary.length < 3) return;
 
-      var inside = false;
-      for (var index = 0, previousIndex = boundary.length - 1; index < boundary.length; previousIndex = index++) {
-        var current = boundary[index];
-        var previous = boundary[previousIndex];
-        var crossesBoundary = ((current[1] > longitude) !== (previous[1] > longitude)) &&
-          (latitude < (previous[0] - current[0]) * (longitude - current[1]) /
-            (previous[1] - current[1]) + current[0]);
-        if (crossesBoundary) inside = !inside;
-      }
-      return inside;
+        var inside = false;
+        for (var index = 0, previousIndex = boundary.length - 1; index < boundary.length; previousIndex = index++) {
+          var current = boundary[index];
+          var previous = boundary[previousIndex];
+          var crossesBoundary = ((current[1] > longitude) !== (previous[1] > longitude)) &&
+            (latitude < (previous[0] - current[0]) * (longitude - current[1]) /
+              (previous[1] - current[1]) + current[0]);
+          if (crossesBoundary) inside = !inside;
+        }
+        if (inside) inAnyZone = true;
+      });
+      return inAnyZone;
     }
 
     function normalisePingCard(card) {
@@ -969,20 +999,21 @@
         .replace(/'/g, '&#39;');
     }
 
-    function getExclusionBoundary() {
+    function getExclusionBoundaries() {
       var group = window.mapLayers && window.mapLayers.exclusionZone;
-      var boundary = [];
-      if (!group || typeof group.eachLayer !== 'function') return boundary;
+      var boundaries = [];
+      if (!group || typeof group.eachLayer !== 'function') return boundaries;
 
       group.eachLayer(function (layer) {
-        if (boundary.length || !layer || typeof layer.getLatLngs !== 'function') return;
+        if (!layer || typeof layer.getLatLngs !== 'function') return;
         var latLngs = layer.getLatLngs();
         var ring = latLngs && latLngs[0] ? latLngs[0] : latLngs;
-        boundary = (ring || []).map(function (point) {
+        var boundary = (ring || []).map(function (point) {
           return [point.lat, point.lng];
         });
+        if (boundary.length >= 3) boundaries.push(boundary);
       });
-      return boundary;
+      return boundaries;
     }
 
     function isInside(point, boundary) {
@@ -1004,45 +1035,126 @@
     }
 
     var ATTENTION_PAGE_SIZE = 20;
+    var MISSING_DATA_PAGE_SIZE = 20;
     var attentionRows = [];
     var attentionPage = 1;
     var attentionEntries = [];
+    var missingDataRows = [];
+    var missingDataPage = 1;
 
     function buildAttentionRowHtml(entry) {
       var point = entry.point;
       var accuracy = Number.isFinite(point.accuracy) ? Math.round(point.accuracy) + ' metres' : '\u2014';
-      var coordinates = Number.isFinite(point.lat) && Number.isFinite(point.lng)
-        ? point.lat.toFixed(6) + ', ' + point.lng.toFixed(6) : 'Unavailable';
       var speed = point.speed != null && !isNaN(Number(point.speed))
         ? (Number(point.speed) * 0.621371).toFixed(1) + ' miles per hour' : '\u2014';
       var signalType = point.geolocationMechanism || '\u2014';
+      var tagStatus = entry.isExclusion ? 'Exclusion breach' : 'No tamper';
       return [
         '<tr class="govuk-table__row">',
         '<th scope="row" class="govuk-table__header">Point ' + (entry.index + 1) + '</th>',
         '<td class="govuk-table__cell">' + escapeHtml(accuracy) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(dateTime(point.time)) + '</td>',
-        '<td class="govuk-table__cell"><code>' + escapeHtml(coordinates) + '</code></td>',
         '<td class="govuk-table__cell">' + escapeHtml(speed) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(signalType) + '</td>',
-        '<td class="govuk-table__cell">\u2014</td>',
+        '<td class="govuk-table__cell">' + escapeHtml(tagStatus) + '</td>',
+        '</tr>'
+      ].join('');
+    }
+
+    function formatGapDuration(minutes) {
+      var roundedMinutes = Math.round(minutes);
+      var hours = Math.floor(roundedMinutes / 60);
+      var remainingMinutes = roundedMinutes % 60;
+      if (hours && remainingMinutes) return hours + ' hours ' + remainingMinutes + ' minutes';
+      if (hours) return hours + ' hours';
+      return roundedMinutes + ' minutes';
+    }
+
+    function buildMissingDataRowHtml(gap) {
+      return [
+        '<tr class="govuk-table__row">',
+        '<th scope="row" class="govuk-table__header">Point ' + (gap.startIndex + 1) + '</th>',
+        '<td class="govuk-table__cell">' + escapeHtml(dateTime(gap.startPoint.time)) + '</td>',
+        '<td class="govuk-table__cell">Point ' + (gap.endIndex + 1) + '</td>',
+        '<td class="govuk-table__cell">' + escapeHtml(dateTime(gap.endPoint.time)) + '</td>',
+        '<td class="govuk-table__cell">' + escapeHtml(formatGapDuration(gap.durationMinutes)) + '</td>',
         '</tr>'
       ].join('');
     }
 
     function currentFilterType() {
-      var select = document.getElementById('emdi-points-filter-type');
-      return select ? select.value : 'all';
+      var checked = document.querySelector('#emdi-points-filter-type input[name="emdi-points-filter-type"]:checked');
+      return checked ? checked.value : 'all';
     }
 
     function applyAttentionFilter() {
       var filterType = currentFilterType();
       var filtered = attentionEntries.filter(function (entry) {
-        if (filterType === 'exclusion') return entry.isExclusion;
-        if (filterType === 'dotted') return entry.isDotted;
-        return true;
+        if (filterType === 'exclusion') return entry.isExclusion && !entry.isDotted;
+        return !entry.isDotted;
       });
       attentionRows = filtered.map(buildAttentionRowHtml);
       renderAttentionPage(1);
+    }
+
+    function buildMissingDataPaginationHtml(currentPage, totalPages) {
+      var pageNumbers = [1, totalPages, currentPage - 1, currentPage, currentPage + 1]
+        .filter(function (page) { return page >= 1 && page <= totalPages; })
+        .sort(function (a, b) { return a - b; })
+        .filter(function (page, index, all) { return all.indexOf(page) === index; });
+
+      var itemsHtml = '';
+      pageNumbers.forEach(function (page, index) {
+        if (index > 0 && page - pageNumbers[index - 1] > 1) {
+          itemsHtml += '<li class="govuk-pagination__item govuk-pagination__item--ellipsis">&ctdot;</li>';
+        }
+        var isCurrent = page === currentPage;
+        itemsHtml += '<li class="govuk-pagination__item' + (isCurrent ? ' govuk-pagination__item--current' : '') + '">' +
+          '<a class="govuk-link govuk-pagination__link" href="#" data-missing-data-page="' + page + '" aria-label="Page ' + page + '"' + (isCurrent ? ' aria-current="page"' : '') + '>' + page + '</a></li>';
+      });
+
+      var prevHtml = currentPage > 1
+        ? '<div class="govuk-pagination__prev"><a class="govuk-link govuk-pagination__link" href="#" rel="prev" data-missing-data-page="' + (currentPage - 1) + '">' +
+          '<svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13"><path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path></svg>' +
+          '<span class="govuk-pagination__link-title">Previous</span></a></div>'
+        : '';
+
+      var nextHtml = currentPage < totalPages
+        ? '<div class="govuk-pagination__next"><a class="govuk-link govuk-pagination__link" href="#" rel="next" data-missing-data-page="' + (currentPage + 1) + '">' +
+          '<span class="govuk-pagination__link-title">Next</span>' +
+          '<svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13"><path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path></svg></a></div>'
+        : '';
+
+      var startResult = (currentPage - 1) * MISSING_DATA_PAGE_SIZE + 1;
+      var endResult = Math.min(currentPage * MISSING_DATA_PAGE_SIZE, missingDataRows.length);
+
+      return '<div class="moj-pagination"><nav class="govuk-pagination moj-pagination__pagination" aria-label="Missing data pagination">' +
+        prevHtml +
+        '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
+        nextHtml +
+        '</nav><p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + missingDataRows.length + ' total results</p></div>';
+    }
+
+    function renderMissingDataPage(page) {
+      var body = document.getElementById('emdi-missing-data-table-body');
+      var paginationSlot = document.getElementById('emdi-missing-data-pagination');
+      if (!body) return;
+
+      if (!missingDataRows.length) {
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">No missing data found in the current map view.</td></tr>';
+        if (paginationSlot) paginationSlot.innerHTML = '';
+        return;
+      }
+
+      var totalPages = Math.ceil(missingDataRows.length / MISSING_DATA_PAGE_SIZE);
+      missingDataPage = Math.min(Math.max(page, 1), totalPages);
+
+      var start = (missingDataPage - 1) * MISSING_DATA_PAGE_SIZE;
+      body.innerHTML = missingDataRows.slice(start, start + MISSING_DATA_PAGE_SIZE).join('');
+
+      if (paginationSlot) {
+        paginationSlot.innerHTML = totalPages > 1 ? buildMissingDataPaginationHtml(missingDataPage, totalPages) : '';
+      }
     }
 
     var filterApplyButton = document.getElementById('emdi-points-filter-apply');
@@ -1097,7 +1209,7 @@
       if (!body) return;
 
       if (!attentionRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">No points meet these conditions in the current map view.</td></tr>';
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">No points meet these conditions in the current map view.</td></tr>';
         if (paginationSlot) paginationSlot.innerHTML = '';
         return;
       }
@@ -1122,9 +1234,19 @@
       if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest && event.target.closest('#emdi-missing-data-pagination [data-missing-data-page]');
+      if (!link) return;
+      event.preventDefault();
+      renderMissingDataPage(Number(link.dataset.missingDataPage));
+      var table = document.getElementById('emdi-missing-data-table');
+      if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
     function renderAttentionTable(points) {
-      var boundary = getExclusionBoundary();
+      var boundaries = getExclusionBoundaries();
       var entries = [];
+      var missingGaps = [];
       (points || []).forEach(function (point, index) {
         var reasons = [];
         var isDotted = false;
@@ -1143,17 +1265,26 @@
           if (!isNaN(nextGapMinutes) && nextGapMinutes >= 5) {
             reasons.push('Dotted line: ' + Math.round(nextGapMinutes) + ' minute gap to next point');
             isDotted = true;
+            missingGaps.push({
+              startIndex: index,
+              startPoint: point,
+              endIndex: index + 1,
+              endPoint: points[index + 1],
+              durationMinutes: nextGapMinutes
+            });
           }
         }
-        var isExclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) && boundary.length >= 3 &&
-          isInside(point, boundary);
+        var isExclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
+          boundaries.some(function (boundary) { return isInside(point, boundary); });
         if (isExclusion) reasons.push('Within the exclusion zone');
 
         entries.push({ index: index, point: point, reasons: reasons, isDotted: isDotted, isExclusion: isExclusion });
       });
 
       attentionEntries = entries;
+      missingDataRows = missingGaps.map(buildMissingDataRowHtml);
       applyAttentionFilter();
+      renderMissingDataPage(1);
     }
 
     var originalPlotTraceObject = window.plotTraceObject;
@@ -1178,8 +1309,25 @@
       var showingTable = !tableView.hidden;
       tableView.hidden = showingTable;
       mapView.hidden = !showingTable;
-      toggleButton.textContent = showingTable ? 'Show accessible table' : 'Show map';
+      toggleButton.textContent = showingTable ? 'Show points in a table' : 'Show map';
     });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var searchForm = document.getElementById('bh-map-filters');
+    var placeholder = document.getElementById('emdi-table-placeholder');
+    var content = document.getElementById('emdi-table-content');
+    if (!searchForm || !placeholder || !content) return;
+
+    function revealTableContent() {
+      placeholder.hidden = true;
+      content.hidden = false;
+    }
+
+    searchForm.addEventListener('input', revealTableContent);
+    searchForm.addEventListener('change', revealTableContent);
   });
 </script>
 
@@ -1542,22 +1690,26 @@
       var exclusionZone = window.mapLayers && window.mapLayers.exclusionZone;
       if (!description || !exclusionZone) return;
 
-      var boundary = [];
+      var zoneBlocks = [];
       exclusionZone.eachLayer(function (layer) {
-        if (layer && typeof layer.getLatLngs === 'function') {
-          var latLngs = layer.getLatLngs()[0] || [];
-          boundary = latLngs.map(function (point) {
-            return point.lat.toFixed(5) + ', ' + point.lng.toFixed(5);
-          });
-          if (layer._path) {
-            layer._path.setAttribute('role', 'img');
-            layer._path.setAttribute('aria-label', 'Exclusion zone boundary around St James Park, Westminster');
-          }
+        if (!layer || typeof layer.getLatLngs !== 'function') return;
+        var latLngs = layer.getLatLngs()[0] || [];
+        var boundary = latLngs.map(function (point) {
+          return point.lat.toFixed(5) + ', ' + point.lng.toFixed(5);
+        });
+        if (!boundary.length) return;
+
+        var zoneLabel = (layer.options && layer.options.emdiZoneLabel) || 'St James Park, Westminster';
+        zoneBlocks.push('<strong>' + zoneLabel + '</strong><br>' + boundary.join('<br>'));
+
+        if (layer._path) {
+          layer._path.setAttribute('role', 'img');
+          layer._path.setAttribute('aria-label', 'Exclusion zone boundary around ' + zoneLabel);
         }
       });
 
-      if (boundary.length) {
-        description.innerHTML = '<strong>Boundary coordinates, latitude and longitude:</strong><br>' + boundary.join('<br>');
+      if (zoneBlocks.length) {
+        description.innerHTML = '<strong>Boundary coordinates, latitude and longitude:</strong><br>' + zoneBlocks.join('<br><br>');
       }
     }
 
@@ -1894,9 +2046,58 @@
   }
 
   document.addEventListener('bh:map-ready', function () {
+    if (window.mapLayers && window.mapLayers.exclusionZone && !window.__emdiGayfereZoneAdded) {
+      var gayfereBoundary = [
+        [51.497263, -0.130043],
+        [51.497263, -0.129957],
+        [51.497137, -0.129957],
+        [51.497137, -0.130043]
+      ];
+
+      var gayfereZone = L.polygon(gayfereBoundary, {
+        className: 'emdi-exclusion-zone-path',
+        color: '#D32F2F',
+        weight: 0,
+        opacity: 0.9,
+        fillColor: '#D32F2F',
+        fillOpacity: 0.35,
+        interactive: true,
+        emdiZoneLabel: '7 Gayfere Street, London',
+        emdiZoneAddress: '7 Gayfere St,<br> London, <br> SW1P 3HN'
+      });
+
+      window.mapLayers.exclusionZone.addLayer(gayfereZone);
+      window.__emdiGayfereZoneAdded = true;
+    }
+
+    if (window.mapLayers && window.mapLayers.exclusionZone && !window.__emdiAirStreetZoneAdded) {
+      var airStreetBoundary = [
+        [51.510254, -0.136258],
+        [51.510254, -0.136142],
+        [51.510146, -0.136142],
+        [51.510146, -0.136258]
+      ];
+
+      var airStreetZone = L.polygon(airStreetBoundary, {
+        className: 'emdi-exclusion-zone-path',
+        color: '#D32F2F',
+        weight: 0,
+        opacity: 0.9,
+        fillColor: '#D32F2F',
+        fillOpacity: 0.35,
+        interactive: true,
+        emdiZoneLabel: '1 Air Street, London',
+        emdiZoneAddress: '1 Air St,<br> London, <br> W1J 0AB'
+      });
+
+      window.mapLayers.exclusionZone.addLayer(airStreetZone);
+      window.__emdiAirStreetZoneAdded = true;
+    }
+
     if (window.mapLayers && window.mapLayers.exclusionZone) {
       window.mapLayers.exclusionZone.eachLayer(function (layer) {
         if (layer && typeof layer.bindPopup === 'function') {
+          var address = (layer.options && layer.options.emdiZoneAddress) || 'St James Park,<br> Westminster, <br> SW1A 2BJ';
           var popupHtml = [
             '<div class="gps-point-popup">',
             '  <div class="gps-point-popup__header">',
@@ -1909,7 +2110,7 @@
             '    </div>',
             '    <div class="govuk-summary-list__row">',
             '      <dt class="govuk-summary-list__key">Address</dt>',
-            '      <dd class="govuk-summary-list__value">St James Park,<br> Westminster, <br> SW1A 2BJ</dd>',
+            '      <dd class="govuk-summary-list__value">' + address + '</dd>',
             '    </div>',
             '  </dl>',
             '</div>'
@@ -3234,7 +3435,8 @@ body {
 }
 
 /* Keep the results count on the same line as the pagination nav, right-aligned. */
-#emdi-points-attention-pagination .moj-pagination {
+#emdi-points-attention-pagination .moj-pagination,
+#emdi-missing-data-pagination .moj-pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3242,14 +3444,30 @@ body {
   gap: 16px;
 }
 
-#emdi-points-attention-pagination .moj-pagination__pagination {
+#emdi-points-attention-pagination .moj-pagination__pagination,
+#emdi-missing-data-pagination .moj-pagination__pagination {
   margin-bottom: 0;
 }
 
-#emdi-points-attention-pagination .moj-pagination__results {
+#emdi-points-attention-pagination .moj-pagination__results,
+#emdi-missing-data-pagination .moj-pagination__results {
   margin: 0 0 0 auto;
   white-space: nowrap;
   text-align: right;
+}
+
+/* Keep the point type filter on one line, left aligned with even gaps. */
+#emdi-points-filter-type {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 32px;
+  width: 100%;
+}
+
+#emdi-points-filter-type .govuk-radios__item {
+  margin-right: 0;
+  white-space: nowrap;
 }
 
 

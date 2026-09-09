@@ -1,15 +1,13 @@
-FROM node:18.16-bullseye-slim
+FROM node:20-alpine3.21
 
 ENV NODE_ENV=production
 
-RUN addgroup --gid 1017 --system appgroup \
-  && adduser --uid 1017 --system appuser --gid 1017
+RUN addgroup -g 1017 appgroup \
+  && adduser -D -u 1017 -G appgroup appuser
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y make python3
+RUN apk add --no-cache make python3
 
 COPY . .
 

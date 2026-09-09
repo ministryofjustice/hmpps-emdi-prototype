@@ -1082,7 +1082,11 @@
     var keyboardPoints = [];
     var keyboardPointIndex = 0;
     var keyboardHighlightLayer;
+    var keyboardPopup;
     var keyboardAccessReady = false;
+    var mapFocusFromKeyboard = false;
+    var mapKeyboardActive = false;
+    var suppressNextMapFocusHighlight = false;
 
     function removeKeyboardHighlight() {
       if (keyboardHighlightLayer && window.map && window.map.hasLayer(keyboardHighlightLayer)) {
@@ -1094,7 +1098,8 @@
     function highlightKeyboardPoint(pointIndex) {
       if (!window.map || !window.L || !keyboardPoints.length) return;
 
-      keyboardPointIndex = (pointIndex + keyboardPoints.length) % keyboardPoints.length;
+      mapKeyboardActive = true;
+      keyboardPointIndex = Math.min(Math.max(pointIndex, 0), keyboardPoints.length - 1);
       var point = keyboardPoints[keyboardPointIndex];
       if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
 
@@ -1133,11 +1138,22 @@
       var speed = point.speed != null && !isNaN(Number(point.speed))
         ? (Number(point.speed) * 0.621371).toFixed(1) + ' miles per hour' : '\u2014';
       var signalType = point.geolocationMechanism || '\u2014';
+      var hasPrevious = pointIndex > 0;
+      var hasNext = pointIndex < keyboardPoints.length - 1;
+
+      function navButton(nav, targetIndex, label, text, disabled) {
+        if (disabled) return '';
+        return '<a class="govuk-link gps-point-popup__nav-button" href="#" aria-label="' + label + '" data-nav="' + nav + '" data-point-index="' + targetIndex + '">' + text + '</a>';
+      }
 
       return [
         '<div class="gps-point-card">',
         '  <div class="gps-point-popup__header">',
+        '    ' + navButton('first', 0, 'Go to first point', '&laquo;', !hasPrevious),
+        '    ' + navButton('prev', pointIndex - 1, 'Go to previous point', '&lsaquo;', !hasPrevious),
         '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Point ' + (pointIndex + 1) + ' of ' + keyboardPoints.length + '</h4>',
+        '    ' + navButton('next', pointIndex + 1, 'Go to next point', '&rsaquo;', !hasNext),
+        '    ' + navButton('last', keyboardPoints.length - 1, 'Go to last point', '&raquo;', !hasNext),
         '  </div>',
         '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
         '    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Accuracy</dt><dd class="govuk-summary-list__value">' + escapeHtml(accuracy) + '</dd></div>',
@@ -1157,16 +1173,39 @@
       var point = keyboardPoints[keyboardPointIndex];
       if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
 
-      L.popup({
-        closeButton: true,
-        autoClose: true,
-        closeOnClick: true,
-        className: 'gps-point-popup',
-        autoPan: true
-      })
+      mapKeyboardActive = true;
+      if (!keyboardPopup) {
+        keyboardPopup = L.popup({
+          closeButton: true,
+          autoClose: true,
+          closeOnClick: true,
+          className: 'gps-point-popup',
+          autoPan: true
+        });
+      }
+
+      keyboardPopup
         .setLatLng([point.lat, point.lng])
         .setContent(keyboardPointPopupHtml(point, keyboardPointIndex))
         .openOn(window.map);
+    }
+
+    function moveKeyboardPoint(pointIndex) {
+      highlightKeyboardPoint(pointIndex);
+      if (window.map && typeof window.map.closePopup === 'function') window.map.closePopup();
+    }
+
+    function restoreMapPointFocus() {
+      var restoredPointIndex = keyboardPointIndex;
+      mapFocusFromKeyboard = true;
+      setTimeout(function () {
+        var mapEl = document.getElementById('map');
+        if (mapEl) {
+          suppressNextMapFocusHighlight = true;
+          mapEl.focus();
+        }
+        highlightKeyboardPoint(restoredPointIndex);
+      }, 0);
     }
 
     function openShortcutsDialog() {
@@ -1185,7 +1224,10 @@
       var mapEl = document.getElementById('map');
       if (backdrop) backdrop.hidden = true;
       if (dialog) dialog.hidden = true;
-      if (mapEl) mapEl.focus();
+      if (mapEl) {
+        mapFocusFromKeyboard = true;
+        mapEl.focus();
+      }
     }
 
     function setupMapKeyboardAccess() {
@@ -1195,43 +1237,104 @@
       var closeButton = document.getElementById('emdi-map-shortcuts-close');
       if (!mapEl) return;
 
-      mapEl.addEventListener('focus', function () {
-        if (keyboardPoints.length) highlightKeyboardPoint(0);
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Tab') {
+          mapFocusFromKeyboard = true;
+          suppressNextMapFocusHighlight = false;
+        }
       });
 
-      mapEl.addEventListener('keydown', function (event) {
+      function handlePointKeyboardEvent(event) {
         if (event.shiftKey && (event.key === '?' || event.key === '/')) {
           event.preventDefault();
           openShortcutsDialog();
-          return;
+          return true;
         }
 
         if (event.key === 'ArrowRight') {
           event.preventDefault();
-          highlightKeyboardPoint(keyboardPointIndex + 1);
-          return;
+          if (document.querySelector('.leaflet-popup .gps-point-card')) {
+            highlightKeyboardPoint(keyboardPointIndex + 1);
+            openKeyboardPointPopup();
+          } else {
+            moveKeyboardPoint(keyboardPointIndex + 1);
+          }
+          return true;
         }
 
         if (event.key === 'ArrowLeft') {
           event.preventDefault();
-          highlightKeyboardPoint(keyboardPointIndex - 1);
-          return;
+          if (document.querySelector('.leaflet-popup .gps-point-card')) {
+            highlightKeyboardPoint(keyboardPointIndex - 1);
+            openKeyboardPointPopup();
+          } else {
+            moveKeyboardPoint(keyboardPointIndex - 1);
+          }
+          return true;
+        }
+
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          return true;
         }
 
         if (event.key === 'Enter') {
           event.preventDefault();
           openKeyboardPointPopup();
+          return true;
+        }
+
+        if (event.key === 'Escape' && window.map && typeof window.map.closePopup === 'function') {
+          event.preventDefault();
+          window.map.closePopup();
+          restoreMapPointFocus();
+          return true;
+        }
+
+        return false;
+      }
+
+      document.addEventListener('keydown', function (event) {
+        var dialog = document.getElementById('emdi-map-shortcuts-dialog');
+        if (!mapKeyboardActive || (dialog && !dialog.hidden)) return;
+        if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Escape'].indexOf(event.key) === -1) return;
+        if (handlePointKeyboardEvent(event)) event.stopImmediatePropagation();
+      }, true);
+
+      mapEl.addEventListener('pointerdown', function () {
+        mapFocusFromKeyboard = false;
+        mapKeyboardActive = false;
+        suppressNextMapFocusHighlight = true;
+        removeKeyboardHighlight();
+      }, true);
+
+      mapEl.addEventListener('focus', function () {
+        if (suppressNextMapFocusHighlight) {
+          suppressNextMapFocusHighlight = false;
           return;
         }
+        if (keyboardPoints.length) highlightKeyboardPoint(0);
+      });
+
+      mapEl.addEventListener('keydown', function (event) {
+        if (handlePointKeyboardEvent(event)) return;
 
         if (event.key === 'Tab' && !event.shiftKey) {
           var mapControls = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener, .leaflet-control-layers-toggle');
           if (mapControls) {
             event.preventDefault();
+            mapKeyboardActive = false;
             mapControls.focus();
           }
         }
-      });
+      }, true);
+
+      if (window.map && typeof window.map.on === 'function') {
+        window.map.on('popupclose', function () {
+          if (!mapKeyboardActive) return;
+          restoreMapPointFocus();
+        });
+      }
 
       if (backdrop) backdrop.addEventListener('click', closeShortcutsDialog);
       if (closeButton) closeButton.addEventListener('click', closeShortcutsDialog);

@@ -1237,12 +1237,72 @@
       var closeButton = document.getElementById('emdi-map-shortcuts-close');
       if (!mapEl) return;
 
+      function focusAfterCurrentTick(element, event) {
+        if (!element) return;
+        if (event) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+        setTimeout(function () { element.focus(); }, 0);
+      }
+
+      function focusFirstMapControlHeading(event) {
+        var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+        if (mapControlsButton && mapControlsButton.getAttribute('aria-expanded') !== 'true') {
+          mapControlsButton.click();
+        }
+        var firstHeading = document.querySelector('.emdi-custom-layer-controls .emdi-collapsible-trigger');
+        if (firstHeading) focusAfterCurrentTick(firstHeading, event);
+      }
+
       document.addEventListener('keydown', function (event) {
         if (event.key === 'Tab') {
           mapFocusFromKeyboard = true;
           suppressNextMapFocusHighlight = false;
         }
       });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab' || event.shiftKey) return;
+
+        var target = event.target;
+        var targetElement = target && target.closest ? target : null;
+        if (target === mapEl) {
+          var zoomIn = document.querySelector('.leaflet-control-zoom-in');
+          if (zoomIn) {
+            mapKeyboardActive = false;
+            focusAfterCurrentTick(zoomIn, event);
+          }
+          return;
+        }
+
+        if (targetElement && targetElement.closest('.leaflet-control-zoom-in')) {
+          var zoomOut = document.querySelector('.leaflet-control-zoom-out');
+          if (zoomOut) {
+            focusAfterCurrentTick(zoomOut, event);
+          }
+          return;
+        }
+
+        if (targetElement && targetElement.closest('.leaflet-control-zoom-out')) {
+          var keyButton = document.querySelector('.emdi-key-toggle');
+          if (keyButton) {
+            focusAfterCurrentTick(keyButton, event);
+          }
+          return;
+        }
+
+        if (targetElement && targetElement.closest('.emdi-key-toggle')) {
+          var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+          if (mapControlsButton) focusAfterCurrentTick(mapControlsButton, event);
+          return;
+        }
+
+        if (targetElement && targetElement.closest('.emdi-layers-toggle, .emdi-layers-opener')) {
+          var guideLink = document.querySelector('#emdi-map-view a[href="map-help"]');
+          if (guideLink) focusAfterCurrentTick(guideLink, event);
+        }
+      }, true);
 
       function handlePointKeyboardEvent(event) {
         if (event.shiftKey && (event.key === '?' || event.key === '/')) {
@@ -1317,16 +1377,7 @@
       });
 
       mapEl.addEventListener('keydown', function (event) {
-        if (handlePointKeyboardEvent(event)) return;
-
-        if (event.key === 'Tab' && !event.shiftKey) {
-          var mapControls = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener, .leaflet-control-layers-toggle');
-          if (mapControls) {
-            event.preventDefault();
-            mapKeyboardActive = false;
-            mapControls.focus();
-          }
-        }
+        handlePointKeyboardEvent(event);
       }, true);
 
       if (window.map && typeof window.map.on === 'function') {
@@ -1891,6 +1942,23 @@
         toggleTab('key');
       });
 
+      toggleBtn.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab' || event.shiftKey) return;
+        var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+        if (!mapControlsButton) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setTimeout(function () { mapControlsButton.focus(); }, 0);
+      }, true);
+
+      toggleBtn.addEventListener('blur', function () {
+        setTimeout(function () {
+          if (document.activeElement !== toggleBtn) return;
+          var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+          if (mapControlsButton) mapControlsButton.focus();
+        }, 0);
+      });
+
       L.DomEvent.disableClickPropagation(container);
       L.DomEvent.disableScrollPropagation(container);
       return container;
@@ -1902,6 +1970,7 @@
       mapOpener.classList.add('leaflet-control', 'emdi-panel-toggle', 'emdi-layers-toggle');
       mapOpener.textContent = 'Map controls';
       mapOpener.setAttribute('aria-expanded', 'false');
+      mapOpener.setAttribute('tabindex', '0');
       mapOpener.style.display = '';
       if (mapOpener.parentNode !== topRightControls) {
         topRightControls.insertBefore(mapOpener, sharedPanel);
@@ -1913,6 +1982,16 @@
         event.stopPropagation();
         toggleTab('layers');
       };
+
+      mapOpener.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab' || event.shiftKey) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setTimeout(function () {
+          var guideLink = document.querySelector('#emdi-map-view a[href="map-help"]');
+          if (guideLink) guideLink.focus();
+        }, 0);
+      }, true);
     }
 
     var layersPanel = document.querySelector('.leaflet-control-layers.emdi-layers-panel');
@@ -2777,6 +2856,15 @@ $(document).on("click", "a.moj-filter__tag",function() {
   font-size: 24px !important;
 }
 
+.leaflet-control-zoom-in:focus,
+.leaflet-control-zoom-out:focus,
+.leaflet-control-zoom a:focus,
+.leaflet-touch .leaflet-control-zoom a:focus {
+  outline: 3px solid #ffdd00 !important;
+  outline-offset: 0 !important;
+  box-shadow: inset 0 0 0 2px #0b0c0c !important;
+}
+
   .govuk-caption-m {
     color: black;
   }
@@ -2932,11 +3020,17 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-collapsible-trigger:focus {
-  outline: none;
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .emdi-collapsible-trigger:focus-visible {
-  outline: none;
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .emdi-collapsible-content[hidden] {
@@ -3116,13 +3210,15 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-panel-toggle:hover {
-  text-decoration: underline;
+  background-color: #f4f4f4;
+  color: #0b0c0c;
+  text-decoration: none;
 }
 
 .emdi-panel-toggle:focus {
   outline: none;
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px #ffdd00;
+  box-shadow: inset 0 0 0 3px #0b0c0c, 0 0 0 6px #ffdd00;
 }
 
 .emdi-panel-toggle--active {
@@ -3131,8 +3227,9 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-panel-toggle--active:focus {
+  outline: none;
   background-color: #f3f2f1;
-  box-shadow: 0 0 0 3px #ffdd00;
+  box-shadow: inset 0 0 0 3px #0b0c0c, 0 0 0 6px #ffdd00;
 }
 
 .emdi-shared-panel {

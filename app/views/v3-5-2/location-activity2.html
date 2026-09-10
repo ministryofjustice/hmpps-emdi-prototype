@@ -258,10 +258,17 @@
     </button>
   </p>
   <div id="emdi-map-view">
+    <div class="emdi-fullscreen-sidebar" id="emdi-fullscreen-sidebar" hidden></div>
+    <div class="emdi-map-fullscreen-main">
     <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
     <div class="emdi-map-keyboard-wrapper">
       <div id="map" tabindex="0" role="application" aria-label="GPS map. Use left and right arrow keys to move between highlighted points. Press Shift and question mark for keyboard shortcuts." style="height: 600px;"></div>
       <div class="emdi-map-shortcut-hint" id="emdi-map-shortcut-hint" aria-hidden="true"><kbd>Shift</kbd> + <kbd>?</kbd> keyboard shortcuts</div>
+      <button class="emdi-map-fullscreen-toggle" id="emdi-map-fullscreen-toggle" type="button" aria-label="Full screen map" title="Full screen map">
+        <svg class="emdi-map-fullscreen-toggle__icon" aria-hidden="true" focusable="false" viewBox="0 0 44 44">
+          <path d="M10 16V10h6M28 10h6v6M34 28v6h-6M16 34h-6v-6" />
+        </svg>
+      </button>
     </div>
     <div class="emdi-map-shortcuts-backdrop" id="emdi-map-shortcuts-backdrop" hidden></div>
     <div class="emdi-map-shortcuts-dialog" id="emdi-map-shortcuts-dialog" role="dialog" aria-modal="true" aria-labelledby="emdi-map-shortcuts-title" hidden>
@@ -299,6 +306,7 @@
       </table>
     </div>
      <br> <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
+    </div>
   </div> <br> <br>
   <div id="emdi-table-view" hidden>
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
@@ -1268,9 +1276,17 @@
         var target = event.target;
         var targetElement = target && target.closest ? target : null;
         if (target === mapEl) {
+          var fullscreenButton = document.getElementById('emdi-map-fullscreen-toggle');
+          if (fullscreenButton) {
+            mapKeyboardActive = false;
+            focusAfterCurrentTick(fullscreenButton, event);
+          }
+          return;
+        }
+
+        if (targetElement && targetElement.closest('#emdi-map-fullscreen-toggle')) {
           var zoomIn = document.querySelector('.leaflet-control-zoom-in');
           if (zoomIn) {
-            mapKeyboardActive = false;
             focusAfterCurrentTick(zoomIn, event);
           }
           return;
@@ -1365,15 +1381,25 @@
         mapFocusFromKeyboard = false;
         mapKeyboardActive = false;
         suppressNextMapFocusHighlight = true;
+        var wrapper = mapEl.closest('.emdi-map-keyboard-wrapper');
+        if (wrapper) wrapper.classList.remove('emdi-map-keyboard-wrapper--keyboard-focus');
         removeKeyboardHighlight();
       }, true);
 
       mapEl.addEventListener('focus', function () {
+        var wrapper = mapEl.closest('.emdi-map-keyboard-wrapper');
         if (suppressNextMapFocusHighlight) {
           suppressNextMapFocusHighlight = false;
+          if (wrapper) wrapper.classList.remove('emdi-map-keyboard-wrapper--keyboard-focus');
           return;
         }
+        if (mapFocusFromKeyboard && wrapper) wrapper.classList.add('emdi-map-keyboard-wrapper--keyboard-focus');
         if (keyboardPoints.length) highlightKeyboardPoint(0);
+      });
+
+      mapEl.addEventListener('blur', function () {
+        var wrapper = mapEl.closest('.emdi-map-keyboard-wrapper');
+        if (wrapper) wrapper.classList.remove('emdi-map-keyboard-wrapper--keyboard-focus');
       });
 
       mapEl.addEventListener('keydown', function (event) {
@@ -1674,6 +1700,62 @@
       mapView.hidden = !showingTable;
       toggleButton.textContent = showingTable ? 'Show points in a table' : 'Show map';
     });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var mapView = document.getElementById('emdi-map-view');
+    var fullscreenButton = document.getElementById('emdi-map-fullscreen-toggle');
+    var sidebar = document.getElementById('emdi-fullscreen-sidebar');
+    var filterForm = document.getElementById('bh-map-filters');
+    var filterPanel = filterForm && filterForm.closest('.loi-filters');
+    if (!mapView || !fullscreenButton || !sidebar || !filterPanel || !filterPanel.parentNode) return;
+
+    var originalParent = filterPanel.parentNode;
+    var originalNextSibling = filterPanel.nextSibling;
+
+    function isFullscreen() {
+      return document.fullscreenElement === document.documentElement || document.webkitFullscreenElement === document.documentElement;
+    }
+
+    function invalidateMapSize() {
+      if (window.map && typeof window.map.invalidateSize === 'function') {
+        setTimeout(function () { window.map.invalidateSize(); }, 150);
+      }
+    }
+
+    function setFullscreenState(active) {
+      mapView.classList.toggle('emdi-map-view--fullscreen', active);
+      document.documentElement.classList.toggle('emdi-document-fullscreen', active);
+      fullscreenButton.setAttribute('aria-label', active ? 'Exit full screen map' : 'Full screen map');
+      fullscreenButton.setAttribute('title', active ? 'Exit full screen map' : 'Full screen map');
+      sidebar.hidden = !active;
+
+      if (active) {
+        sidebar.appendChild(filterPanel);
+      } else {
+        originalParent.insertBefore(filterPanel, originalNextSibling);
+      }
+
+      invalidateMapSize();
+    }
+
+    fullscreenButton.addEventListener('click', function () {
+      if (isFullscreen() || mapView.classList.contains('emdi-map-view--fullscreen')) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else setFullscreenState(false);
+        return;
+      }
+
+      setFullscreenState(true);
+      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () { setFullscreenState(false); });
+      else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+    });
+
+    document.addEventListener('fullscreenchange', function () { setFullscreenState(isFullscreen()); });
+    document.addEventListener('webkitfullscreenchange', function () { setFullscreenState(isFullscreen()); });
   });
 </script>
 
@@ -3615,7 +3697,180 @@ path[stroke-width="1"]
   position: relative;
 }
 
-#map:focus {
+.emdi-map-fullscreen-toggle {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 800;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.emdi-map-fullscreen-toggle:hover {
+  background-color: #f4f4f4;
+}
+
+.emdi-map-fullscreen-toggle:focus {
+  outline: 3px solid #ffdd00 !important;
+  outline-offset: 0 !important;
+  box-shadow: inset 0 0 0 2px #0b0c0c !important;
+}
+
+.emdi-map-fullscreen-toggle__icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 6px auto;
+}
+
+.emdi-map-fullscreen-toggle__icon path {
+  fill: none;
+  stroke: #0b0c0c;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.emdi-map-keyboard-wrapper .leaflet-top.leaflet-left .leaflet-control-zoom {
+  margin-top: 64px;
+}
+
+#emdi-map-view:fullscreen,
+#emdi-map-view:-webkit-full-screen,
+#emdi-map-view.emdi-map-view--fullscreen {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 0;
+  width: 100vw;
+  height: calc(100vh - 150px);
+  min-height: 560px;
+  margin: 0;
+  background: #ffffff;
+}
+
+:fullscreen {
+  background: #ffffff;
+}
+
+html.emdi-document-fullscreen .govuk-phase-banner,
+html.emdi-document-fullscreen #technical-updates-banner,
+html.emdi-document-fullscreen .probation-common-footer,
+html.emdi-document-fullscreen #emdi-view-toggle {
+  display: none !important;
+}
+
+html.emdi-document-fullscreen .govuk-main-wrapper > *:not(:has(#emdi-map-view)) {
+  display: none !important;
+}
+
+html.emdi-document-fullscreen .govuk-main-wrapper {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+html.emdi-document-fullscreen,
+html.emdi-document-fullscreen body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+html.emdi-document-fullscreen #emdi-map-view {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.emdi-fullscreen-sidebar {
+  box-sizing: border-box;
+  padding: 24px;
+  overflow-y: auto;
+  background: #f3f2f1;
+  border-right: 1px solid #b1b4b6;
+}
+
+.emdi-map-fullscreen-main {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+}
+
+#emdi-map-view:fullscreen .emdi-map-fullscreen-main,
+#emdi-map-view:-webkit-full-screen .emdi-map-fullscreen-main,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-fullscreen-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#emdi-map-view:fullscreen .emdi-map-keyboard-wrapper,
+#emdi-map-view:-webkit-full-screen .emdi-map-keyboard-wrapper,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-keyboard-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+#emdi-map-view:fullscreen #map,
+#emdi-map-view:-webkit-full-screen #map,
+#emdi-map-view.emdi-map-view--fullscreen #map {
+  height: 100% !important;
+}
+
+#emdi-map-view:fullscreen .emdi-fullscreen-action,
+#emdi-map-view:-webkit-full-screen .emdi-fullscreen-action,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-action {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 800;
+  margin: 0;
+}
+
+#emdi-map-view:fullscreen .emdi-fullscreen-sidebar .loi-filters,
+#emdi-map-view:-webkit-full-screen .emdi-fullscreen-sidebar .loi-filters,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .loi-filters {
+  margin-bottom: 0;
+  background: transparent;
+}
+
+#emdi-map-view:fullscreen .emdi-fullscreen-sidebar .bh-filters-grid,
+#emdi-map-view:-webkit-full-screen .emdi-fullscreen-sidebar .bh-filters-grid,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-filters-grid {
+  display: block;
+}
+
+#emdi-map-view:fullscreen .emdi-fullscreen-sidebar .bh-slot,
+#emdi-map-view:-webkit-full-screen .emdi-fullscreen-sidebar .bh-slot,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-slot {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 760px) {
+  #emdi-map-view:fullscreen,
+  #emdi-map-view:-webkit-full-screen,
+  #emdi-map-view.emdi-map-view--fullscreen {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .emdi-fullscreen-sidebar {
+    max-height: 42vh;
+    border-right: 0;
+    border-bottom: 1px solid #b1b4b6;
+  }
+}
+
+.emdi-map-keyboard-wrapper--keyboard-focus #map:focus {
   outline: 4px solid #ffdd00;
   box-shadow: inset 0 0 0 2px #0b0c0c;
 }
@@ -3637,7 +3892,7 @@ path[stroke-width="1"]
   opacity: 0;
 }
 
-#map:focus + .emdi-map-shortcut-hint {
+.emdi-map-keyboard-wrapper--keyboard-focus #map:focus + .emdi-map-shortcut-hint {
   opacity: 1;
 }
 

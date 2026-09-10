@@ -3746,7 +3746,7 @@ path[stroke-width="1"]
 #emdi-map-view:-webkit-full-screen,
 #emdi-map-view.emdi-map-view--fullscreen {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(460px, 500px) minmax(0, 1fr);
   gap: 0;
   width: 100vw;
   height: calc(100vh - 150px);
@@ -3791,15 +3791,29 @@ html.emdi-document-fullscreen #emdi-map-view {
 }
 
 .emdi-fullscreen-sidebar {
+  position: relative;
+  z-index: 3000;
+  isolation: isolate;
   box-sizing: border-box;
   padding: 24px;
-  overflow-y: auto;
+  overflow: visible !important;
   background: #f3f2f1;
   border-right: 1px solid #b1b4b6;
 }
 
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar form,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .loi-filters,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-filters-grid,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-slot,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .govuk-form-group,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .govuk-date-input {
+  overflow: visible !important;
+}
+
 .emdi-map-fullscreen-main {
   position: relative;
+  z-index: 1;
   min-width: 0;
   height: 100%;
 }

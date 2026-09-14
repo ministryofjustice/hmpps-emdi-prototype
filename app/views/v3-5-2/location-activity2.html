@@ -286,10 +286,6 @@
       <table class="govuk-table emdi-map-shortcuts-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">Highlight first point</th>
-            <td class="govuk-table__cell"><kbd>Tab</kbd></td>
-          </tr>
-          <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">Move to previous or next point</th>
             <td class="govuk-table__cell"><kbd>←</kbd> or <kbd>→</kbd></td>
           </tr>
@@ -298,13 +294,10 @@
             <td class="govuk-table__cell"><kbd>Enter</kbd></td>
           </tr>
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">Move from the map to map controls</th>
+            <th scope="row" class="govuk-table__header">Move through the map controls</th>
             <td class="govuk-table__cell"><kbd>Tab</kbd></td>
           </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">Open keyboard shortcuts</th>
-            <td class="govuk-table__cell"><kbd>Shift</kbd> + <kbd>?</kbd></td>
-          </tr>
+          
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">Close keyboard shortcuts</th>
             <td class="govuk-table__cell"><kbd>Escape</kbd></td>
@@ -1401,7 +1394,7 @@
           return;
         }
         if (mapFocusFromKeyboard && wrapper) wrapper.classList.add('emdi-map-keyboard-wrapper--keyboard-focus');
-        if (keyboardPoints.length) highlightKeyboardPoint(0);
+        if (mapFocusFromKeyboard && keyboardPoints.length) highlightKeyboardPoint(0);
       });
 
       mapEl.addEventListener('blur', function () {
@@ -1414,6 +1407,13 @@
       }, true);
 
       if (window.map && typeof window.map.on === 'function') {
+        window.map.on('mousedown', function () {
+          mapFocusFromKeyboard = false;
+          mapKeyboardActive = false;
+          suppressNextMapFocusHighlight = true;
+          removeKeyboardHighlight();
+        });
+
         window.map.on('popupclose', function () {
           if (!mapKeyboardActive) return;
           restoreMapPointFocus();
@@ -3939,7 +3939,7 @@ html.emdi-document-fullscreen #emdi-map-view {
 }
 
 .emdi-map-keyboard-wrapper--keyboard-focus #map:focus {
-  outline: 4px solid #0b0c0c;
+  outline: 4px solid #ffdd00;
   box-shadow: inset 0 0 0 2px #0b0c0c;
 }
 
@@ -3978,19 +3978,19 @@ html.emdi-document-fullscreen #emdi-map-view {
 }
 
 .emdi-map-shortcuts-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 1999;
   background: rgba(11, 12, 12, 0.45);
 }
 
 .emdi-map-shortcuts-dialog {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   z-index: 2000;
-  width: min(720px, calc(100vw - 48px));
-  max-height: calc(100vh - 48px);
+  width: min(720px, calc(100% - 48px));
+  max-height: calc(100% - 48px);
   overflow: auto;
   transform: translate(-50%, -50%);
   box-sizing: border-box;

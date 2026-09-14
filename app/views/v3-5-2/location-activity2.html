@@ -1516,12 +1516,16 @@
 
       var startResult = (currentPage - 1) * MISSING_DATA_PAGE_SIZE + 1;
       var endResult = Math.min(currentPage * MISSING_DATA_PAGE_SIZE, missingDataRows.length);
+      var paginationNav = totalPages > 1
+        ? '<nav class="govuk-pagination moj-pagination__pagination" aria-label="Missing data pagination">' +
+          prevHtml +
+          '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
+          nextHtml +
+          '</nav>'
+        : '';
 
-      return '<div class="moj-pagination"><nav class="govuk-pagination moj-pagination__pagination" aria-label="Missing data pagination">' +
-        prevHtml +
-        '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
-        nextHtml +
-        '</nav><p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + missingDataRows.length + ' total results</p></div>';
+      return '<div class="moj-pagination">' + paginationNav +
+        '<p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + missingDataRows.length + ' total results</p></div>';
     }
 
     function renderMissingDataPage(page) {
@@ -1542,7 +1546,7 @@
       body.innerHTML = missingDataRows.slice(start, start + MISSING_DATA_PAGE_SIZE).join('');
 
       if (paginationSlot) {
-        paginationSlot.innerHTML = totalPages > 1 ? buildMissingDataPaginationHtml(missingDataPage, totalPages) : '';
+        paginationSlot.innerHTML = buildMissingDataPaginationHtml(missingDataPage, totalPages);
       }
     }
 
@@ -1584,12 +1588,16 @@
 
       var startResult = (currentPage - 1) * ATTENTION_PAGE_SIZE + 1;
       var endResult = Math.min(currentPage * ATTENTION_PAGE_SIZE, attentionRows.length);
+      var paginationNav = totalPages > 1
+        ? '<nav class="govuk-pagination moj-pagination__pagination" aria-label="Pagination">' +
+          prevHtml +
+          '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
+          nextHtml +
+          '</nav>'
+        : '';
 
-      return '<div class="moj-pagination"><nav class="govuk-pagination moj-pagination__pagination" aria-label="Pagination">' +
-        prevHtml +
-        '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
-        nextHtml +
-        '</nav><p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + attentionRows.length + ' total results</p></div>';
+      return '<div class="moj-pagination">' + paginationNav +
+        '<p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + attentionRows.length + ' total results</p></div>';
     }
 
     function renderAttentionPage(page) {
@@ -1610,7 +1618,7 @@
       body.innerHTML = attentionRows.slice(start, start + ATTENTION_PAGE_SIZE).join('');
 
       if (paginationSlot) {
-        paginationSlot.innerHTML = totalPages > 1 ? buildPaginationHtml(attentionPage, totalPages) : '';
+        paginationSlot.innerHTML = buildPaginationHtml(attentionPage, totalPages);
       }
     }
 
@@ -4267,26 +4275,27 @@ body {
   min-width: 0;
 }
 
-/* Keep the results count on the same line as the pagination nav, right-aligned. */
+/* Place the results count on its own line below the pagination nav. */
 #emdi-points-attention-pagination .moj-pagination,
 #emdi-missing-data-pagination .moj-pagination {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
 }
 
 #emdi-points-attention-pagination .moj-pagination__pagination,
 #emdi-missing-data-pagination .moj-pagination__pagination {
+  align-self: flex-start;
   margin-bottom: 0;
 }
 
 #emdi-points-attention-pagination .moj-pagination__results,
 #emdi-missing-data-pagination .moj-pagination__results {
-  margin: 0 0 0 auto;
+  align-self: flex-start;
+  margin: 0;
   white-space: nowrap;
-  text-align: right;
+  text-align: left;
 }
 
 /* Keep the point type filter on one line, left aligned with even gaps. */

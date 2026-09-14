@@ -258,7 +258,14 @@
     </button>
   </p>
   <div id="emdi-map-view">
-    <div class="emdi-fullscreen-sidebar" id="emdi-fullscreen-sidebar" hidden></div>
+    <div class="emdi-fullscreen-sidebar" id="emdi-fullscreen-sidebar" hidden>
+      <h2 class="emdi-fullscreen-sidebar__person govuk-heading-m">{{ persondata.name }}</h2>
+      <span class="emdi-fullscreen-sidebar__details govuk-caption-m">
+        <abbr title="Case reference number" style="text-decoration: none;">CRN</abbr>: {{ persondata.crn }}<br>
+        Date of birth: {{ persondata.dateOfBirth }}<br>
+        Tier: <a href="#" class="govuk-link">DO</a>
+      </span>
+    </div>
     <div class="emdi-map-fullscreen-main">
     <div id="map-status" class="govuk-visually-hidden" aria-live="polite"></div>
     <div class="emdi-map-keyboard-wrapper">
@@ -305,7 +312,7 @@
         </tbody>
       </table>
     </div>
-     <br> <p class="govuk-body-m"><a href="map-help">Guide to the map</a></p>
+    <br> <p class="emdi-map-guide govuk-body-m"><a href="map-help">Guide to the map</a></p>
     </div>
   </div> <br> <br>
   <div id="emdi-table-view" hidden>
@@ -1977,15 +1984,18 @@
         '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--low"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--low"></span>Low Activity</div>',
         '</div>',
         '<hr class="emdi-heatmap-key__divider">',
-        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--exclusion">',
-        '  <div class="emdi-heatmap-key__title">Exclusion zone</div>',
-        '  <div class="emdi-heatmap-key__item"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Red zone with patterned border</div>',
+        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--zones">',
+        '  <div class="emdi-heatmap-key__title">Zones</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--exclusion"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Exclusion zone</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--restriction"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--restriction-zone"></span>Restriction zone</div>',
         '</div>',
         '<div class="emdi-heatmap-key__empty">No map layers selected</div>'
       ].join('');
 
       var heatmapSection = keySlot.querySelector('.emdi-heatmap-key__section--heatmap');
-      var exclusionSection = keySlot.querySelector('.emdi-heatmap-key__section--exclusion');
+      var zonesSection = keySlot.querySelector('.emdi-heatmap-key__section--zones');
+      var exclusionItem = keySlot.querySelector('.emdi-heatmap-key__item--exclusion');
+      var restrictionItem = keySlot.querySelector('.emdi-heatmap-key__item--restriction');
       var keyDivider = keySlot.querySelector('.emdi-heatmap-key__divider');
       var emptyMessage = keySlot.querySelector('.emdi-heatmap-key__empty');
       var heatmapKeyItems = {
@@ -1996,8 +2006,9 @@
       };
 
       function updateKeyVisibility() {
-        var heatmapOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.heatmap));
-        var exclusionOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.exclusionZone));
+        var heatmapOn = !!(window.map && window.mapLayers && window.mapLayers.heatmap && window.map.hasLayer(window.mapLayers.heatmap));
+        var exclusionOn = !!(window.map && window.mapLayers && window.mapLayers.exclusionZone && window.map.hasLayer(window.mapLayers.exclusionZone));
+        var restrictionOn = !!(window.map && window.mapLayers && window.mapLayers.restrictionZone && window.map.hasLayer(window.mapLayers.restrictionZone));
 
         var anyLevelVisible = false;
         Object.keys(heatmapKeyItems).forEach(function (id) {
@@ -2011,9 +2022,11 @@
 
         var heatmapSectionVisible = heatmapOn && anyLevelVisible;
         if (heatmapSection) heatmapSection.hidden = !heatmapSectionVisible;
-        if (exclusionSection) exclusionSection.hidden = !exclusionOn;
-        if (keyDivider) keyDivider.hidden = !(heatmapSectionVisible && exclusionOn);
-        if (emptyMessage) emptyMessage.hidden = heatmapSectionVisible || exclusionOn;
+        if (exclusionItem) exclusionItem.hidden = !exclusionOn;
+        if (restrictionItem) restrictionItem.hidden = !restrictionOn;
+        if (zonesSection) zonesSection.hidden = !(exclusionOn || restrictionOn);
+        if (keyDivider) keyDivider.hidden = !(heatmapSectionVisible && (exclusionOn || restrictionOn));
+        if (emptyMessage) emptyMessage.hidden = heatmapSectionVisible || exclusionOn || restrictionOn;
       }
       window.emdiUpdateHeatmapKeyVisibility = updateKeyVisibility;
       updateKeyVisibility();
@@ -2224,16 +2237,17 @@
       layerGroup.clearLayers();
       var circle = L.circle(waterlooStation, {
         className: 'emdi-waterloo-restriction-zone',
-        color: '#d4351c',
-        fillColor: '#d4351c',
-        fillOpacity: 0.3,
+        color: '#6f42c1',
+        fillColor: '#6f42c1',
+        fillOpacity: 0.2,
         weight: 3,
-        radius: 50,
+        dashArray: '8 6',
+        radius: 100,
         pane: 'loi-areas',
         interactive: true
       });
 
-      circle.bindPopup('Restriction zone<br>Waterloo Station<br>50 metre radius', {
+      circle.bindPopup('Restriction zone<br>Waterloo Station<br>100 metre radius', {
         closeButton: true,
         autoClose: false,
         closeOnClick: false,
@@ -2281,6 +2295,15 @@
         var row = input.closest('.emdi-control-row');
         if (row) row.classList.toggle('emdi-control-row--disabled', !enabled);
       });
+    }
+
+    function setPointNumbersVisible(visible) {
+      if (window.map && window.map.getContainer) {
+        window.map.getContainer().classList.toggle('emdi-point-numbers-hidden', !visible);
+      }
+      if (window.mapLayers && window.mapLayers.numbers && !window.map.hasLayer(window.mapLayers.numbers)) {
+        window.map.addLayer(window.mapLayers.numbers);
+      }
     }
 
     function setBase(type) {
@@ -2451,7 +2474,7 @@
       });
 
       wrapper.querySelector('#emdi-toggle-points').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.numbers, this.checked);
+        setPointNumbersVisible(this.checked);
       });
 
       wrapper.querySelector('#emdi-toggle-heatmap').addEventListener('change', function () {
@@ -2495,7 +2518,10 @@
     if (satelliteInput) satelliteInput.checked = !!satelliteActive;
     if (directionInput) directionInput.checked = hasLayer(window.mapLayers.directionInfo);
     if (confidenceInput) confidenceInput.checked = hasLayer(window.mapLayers.accuracy);
-    if (pointsInput) pointsInput.checked = hasLayer(window.mapLayers.numbers);
+    if (pointsInput) {
+      pointsInput.checked = hasLayer(window.mapLayers.numbers);
+      setPointNumbersVisible(pointsInput.checked);
+    }
     syncZonePolygons(false);
 
     if (!window.__emdiZonesInitialised) {
@@ -3021,7 +3047,7 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-layers-panel .leaflet-control-layers-selector:focus-visible {
-  outline: 3px solid #ffdd00;
+  outline: 3px solid #0b0c0c;
   outline-offset: 2px;
 }
 
@@ -3044,6 +3070,11 @@ a[aria-label="North arrow"] {
 
 .emdi-custom-layer-controls {
   margin-top: 4px;
+}
+
+.emdi-point-numbers-hidden .leaflet-marker-icon {
+  opacity: 0 !important;
+  pointer-events: auto !important;
 }
 
 .emdi-control-group {
@@ -3102,15 +3133,13 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-collapsible-trigger:focus {
-  outline: 3px solid #ffdd00;
-  outline-offset: 2px;
+  outline: none;
   background-color: transparent;
   box-shadow: none;
 }
 
 .emdi-collapsible-trigger:focus-visible {
-  outline: 3px solid #ffdd00;
-  outline-offset: 2px;
+  outline: none;
   background-color: transparent;
   box-shadow: none;
 }
@@ -3292,15 +3321,13 @@ a[aria-label="North arrow"] {
 }
 
 .emdi-panel-toggle:hover {
-  background-color: #f4f4f4;
-  color: #0b0c0c;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .emdi-panel-toggle:focus {
   outline: none;
   background-color: #ffffff;
-  box-shadow: inset 0 0 0 3px #0b0c0c, 0 0 0 6px #ffdd00;
+  box-shadow: 0 0 0 3px #ffdd00;
 }
 
 .emdi-panel-toggle--active {
@@ -3311,7 +3338,7 @@ a[aria-label="North arrow"] {
 .emdi-panel-toggle--active:focus {
   outline: none;
   background-color: #f3f2f1;
-  box-shadow: inset 0 0 0 3px #0b0c0c, 0 0 0 6px #ffdd00;
+  box-shadow: 0 0 0 3px #ffdd00;
 }
 
 .emdi-shared-panel {
@@ -3456,12 +3483,13 @@ a[aria-label="North arrow"] {
 .emdi-heatmap-key__swatch--medium { background: #3b528b; }
 .emdi-heatmap-key__swatch--low { background: #440154; }
 .emdi-heatmap-key__swatch--exclusion-zone {
-  background-color: #d4351c;
-  background-image:
-    repeating-linear-gradient(135deg, transparent 0, transparent 3px, #0b0c0c 3px, #0b0c0c 5px),
-    repeating-linear-gradient(45deg, transparent 0, transparent 3px, #0b0c0c 3px, #0b0c0c 5px);
+  background-color: rgba(212, 53, 28, 0.1);
+  border: 2px dotted #d4351c;
 }
-
+.emdi-heatmap-key__swatch--restriction-zone {
+  background-color: rgba(111, 66, 193, 0.2);
+  border: 2px dashed #6f42c1;
+}
 /* Keep typography identical between Key and Map controls content. */
 .emdi-shared-panel {
   font-family: "GDS Transport", arial, sans-serif;
@@ -3498,12 +3526,12 @@ a[aria-label="North arrow"] {
 
 /* Dedicated zone hooks: keep zone fills visible when toggled on. */
 .emdi-exclusion-zone-path {
-  stroke: #0b0c0c !important;
-  stroke-width: 4 !important;
-  stroke-dasharray: 10 6 !important;
-  stroke-linecap: butt !important;
-  fill: url(#emdi-exclusion-hatch) !important;
-  fill-opacity: 1 !important;
+  stroke: #d4351c !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 1 6 !important;
+  stroke-linecap: round !important;
+  fill: #d4351c !important;
+  fill-opacity: 0.2 !important;
 }
 
 .emdi-inclusion-zone-path {
@@ -3591,7 +3619,7 @@ path[stroke-width="1"]
 
 /* Input receives focus, so style the box using the sibling selector */
 .leaflet-control-layers-selector[type="checkbox"]:focus + span::before {
-  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline: 3px solid #0b0c0c;
   outline-offset: 0px;
 }
 
@@ -3683,7 +3711,7 @@ path[stroke-width="1"]
 
 /* Input receives focus, so style the box using the sibling selector */
 .leaflet-control-layers-selector[type="radio"]:focus + span::before {
-  outline: 3px solid #ffdd00;     /* GOV.UK yellow */
+  outline: 3px solid #0b0c0c;
   outline-offset: 0px;
 }
 
@@ -3801,6 +3829,18 @@ html.emdi-document-fullscreen #emdi-map-view {
   border-right: 1px solid #b1b4b6;
 }
 
+.emdi-fullscreen-sidebar__person {
+  margin-top: 0;
+  margin-bottom: 8px;
+  margin-left: 20px;
+}
+
+.emdi-fullscreen-sidebar__details {
+  display: block;
+  margin-bottom: 16px;
+  margin-left: 20px;
+}
+
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar form,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .loi-filters,
@@ -3866,7 +3906,13 @@ html.emdi-document-fullscreen #emdi-map-view {
 #emdi-map-view:fullscreen .emdi-fullscreen-sidebar .bh-slot,
 #emdi-map-view:-webkit-full-screen .emdi-fullscreen-sidebar .bh-slot,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-slot {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+}
+
+#emdi-map-view:fullscreen .emdi-map-guide,
+#emdi-map-view:-webkit-full-screen .emdi-map-guide,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-guide {
+  margin-left: 20px;
 }
 
 @media (max-width: 760px) {
@@ -3885,7 +3931,7 @@ html.emdi-document-fullscreen #emdi-map-view {
 }
 
 .emdi-map-keyboard-wrapper--keyboard-focus #map:focus {
-  outline: 4px solid #ffdd00;
+  outline: 4px solid #0b0c0c;
   box-shadow: inset 0 0 0 2px #0b0c0c;
 }
 
@@ -3943,7 +3989,22 @@ html.emdi-document-fullscreen #emdi-map-view {
   padding: 24px;
   background: #ffffff;
   border: 4px solid #0b0c0c;
-  box-shadow: 0 0 0 5px #ffdd00;
+  box-shadow: 0 0 0 5px #0b0c0c;
+}
+
+#emdi-map-view:fullscreen .emdi-map-shortcuts-backdrop,
+#emdi-map-view:-webkit-full-screen .emdi-map-shortcuts-backdrop,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-shortcuts-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+#emdi-map-view:fullscreen .emdi-map-shortcuts-dialog,
+#emdi-map-view:-webkit-full-screen .emdi-map-shortcuts-dialog,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-shortcuts-dialog {
+  position: absolute;
+  width: min(720px, calc(100% - 48px));
+  max-height: calc(100% - 48px);
 }
 
 .emdi-map-shortcuts-dialog__header {
@@ -3966,7 +4027,7 @@ html.emdi-document-fullscreen #emdi-map-view {
 }
 
 .emdi-map-shortcuts-dialog__close:focus {
-  outline: 3px solid #ffdd00;
+  outline: 3px solid #0b0c0c;
   outline-offset: 2px;
 }
 

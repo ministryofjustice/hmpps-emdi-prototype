@@ -307,7 +307,7 @@
     </div>
     <br> <p class="emdi-map-guide govuk-body-m"><a href="map-help">Guide to the map</a></p>
     </div>
-  </div> <br> <br>
+  </div> 
   <div id="emdi-table-view" hidden>
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
   <div id="emdi-table-content" hidden>
@@ -2255,11 +2255,29 @@
         interactive: true
       });
 
-      circle.bindPopup('Restriction zone<br>Waterloo Station<br>100 metre radius', {
+      var popupHtml = [
+        '<div class="gps-point-popup">',
+        '  <div class="gps-point-popup__header">',
+        '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Restriction zone</h4>',
+        '  </div>',
+        '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+        '    <div class="govuk-summary-list__row">',
+        '      <dt class="govuk-summary-list__key">Date, time</dt>',
+        '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00</dd>',
+        '    </div>',
+        '    <div class="govuk-summary-list__row">',
+        '      <dt class="govuk-summary-list__key">Address</dt>',
+        '      <dd class="govuk-summary-list__value">Waterloo Station<br>100 metre radius</dd>',
+        '    </div>',
+        '  </dl>',
+        '</div>'
+      ].join('');
+
+      circle.bindPopup(popupHtml, {
         closeButton: true,
         autoClose: false,
         closeOnClick: false,
-        className: 'app-area-popup'
+        className: 'gps-point-popup'
       });
 
       circle.addTo(layerGroup);

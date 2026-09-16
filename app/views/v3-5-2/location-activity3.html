@@ -377,6 +377,7 @@
 </div>
 
 
+<h2 class="govuk-heading-l">{{ persondata.firstname }}'s specific location data</h2>
 <div class="govuk-tabs" data-module="govuk-tabs">
   <ul class="govuk-tabs__list">
     <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
@@ -389,8 +390,11 @@
 
   <div class="govuk-tabs__panel" id="overnight-activity-tab">
 
+    {% set overnightExceptionPeople = ['pennyjordan', 'mikeknight', 'chrispost', 'terrymedford', 'mikevanpeebles'] %}
+
+    {% if data['personselected'] in overnightExceptionPeople %}
       {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
-      
+
       {% if data['personselected'] == 'pennyjordan' %}
       <p class="govuk-body">No address available to match</p>
       <ul class="govuk-list govuk-list--bullet">
@@ -425,33 +429,63 @@
       </ul>
       <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
       <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
-      
-
-
-      {% else %}
-      <p class="govuk-body"> {{ persondata.firstname  }} left their approved address (31 High street, London, W1A 1AA) during the night 1 time in the last 7 days:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>
-          From 1:05am to 1:36am on <span id="overnight-activity-date-text">Friday 7 November 2025</span>.
-        <a href="#"
-          class="plot-link govuk-link"
-          data-trace="overnight-2025-10-25"
-          data-date="2025-10-25"
-          data-start="01:05"
-          data-end="01:36">View activity on map
-        </a>
-        </li>
-      </ul>
-      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
       {% endif %}
         {% endcall %}
+
+    {% else %}
+
+      <p class="govuk-body">This data shows whether {{ persondata.firstname }} has left their approved address overnight.</p>
+
+      <h3 class="govuk-heading-s">{{ persondata.firstname }}'s approved address</h3>
+      <p class="govuk-body emdi-address-block">31 High Street<br>London<br>W1A 1AA</p>
+
+      {% call govukInsetText({ classes: "govuk-!-margin-bottom-4" }) %}
+      This is the closest available match for {{ persondata.firstname }}'s approved address. It has a XX% accuracy rating.
+      {% endcall %}
+
+      <div class="loi-filters govuk-!-margin-bottom-4">
+        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Warning about data accuracy</p>
+        <p class="govuk-body govuk-!-margin-bottom-1">Limited overnight data</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">Text to come text to come</p>
+      </div>
+
+      <h3 class="govuk-heading-s">{{ persondata.firstname }}'s overnight activity for past 7 days</h3>
+      <p class="govuk-body">Number of times {{ persondata.firstname }} has left their approved address between midnight and 6am: 3</p>
+
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Date</th>
+            <th scope="col" class="govuk-table__header">Time</th>
+            <th scope="col" class="govuk-table__header">View activity on map</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Tue 14 Jul 2026</td>
+            <td class="govuk-table__cell">01:05 to 01:36 (31 mins)</td>
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="overnight-1">View</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Tue 14 Jul 2026</td>
+            <td class="govuk-table__cell">03:45 to 05:30 (1 hour 45 mins)</td>
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="overnight-2">View</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Fri 16 Jul 2026</td>
+            <td class="govuk-table__cell">00:45 to 02:30 (2 hours 15 mins)</td>
+            <td class="govuk-table__cell"><a href="#" class="plot-link govuk-link" data-trace="overnight-3">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body emdi-muted-text">This does not show activity in relation to any curfew licence conditions.</p>
+
+    {% endif %}
       </div>
 
       <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="locations-of-interest-tab">
-<p class="govuk-body">You can check if the person on probation has been to certain locations that may be relevant to their licence conditions.</p>
-
- <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
+<p class="govuk-body">This data shows whether {{ persondata.firstname }} has visited specific locations that may relate to their licence conditions.</p>
 
 {% set removedDefaultPeople = data.mvpRemovedDefaultLoiPeople or [] %}
 {% set deletedCustomLoi = data.mvpDeletedCustomLoi or [] %}
@@ -460,10 +494,22 @@
   and not (data.loiName1 and (data.loiName1 | length))
 %}
 {% set showPrepopulatedLoi =
-  data['personselected'] in ['billyhoskins', 'chrispost', 'mikeknight']
+  data['personselected'] in ['chrispost', 'mikeknight']
   and not (data['personselected'] in removedDefaultPeople)
   and not (data['personselected'] in deletedCustomLoi)
 %}
+{% set showFirstLoiSection =
+  data['personselected'] in ['chrispost', 'mikeknight']
+  or (data.loiName1 and (data.loiName1 | length))
+  or (data.selectedAddress and (data.selectedAddress | trim | length) > 0)
+  or data.row1
+  or data.row2
+%}
+
+{% if not showFirstLoiSection %}
+ <p><a href='mvp-manage-locations' class='govuk-link'>Manage addresses</a></p>
+{% endif %}
+ <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
 
 {% if showDeletedCustomLoiEmptyState %}
 {{ govukTable({
@@ -668,20 +714,13 @@
     {% endif %}
 
 
-{% set showFirstLoiSection =
-  data['personselected'] in ['billyhoskins', 'chrispost', 'mikeknight']
-  or (data.loiName1 and (data.loiName1 | length))
-  or (data.selectedAddress and (data.selectedAddress | trim | length) > 0)
-  or data.row1
-  or data.row2
-%}
-
 {% if not showFirstLoiSection %}
 
 
 {% if data['personselected'] != 'mikevanpeebles' %}
 <div class="loi-filters govuk-!-margin-bottom-3">
   <form id="loi-filters" class="loi-filters__form" novalidate data-tag-fitted="2025-06-08">
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Filter results</h3>
     <div class="loi-filters__row">
       <div class="loi-filters__group">
         <label class="govuk-label" for="filter-type" style="font-weight: bold;">Location</label>
@@ -886,6 +925,7 @@
 {% endif %}
 
 {# 4) Render the table #}
+<h3 class="govuk-heading-m">{{ persondata.firstname }}'s visits to locations of interest</h3>
 {{ govukTable({
   attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
   head: [
@@ -4368,6 +4408,14 @@ body {
 #emdi-points-filter-type .govuk-radios__item {
   margin-right: 0;
   white-space: nowrap;
+}
+
+.emdi-address-block {
+  margin-bottom: 20px;
+}
+
+.emdi-muted-text {
+  color: #505a5f;
 }
 
 

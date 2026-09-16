@@ -252,11 +252,6 @@
      
 
 <div class="govuk-!-margin-bottom-6">
-  <p class="govuk-!-margin-bottom-3">
-    <button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-view-toggle" type="button" aria-controls="emdi-map-view emdi-table-view">
-      Show points in a table
-    </button>
-  </p>
   <div id="emdi-map-view">
     <div class="emdi-fullscreen-sidebar" id="emdi-fullscreen-sidebar" hidden>
       <h2 class="emdi-fullscreen-sidebar__person govuk-heading-m">{{ persondata.name }}</h2>
@@ -305,10 +300,10 @@
         </tbody>
       </table>
     </div>
-    <br> <p class="emdi-map-guide govuk-body-m"><a href="map-help">Guide to the map</a></p>
+    <br> <p class="emdi-map-guide govuk-body-m"><a href="map-help">Guide to the map</a></p> <hr>
     </div>
   </div> 
-  <div id="emdi-table-view" hidden>
+  <div id="emdi-table-view" class="govuk-!-margin-top-6">
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
   <div id="emdi-table-content" hidden>
   <h3 class="govuk-heading-m">Points</h3>
@@ -343,10 +338,11 @@
         <th scope="col" class="govuk-table__header">Speed</th>
         <th scope="col" class="govuk-table__header">Signal type</th>
         <th scope="col" class="govuk-table__header">Tag status</th>
+        <th scope="col" class="govuk-table__header">View on map</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="emdi-points-attention-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">Update the map to view points.</td></tr>
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">Update the map to view points.</td></tr>
     </tbody>
   </table>
   <div id="emdi-points-attention-pagination"></div>
@@ -361,10 +357,11 @@
         <th scope="col" class="govuk-table__header">Gap end point</th>
         <th scope="col" class="govuk-table__header">Gap end time</th>
         <th scope="col" class="govuk-table__header">Duration</th>
+        <th scope="col" class="govuk-table__header">View on map</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="emdi-missing-data-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">Update the map to view missing data.</td></tr>
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">Update the map to view missing data.</td></tr>
     </tbody>
   </table>
   <div id="emdi-missing-data-pagination"></div>
@@ -1451,7 +1448,27 @@
         if (event.key === 'Escape' && dialog && !dialog.hidden) closeShortcutsDialog();
       });
 
+      document.addEventListener('click', function (event) {
+        var link = event.target.closest && event.target.closest('.emdi-view-on-map[data-point-index]');
+        if (!link) return;
+        event.preventDefault();
+        var pointIndex = Number(link.dataset.pointIndex);
+        var mapEl = document.getElementById('map');
+        if (mapEl) {
+          mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          suppressNextMapFocusHighlight = true;
+          mapEl.focus();
+        }
+        highlightKeyboardPoint(pointIndex);
+        openKeyboardPointPopup();
+      });
+
       keyboardAccessReady = true;
+    }
+
+    function viewOnMapLinkHtml(keyboardIndex) {
+      if (!Number.isFinite(keyboardIndex) || keyboardIndex < 0) return '\u2014';
+      return '<a href="#" class="govuk-link emdi-view-on-map" data-point-index="' + keyboardIndex + '">View on map</a>';
     }
 
     function buildAttentionRowHtml(entry) {
@@ -1469,6 +1486,7 @@
         '<td class="govuk-table__cell">' + escapeHtml(speed) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(signalType) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(tagStatus) + '</td>',
+        '<td class="govuk-table__cell">' + viewOnMapLinkHtml(entry.keyboardIndex) + '</td>',
         '</tr>'
       ].join('');
     }
@@ -1490,6 +1508,7 @@
         '<td class="govuk-table__cell">Point ' + (gap.endIndex + 1) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(dateTime(gap.endPoint.time)) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(formatGapDuration(gap.durationMinutes)) + '</td>',
+        '<td class="govuk-table__cell">' + viewOnMapLinkHtml(gap.startKeyboardIndex) + '</td>',
         '</tr>'
       ].join('');
     }
@@ -1557,7 +1576,7 @@
       if (!body) return;
 
       if (!missingDataRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">No missing data found in the current map view.</td></tr>';
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">No missing data found in the current map view.</td></tr>';
         if (paginationSlot) paginationSlot.innerHTML = '';
         return;
       }
@@ -1629,7 +1648,7 @@
       if (!body) return;
 
       if (!attentionRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">No points meet these conditions in the current map view.</td></tr>';
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">No points meet these conditions in the current map view.</td></tr>';
         if (paginationSlot) paginationSlot.innerHTML = '';
         return;
       }
@@ -1697,7 +1716,9 @@
               startPoint: point,
               endIndex: index + 1,
               endPoint: points[index + 1],
-              durationMinutes: nextGapMinutes
+              durationMinutes: nextGapMinutes,
+              startKeyboardIndex: keyboardPoints.indexOf(point),
+              endKeyboardIndex: keyboardPoints.indexOf(points[index + 1])
             });
           }
         }
@@ -1705,7 +1726,7 @@
           boundaries.some(function (boundary) { return isInside(point, boundary); });
         if (isExclusion) reasons.push('Within the exclusion zone');
 
-        entries.push({ index: index, point: point, reasons: reasons, isDotted: isDotted, isExclusion: isExclusion });
+        entries.push({ index: index, point: point, reasons: reasons, isDotted: isDotted, isExclusion: isExclusion, keyboardIndex: keyboardPoints.indexOf(point) });
       });
 
       attentionEntries = entries;
@@ -1725,22 +1746,6 @@
       });
     };
   }());
-</script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var toggleButton = document.getElementById('emdi-view-toggle');
-    var mapView = document.getElementById('emdi-map-view');
-    var tableView = document.getElementById('emdi-table-view');
-    if (!toggleButton || !mapView || !tableView) return;
-
-    toggleButton.addEventListener('click', function () {
-      var showingTable = !tableView.hidden;
-      tableView.hidden = showingTable;
-      mapView.hidden = !showingTable;
-      toggleButton.textContent = showingTable ? 'Show points in a table' : 'Show map';
-    });
-  });
 </script>
 
 <script>
@@ -3858,8 +3863,7 @@ path[stroke-width="1"]
 
 html.emdi-document-fullscreen .govuk-phase-banner,
 html.emdi-document-fullscreen #technical-updates-banner,
-html.emdi-document-fullscreen .probation-common-footer,
-html.emdi-document-fullscreen #emdi-view-toggle {
+html.emdi-document-fullscreen .probation-common-footer {
   display: none !important;
 }
 

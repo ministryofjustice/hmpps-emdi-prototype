@@ -61,6 +61,7 @@
     </li>
   </ol>
 </nav>
+
  
 
 <div id="feedback-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">  {%- from "moj/components/alert/macro.njk" import mojAlert -%}
@@ -182,7 +183,7 @@
       <!-- Row 2: Time inputs -->
       <div class="bh-slot bh-time-from">
         <div class="govuk-form-group">
-          <label class="govuk-label">Time from</label>
+          <label class="govuk-label" for="bh-time-from-hour">Time from</label>
           <div class="govuk-date-input" id="bh-time-from">
             <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
             <div class="govuk-date-input__item">
@@ -207,7 +208,7 @@
 
       <div class="bh-slot bh-time-to">
         <div class="govuk-form-group">
-          <label class="govuk-label">Time to</label>
+          <label class="govuk-label" for="bh-time-to-hour">Time to</label>
           <div class="govuk-date-input" id="bh-time-to">
            <div><label class="govuk-hint" for="">For example, 14:55.</label></div>
             <div class="govuk-date-input__item">
@@ -376,74 +377,81 @@
 </div>
 
 
-<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
+<div class="govuk-tabs" data-module="govuk-tabs">
+  <ul class="govuk-tabs__list">
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" href="#overnight-activity-tab">Overnight activity</a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" href="#locations-of-interest-tab">Locations of interest</a>
+    </li>
+  </ul>
 
-<h3 class="govuk-heading-m govuk-!-margin-bottom-2">Overnight activity</h3>
+  <div class="govuk-tabs__panel" id="overnight-activity-tab">
 
-    {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+      {% call govukInsetText({ classes: "govuk-!-margin-0 guidance-panel" }) %}
+      
+      {% if data['personselected'] == 'pennyjordan' %}
+      <p class="govuk-body">No address available to match</p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'mikeknight' %}
+      <p class="govuk-body">Address match found no match</p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'chrispost' %}
+      <p class="govuk-body">Address matched </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+      {% elif data['personselected'] == 'terrymedford' %}
+      <p class="govuk-body"> Raw address and the address matched </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
+        {% elif data['personselected'] == 'mikevanpeebles' %}
+      <p class="govuk-body"> Address matched close options - some uncertainty </p>
+      <ul class="govuk-list govuk-list--bullet">
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      
 
-    {% if data['personselected'] == 'pennyjordan' %}
-    <p class="govuk-body">No address available to match</p>
-    <ul class="govuk-list govuk-list--bullet">
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
 
-    {% elif data['personselected'] == 'mikeknight' %}
-    <p class="govuk-body">Address match found no match</p>
-    <ul class="govuk-list govuk-list--bullet">
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      {% else %}
+      <p class="govuk-body"> {{ persondata.firstname  }} left their approved address (31 High street, London, W1A 1AA) during the night 1 time in the last 7 days:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          From 1:05am to 1:36am on <span id="overnight-activity-date-text">Friday 7 November 2025</span>.
+        <a href="#"
+          class="plot-link govuk-link"
+          data-trace="overnight-2025-10-25"
+          data-date="2025-10-25"
+          data-start="01:05"
+          data-end="01:36">View activity on map
+        </a>
+        </li>
+      </ul>
+      <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
+      <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
+      {% endif %}
+        {% endcall %}
+      </div>
 
-    {% elif data['personselected'] == 'chrispost' %}
-    <p class="govuk-body">Address matched </p>
-    <ul class="govuk-list govuk-list--bullet">
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
-
-    {% elif data['personselected'] == 'terrymedford' %}
-    <p class="govuk-body"> Raw address and the address matched </p>
-    <ul class="govuk-list govuk-list--bullet">
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
-
-      {% elif data['personselected'] == 'mikevanpeebles' %}
-    <p class="govuk-body"> Address matched close options - some uncertainty </p>
-    <ul class="govuk-list govuk-list--bullet">
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
-
-
-
-    {% else %}
-    <p class="govuk-body"> {{ persondata.firstname  }} left their approved address (31 High street, London, W1A 1AA) during the night 1 time in the last 7 days:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>
-        From 1:05am to 1:36am on <span id="overnight-activity-date-text">Friday 7 November 2025</span>.
-      <a href="#"
-        class="plot-link govuk-link"
-        data-trace="overnight-2025-10-25"
-        data-date="2025-10-25"
-        data-start="01:05"
-        data-end="01:36">View activity on map
-      </a>
-      </li>
-    </ul>
-    <p class="govuk-body">Overnight activity shows any times {{ persondata.firstname  }} left home between midnight and 6am in the last 7 days.</p>
-    <p class="govuk-body">It does not show activity in relation to any curfew licence conditions.</p>
-    {% endif %}
-    {% endcall %}
-
-<hr class="govuk-section-break govuk-section-break--visible curfew-forecast-break">
-
-<h3 class="govuk-heading-m govuk-!-margin-bottom-0" id="filter-by-loi">Visits to specific locations of interest</h3>
+      <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="locations-of-interest-tab">
 <p class="govuk-body">You can check if the person on probation has been to certain locations that may be relevant to their licence conditions.</p>
 
-    <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
+ <p><a href='mvp-add-location1' class='govuk-link'>Add an address</a></p>
 
 {% set removedDefaultPeople = data.mvpRemovedDefaultLoiPeople or [] %}
 {% set deletedCustomLoi = data.mvpDeletedCustomLoi or [] %}
@@ -912,6 +920,11 @@
 
 <hr>
 
+  </div>
+</div>
+
+
+
 <!-- Leaflet core -->
 <link href="/public/sass/leaflet.css" rel="stylesheet" type="text/css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -959,6 +972,36 @@
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    function enforceSingleMapPopup() {
+      var map = window.map;
+      if (!map || typeof map.on !== 'function' || map.__emdiSinglePopupHandler) return;
+
+      var lastPopup;
+      map.on('popupopen', function (event) {
+        if (lastPopup && lastPopup !== event.popup && typeof map.closePopup === 'function') {
+          map.closePopup(lastPopup);
+        }
+        if (typeof map.eachLayer === 'function') {
+          map.eachLayer(function (layer) {
+            if (layer && typeof layer.getPopup === 'function' && typeof layer.closePopup === 'function' && layer.getPopup() !== event.popup) {
+              layer.closePopup();
+            }
+          });
+        }
+        lastPopup = event.popup;
+      });
+      map.on('popupclose', function (event) {
+        if (lastPopup === event.popup) lastPopup = null;
+      });
+      map.__emdiSinglePopupHandler = true;
+    }
+
+    enforceSingleMapPopup();
+    document.addEventListener('bh:map-ready', enforceSingleMapPopup);
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
     function isInsideExclusionZone(latitude, longitude) {
       var exclusionZone = window.mapLayers && window.mapLayers.exclusionZone;
       if (!exclusionZone || typeof exclusionZone.eachLayer !== 'function') return false;
@@ -984,33 +1027,6 @@
       });
       return inAnyZone;
     }
-
-    function updateZonePointCounts(points) {
-      var exclusionCount = 0;
-      var restrictionCount = 0;
-      var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
-      var restrictionLayers = restrictionZone && typeof restrictionZone.getLayers === 'function'
-        ? restrictionZone.getLayers()
-        : [];
-
-      (points || []).forEach(function (point) {
-        if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
-        if (isInsideExclusionZone(point.lat, point.lng)) exclusionCount += 1;
-
-        var pointLatLng = window.L.latLng(point.lat, point.lng);
-        var isInsideRestriction = restrictionLayers.some(function (layer) {
-          if (!layer || typeof layer.getLatLng !== 'function' || typeof layer.getRadius !== 'function') return false;
-          return pointLatLng.distanceTo(layer.getLatLng()) <= layer.getRadius();
-        });
-        if (isInsideRestriction) restrictionCount += 1;
-      });
-
-      var exclusionLabel = document.querySelector('#emdi-toggle-exclusion + span');
-      var restrictionLabel = document.querySelector('#emdi-toggle-restriction + span');
-      if (exclusionLabel) exclusionLabel.textContent = 'Exclusion (' + exclusionCount + ')';
-      if (restrictionLabel) restrictionLabel.textContent = 'Restriction (' + restrictionCount + ')';
-    }
-    window.updateZonePointCounts = updateZonePointCounts;
 
     function normalisePingCard(card) {
       if (!card || card.dataset.emdiTagStatusNormalised) return;
@@ -1666,8 +1682,6 @@
     function renderAttentionTable(points) {
       var boundaries = getExclusionBoundaries();
       var entries = [];
-      window.emdiLoadedTrailPoints = points || [];
-      if (typeof window.updateZonePointCounts === 'function') window.updateZonePointCounts(window.emdiLoadedTrailPoints);
       var missingGaps = [];
       keyboardPoints = (points || []).filter(function (point) {
         return Number.isFinite(point.lat) && Number.isFinite(point.lng);
@@ -2254,18 +2268,9 @@
 
       polygon.bindPopup(label, {
         closeButton: true,
-        autoClose: true,
-        closeOnClick: true,
+        autoClose: false,
+        closeOnClick: false,
         className: 'app-area-popup'
-      });
-
-      polygon.on('click', function (event) {
-        if (window.openPointPopupAtLatLng && window.openPointPopupAtLatLng(event.latlng)) {
-          if (event.originalEvent) {
-            event.originalEvent.preventDefault();
-            event.originalEvent.stopPropagation();
-          }
-        }
       });
 
       polygon.addTo(layerGroup);
@@ -2309,8 +2314,8 @@
 
       circle.bindPopup(popupHtml, {
         closeButton: true,
-        autoClose: true,
-        closeOnClick: true,
+        autoClose: false,
+        closeOnClick: false,
         className: 'gps-point-popup'
       });
 
@@ -2562,8 +2567,6 @@
       wrapper.querySelector('#emdi-toggle-restriction').addEventListener('change', function () {
         setLayerVisible(window.mapLayers.restrictionZone, this.checked);
       });
-
-      updateZonePointCounts(window.emdiLoadedTrailPoints || []);
     }
 
     var streetInput = document.getElementById('emdi-base-street');
@@ -2679,18 +2682,9 @@
 
           layer.bindPopup(popupHtml, {
             closeButton: true,
-            autoClose: true,
-            closeOnClick: true,
+            autoClose: false,
+            closeOnClick: false,
             className: 'gps-point-popup'
-          });
-
-          layer.on('click', function (event) {
-            if (window.openPointPopupAtLatLng && window.openPointPopupAtLatLng(event.latlng)) {
-              if (event.originalEvent) {
-                event.originalEvent.preventDefault();
-                event.originalEvent.stopPropagation();
-              }
-            }
           });
         }
       });
@@ -2698,7 +2692,6 @@
 
     normaliseMapControlsToV325();
     updateExclusionZoneDescription();
-    updateZonePointCounts(window.emdiLoadedTrailPoints || []);
 
     if (!window.__emdiV325ControlObserver) {
       var mapEl = document.getElementById('map');
@@ -2798,10 +2791,13 @@ app.get('/mvp-location', (req, res) => {
   document.addEventListener('DOMContentLoaded', function () {
     if (!window.map) return;
 
-    // Keep LOI areas above base overlays but below ping markers, tooltips and popups.
-    var loiAreasPane = window.map.getPane('loi-areas') || window.map.createPane('loi-areas');
-    // Leaflet default z-indexes: overlayPane=400, markerPane=600, tooltip=650, popup=700
-    loiAreasPane.style.zIndex = 450;
+    // Give LOI areas their own pane above lines/circles but under tooltips/popups
+if (!window.map.getPane('loi-areas')) {
+  const pane = window.map.createPane('loi-areas');
+  // Leaflet default z-indexes: overlayPane=400, markerPane=600, tooltip=650, popup=700
+  // Put polygons above lines/circles (400) but just under tooltips (650)
+  pane.style.zIndex = 645;
+}
 
     // Restore previously chosen base (Street/Satellite)
     try {
@@ -3020,7 +3016,8 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
 <style>
 
- 
+
+
 
  /* Larger Leaflet zoom controls */
 .leaflet-control-zoom-in,
@@ -3596,8 +3593,8 @@ a[aria-label="North arrow"] {
 /* Dedicated zone hooks: keep zone fills visible when toggled on. */
 .emdi-exclusion-zone-path {
   stroke: #d4351c !important;
-  stroke-width: 3 !important;
-  stroke-dasharray: 0 8 !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 1 6 !important;
   stroke-linecap: round !important;
   fill: #d4351c !important;
   fill-opacity: 0.2 !important;

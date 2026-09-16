@@ -889,6 +889,36 @@
 </script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function enforceSingleMapPopup() {
+      var map = window.map;
+      if (!map || typeof map.on !== 'function' || map.__emdiSinglePopupHandler) return;
+
+      var lastPopup;
+      map.on('popupopen', function (event) {
+        if (lastPopup && lastPopup !== event.popup && typeof map.closePopup === 'function') {
+          map.closePopup(lastPopup);
+        }
+        if (typeof map.eachLayer === 'function') {
+          map.eachLayer(function (layer) {
+            if (layer && typeof layer.getPopup === 'function' && typeof layer.closePopup === 'function' && layer.getPopup() !== event.popup) {
+              layer.closePopup();
+            }
+          });
+        }
+        lastPopup = event.popup;
+      });
+      map.on('popupclose', function (event) {
+        if (lastPopup === event.popup) lastPopup = null;
+      });
+      map.__emdiSinglePopupHandler = true;
+    }
+
+    enforceSingleMapPopup();
+    document.addEventListener('bh:map-ready', enforceSingleMapPopup);
+  });
+</script>
+<script>
   (function () {
     function escapeHtml(value) {
       return String(value == null ? '' : value)

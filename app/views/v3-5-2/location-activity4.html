@@ -2661,28 +2661,50 @@
     }
 
     if (window.mapLayers && window.mapLayers.exclusionZone) {
-      window.mapLayers.exclusionZone.eachLayer(function (layer) {
-        if (layer && typeof layer.bindPopup === 'function') {
-          var address = (layer.options && layer.options.emdiZoneAddress) || 'St James Park,<br> Westminster, <br> SW1A 2BJ';
-          var popupHtml = [
-            '<div class="gps-point-popup">',
-            '  <div class="gps-point-popup__header">',
-            '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Exclusion zone</h4>',
-            '  </div>',
-            '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
-            '    <div class="govuk-summary-list__row">',
-            '      <dt class="govuk-summary-list__key">Date, time</dt>',
-            '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00</dd>',
-            '    </div>',
-            '    <div class="govuk-summary-list__row">',
-            '      <dt class="govuk-summary-list__key">Address</dt>',
-            '      <dd class="govuk-summary-list__value">' + address + '</dd>',
-            '    </div>',
-            '  </dl>',
-            '</div>'
-          ].join('');
+      function getExclusionZoneLayers() {
+        return window.mapLayers.exclusionZone.getLayers().filter(function (layer) {
+          return layer && typeof layer.bindPopup === 'function';
+        });
+      }
 
-          layer.bindPopup(popupHtml, {
+      function exclusionZonePopupHtml(zoneIndex) {
+        var zones = getExclusionZoneLayers();
+        var zone = zones[zoneIndex];
+        var address = (zone && zone.options && zone.options.emdiZoneAddress) || 'St James Park,<br> Westminster, <br> SW1A 2BJ';
+        var hasPrevious = zoneIndex > 0;
+        var hasNext = zoneIndex < zones.length - 1;
+
+        function navButton(nav, targetIndex, label, text, disabled) {
+          if (disabled || targetIndex < 0 || targetIndex >= zones.length) return '';
+          return '<a class="govuk-link emdi-exclusion-zone-nav-button" href="#" aria-label="' + label + '" data-zone-index="' + targetIndex + '">' + text + '</a>';
+        }
+
+        return [
+          '<div class="gps-point-popup">',
+          '  <div class="gps-point-popup__header">',
+          '    ' + navButton('first', 0, 'Go to first exclusion zone', '&laquo;', !hasPrevious),
+          '    ' + navButton('prev', zoneIndex - 1, 'Go to previous exclusion zone', '&lsaquo;', !hasPrevious),
+          '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Exclusion zone ' + (zoneIndex + 1) + ' of ' + zones.length + '</h4>',
+          '    ' + navButton('next', zoneIndex + 1, 'Go to next exclusion zone', '&rsaquo;', !hasNext),
+          '    ' + navButton('last', zones.length - 1, 'Go to last exclusion zone', '&raquo;', !hasNext),
+          '  </div>',
+          '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+          '    <div class="govuk-summary-list__row">',
+          '      <dt class="govuk-summary-list__key">Date, time</dt>',
+          '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00</dd>',
+          '    </div>',
+          '    <div class="govuk-summary-list__row">',
+          '      <dt class="govuk-summary-list__key">Address</dt>',
+          '      <dd class="govuk-summary-list__value">' + address + '</dd>',
+          '    </div>',
+          '  </dl>',
+          '</div>'
+        ].join('');
+      }
+
+      getExclusionZoneLayers().forEach(function (layer, zoneIndex) {
+        if (layer && typeof layer.bindPopup === 'function') {
+          layer.bindPopup(exclusionZonePopupHtml(zoneIndex), {
             closeButton: true,
             autoClose: true,
             closeOnClick: true,
@@ -2695,10 +2717,31 @@
                 event.originalEvent.preventDefault();
                 event.originalEvent.stopPropagation();
               }
+              return;
             }
+            layer.setPopupContent(exclusionZonePopupHtml(zoneIndex));
           });
         }
       });
+
+      if (!window.__emdiExclusionZoneNavigationInitialised) {
+        document.addEventListener('click', function (event) {
+          var button = event.target.closest && event.target.closest('.emdi-exclusion-zone-nav-button');
+          if (!button) return;
+          event.preventDefault();
+
+          var zoneIndex = Number(button.dataset.zoneIndex);
+          var zones = getExclusionZoneLayers();
+          var targetZone = zones[zoneIndex];
+          if (!targetZone || typeof targetZone.openPopup !== 'function') return;
+
+          var center = targetZone.getBounds && targetZone.getBounds().getCenter();
+          targetZone.setPopupContent(exclusionZonePopupHtml(zoneIndex));
+          targetZone.openPopup(center);
+          if (center && window.map) window.map.panTo(center, { animate: true });
+        });
+        window.__emdiExclusionZoneNavigationInitialised = true;
+      }
     }
 
     normaliseMapControlsToV325();
@@ -4248,7 +4291,8 @@ html.emdi-document-fullscreen #emdi-map-view {
   margin-right: 6px;
 }
 
-.gps-point-popup__nav-button {
+.gps-point-popup__nav-button,
+.emdi-exclusion-zone-nav-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;

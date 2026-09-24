@@ -1766,8 +1766,23 @@
     }
 
     function setFullscreenState(active) {
+      var serviceHeader = document.querySelector('.probation-common-header');
+      var serviceNavigation = document.querySelector('.govuk-service-navigation');
+
+      function visibleHeight(element) {
+        return element && window.getComputedStyle(element).display !== 'none'
+          ? element.getBoundingClientRect().height
+          : 0;
+      }
+
+      var serviceHeaderHeight = visibleHeight(serviceHeader);
+      var serviceNavigationHeight = visibleHeight(serviceNavigation);
+  var fullscreenChromeHeight = serviceHeaderHeight + serviceNavigationHeight;
+
       mapView.classList.toggle('emdi-map-view--fullscreen', active);
       document.documentElement.classList.toggle('emdi-document-fullscreen', active);
+      document.documentElement.style.setProperty('--emdi-service-header-height', active ? serviceHeaderHeight + 'px' : '0px');
+      mapView.style.setProperty('--emdi-fullscreen-chrome-height', active ? fullscreenChromeHeight + 'px' : '0px');
       fullscreenButton.setAttribute('aria-label', active ? 'Exit full screen map' : 'Full screen map');
       fullscreenButton.setAttribute('title', active ? 'Exit full screen map' : 'Full screen map');
       sidebar.hidden = !active;
@@ -3843,11 +3858,13 @@ path[stroke-width="1"]
 #emdi-map-view:-webkit-full-screen,
 #emdi-map-view.emdi-map-view--fullscreen {
   display: grid;
-  grid-template-columns: minmax(460px, 500px) minmax(0, 1fr);
+  grid-template-columns: minmax(380px, 425px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: 0;
   width: 100vw;
-  height: calc(100vh - 150px);
-  min-height: 560px;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   margin: 0;
   background: #ffffff;
 }
@@ -3880,11 +3897,32 @@ html.emdi-document-fullscreen body {
 }
 
 html.emdi-document-fullscreen #emdi-map-view {
-  position: relative;
-  left: 50%;
+  position: fixed;
+  top: var(--emdi-fullscreen-chrome-height, 0px);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10000;
   width: 100vw;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  height: calc(100vh - var(--emdi-fullscreen-chrome-height, 0px));
+  height: calc(100dvh - var(--emdi-fullscreen-chrome-height, 0px));
+  margin: 0;
+}
+
+html.emdi-document-fullscreen .probation-common-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10001;
+}
+
+html.emdi-document-fullscreen .govuk-service-navigation {
+  position: fixed;
+  top: var(--emdi-service-header-height, 0px);
+  right: 0;
+  left: 0;
+  z-index: 10001;
 }
 
 .emdi-fullscreen-sidebar {
@@ -3892,8 +3930,11 @@ html.emdi-document-fullscreen #emdi-map-view {
   z-index: 3000;
   isolation: isolate;
   box-sizing: border-box;
-  padding: 24px;
-  overflow: visible !important;
+  min-height: 0;
+  height: 100%;
+  padding: 36px 18px 24px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   background: #f3f2f1;
   border-right: 1px solid #b1b4b6;
 }
@@ -3910,7 +3951,6 @@ html.emdi-document-fullscreen #emdi-map-view {
   margin-left: 20px;
 }
 
-#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar form,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .loi-filters,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-filters-grid,
@@ -3918,6 +3958,12 @@ html.emdi-document-fullscreen #emdi-map-view {
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .govuk-form-group,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .govuk-date-input {
   overflow: visible !important;
+}
+
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-date-from .govuk-input,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-fullscreen-sidebar .bh-date-to .govuk-input {
+  width: 182px;
+  max-width: 182px !important;
 }
 
 .emdi-map-fullscreen-main {
@@ -3981,7 +4027,19 @@ html.emdi-document-fullscreen #emdi-map-view {
 #emdi-map-view:fullscreen .emdi-map-guide,
 #emdi-map-view:-webkit-full-screen .emdi-map-guide,
 #emdi-map-view.emdi-map-view--fullscreen .emdi-map-guide {
-  margin-left: 20px;
+  display: block;
+  position: static;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-top: 1px solid #b1b4b6;
+}
+
+#emdi-map-view:fullscreen .emdi-map-fullscreen-main > br,
+#emdi-map-view:-webkit-full-screen .emdi-map-fullscreen-main > br,
+#emdi-map-view.emdi-map-view--fullscreen .emdi-map-fullscreen-main > br {
+  display: none;
 }
 
 @media (max-width: 760px) {

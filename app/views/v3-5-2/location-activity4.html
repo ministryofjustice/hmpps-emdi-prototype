@@ -61,7 +61,7 @@
     </li>
   </ol>
 </nav>
- 
+
 
 <div id="feedback-success-banner" class="govuk-!-display-none govuk-!-margin-bottom-4">  {%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
@@ -307,11 +307,13 @@
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
   <div id="emdi-table-content" hidden>
   <h3 class="govuk-heading-m">Points</h3>
-  <p class="govuk-body">This table shows every point and the time between each ping, and can be filtered to show points inside the exclusion zone.</p>
+  <p class="govuk-body">This table shows every point on the map (tag ping) and the time between each ping.</p>
+  
+  <p class="govuk-body">If a notable gap between 2 pings is flagged, you can check this against battery data or the data to learn more about the circumstances.</p>
   <div class="loi-filters govuk-!-margin-bottom-3">
     <div class="govuk-form-group govuk-!-margin-bottom-3">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-label">Point type</legend>
+        <legend class="govuk-fieldset__legend govuk-label">Point filter</legend>
         <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios" id="emdi-points-filter-type">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="emdi-points-filter-type-all" name="emdi-points-filter-type" type="radio" value="all" checked>
@@ -321,6 +323,16 @@
             <input class="govuk-radios__input" id="emdi-points-filter-type-exclusion" name="emdi-points-filter-type" type="radio" value="exclusion">
             <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-exclusion">Show points in exclusion zones only</label>
           </div>
+          <!--
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="emdi-points-filter-type-inclusion" name="emdi-points-filter-type" type="radio" value="inclusion">
+            <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-inclusion">Show points in inclusion zones only</label>
+          </div>
+        -->
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="emdi-points-filter-type-restriction" name="emdi-points-filter-type" type="radio" value="restriction">
+            <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-restriction">Show points in restriction zones only</label>
+          </div>
         </div>
       </fieldset>
     </div>
@@ -329,7 +341,7 @@
     </button>
   </div>
   <table class="govuk-table" id="emdi-points-attention-table">
-    <caption class="govuk-table__caption govuk-visually-hidden">GPS points with gaps or inside the exclusion zone</caption>
+    <caption class="govuk-table__caption govuk-visually-hidden">GPS points with gaps or inside an inclusion, exclusion or restriction zone</caption>
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">Point</th>
@@ -565,6 +577,8 @@
           </tr>
 
         {% endif %}
+
+
 
 <!-- This is Chris Post -->
         {% if data['personselected']=='chrispost' and showPrepopulatedLoi %}
@@ -1046,8 +1060,8 @@
         .replace(/'/g, '&#39;');
     }
 
-    function getExclusionBoundaries() {
-      var group = window.mapLayers && window.mapLayers.exclusionZone;
+    function getZoneBoundaries(zoneName) {
+      var group = window.mapLayers && window.mapLayers[zoneName];
       var boundaries = [];
       if (!group || typeof group.eachLayer !== 'function') return boundaries;
 
@@ -1497,6 +1511,8 @@
       var filterType = currentFilterType();
       var filtered = attentionEntries.filter(function (entry) {
         if (filterType === 'exclusion') return entry.isExclusion;
+        if (filterType === 'inclusion') return entry.isInclusion;
+        if (filterType === 'restriction') return entry.isRestriction;
         return true;
       });
       attentionRows = filtered.map(buildAttentionRowHtml);
@@ -1585,7 +1601,12 @@
     });
 
     function renderAttentionTable(points) {
-      var boundaries = getExclusionBoundaries();
+      var exclusionBoundaries = getZoneBoundaries('exclusionZone');
+      var inclusionBoundaries = getZoneBoundaries('inclusionZone');
+      var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
+      var restrictionLayers = restrictionZone && typeof restrictionZone.getLayers === 'function'
+        ? restrictionZone.getLayers()
+        : [];
       var entries = [];
       window.emdiLoadedTrailPoints = points || [];
       if (typeof window.updateZonePointCounts === 'function') window.updateZonePointCounts(window.emdiLoadedTrailPoints);
@@ -1615,8 +1636,17 @@
           }
         }
         var isExclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
-          boundaries.some(function (boundary) { return isInside(point, boundary); });
+          exclusionBoundaries.some(function (boundary) { return isInside(point, boundary); });
+        var isInclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
+          inclusionBoundaries.some(function (boundary) { return isInside(point, boundary); });
+        var isRestriction = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
+          restrictionLayers.some(function (layer) {
+            if (!layer || typeof layer.getLatLng !== 'function' || typeof layer.getRadius !== 'function') return false;
+            return window.L.latLng(point.lat, point.lng).distanceTo(layer.getLatLng()) <= layer.getRadius();
+          });
         if (isExclusion) reasons.push('Within the exclusion zone');
+        if (isInclusion) reasons.push('Within the inclusion zone');
+        if (isRestriction) reasons.push('Within the restriction zone');
 
         entries.push({
           index: index,
@@ -1624,6 +1654,8 @@
           reasons: reasons,
           isDotted: isDotted,
           isExclusion: isExclusion,
+          isInclusion: isInclusion,
+          isRestriction: isRestriction,
           keyboardIndex: keyboardPoints.indexOf(point),
           gapToNextMinutes: Number.isFinite(nextGapMinutes) && nextGapMinutes >= 0 ? nextGapMinutes : null
         });

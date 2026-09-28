@@ -306,14 +306,17 @@
   <div id="emdi-table-view" class="govuk-!-margin-top-6">
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
   <div id="emdi-table-content" hidden>
-  <h3 class="govuk-heading-m">Points</h3>
+  <h3 class="govuk-heading-m">Points on the map</h3>
   <p class="govuk-body">This table shows every point on the map (tag ping) and the time between each ping.</p>
   
-  <p class="govuk-body">If a notable gap between 2 pings is flagged, you can check this against battery data or the data to learn more about the circumstances.</p>
+  <p class="govuk-body">If more than 5 minutes passes between pings, this is flagged as a notable gap.
+
+  <p>Signal loss can occur due to buildings, bad weather or being underground. If you are concerned about a notable gap, you can check the battery level data or tamper event data for the same period.</p>
+  </p>
   <div class="loi-filters govuk-!-margin-bottom-3">
     <div class="govuk-form-group govuk-!-margin-bottom-3">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-label">Point filter</legend>
+        <legend class="govuk-fieldset__legend govuk-label" style="font-weight: bold;">Point filter</legend>
         <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios" id="emdi-points-filter-type">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="emdi-points-filter-type-all" name="emdi-points-filter-type" type="radio" value="all" checked>
@@ -345,9 +348,9 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">Point</th>
-        <th scope="col" class="govuk-table__header">Accuracy</th>
+        <th scope="col" class="govuk-table__header">Accuracy (metres)</th>
         <th scope="col" class="govuk-table__header">Date, time</th>
-        <th scope="col" class="govuk-table__header">Speed</th>
+        <th scope="col" class="govuk-table__header">Speed (miles per hour)</th>
         <th scope="col" class="govuk-table__header">Signal type</th>
         <th scope="col" class="govuk-table__header">Tag status</th>
         <th scope="col" class="govuk-table__header">View on map</th>
@@ -1460,14 +1463,14 @@
 
     function viewOnMapLinkHtml(keyboardIndex) {
       if (!Number.isFinite(keyboardIndex) || keyboardIndex < 0) return '\u2014';
-      return '<a href="#" class="govuk-link emdi-view-on-map" data-point-index="' + keyboardIndex + '">View on map</a>';
+      return '<a href="#" class="govuk-link emdi-view-on-map" data-point-index="' + keyboardIndex + '">View</a>';
     }
 
     function buildAttentionRowHtml(entry) {
       var point = entry.point;
-      var accuracy = Number.isFinite(point.accuracy) ? Math.round(point.accuracy) + ' metres' : '\u2014';
+      var accuracy = Number.isFinite(point.accuracy) ? Math.round(point.accuracy) + 'm' : '\u2014';
       var speed = point.speed != null && !isNaN(Number(point.speed))
-        ? (Number(point.speed) * 0.621371).toFixed(1) + ' miles per hour' : '\u2014';
+        ? (Number(point.speed) * 0.621371).toFixed(1) + 'mph' : '\u2014';
       var signalType = point.geolocationMechanism || '\u2014';
       var tagStatus = entry.isExclusion ? 'Exclusion breach' : 'No tamper';
       var rows = [
@@ -1485,7 +1488,7 @@
       if (Number.isFinite(entry.gapToNextMinutes) && Math.round(entry.gapToNextMinutes) > 5) {
         rows.push(
           '<tr class="govuk-table__row emdi-considerable-gap-row">',
-          '<td class="govuk-table__cell" colspan="7">There has been a considerable gap of ' + escapeHtml(formatGapDuration(entry.gapToNextMinutes)) + '</td>',
+          '<td class="govuk-table__cell" colspan="7">There has been a notable gap of ' + escapeHtml(formatGapDuration(entry.gapToNextMinutes)) + '</td>',
           '</tr>'
         );
       }

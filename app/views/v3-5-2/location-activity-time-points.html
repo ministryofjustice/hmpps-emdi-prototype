@@ -1687,6 +1687,7 @@
     var pingIntervalMinutes = 0;
     var lastRawTrace = null;
     var originalPlotTraceObject = null;
+    var originalGapThresholdMins = null;
 
     function pointTimeMs(point) {
       var raw = point && (point.time || point.timestamp || point.ts);
@@ -1708,6 +1709,16 @@
       return kept;
     }
 
+    // Only break the line for notable gaps when "All" pings are shown - a thinned-out
+    // view creates artificial gaps between the remaining points, so keep it solid.
+    function updateLineDashingForPingInterval() {
+      if (!window.CFG) return;
+      if (originalGapThresholdMins === null) {
+        originalGapThresholdMins = Number(window.CFG.MISSING_DATA_GAP_MINS) || 5;
+      }
+      window.CFG.MISSING_DATA_GAP_MINS = pingIntervalMinutes ? Infinity : originalGapThresholdMins;
+    }
+
     function applyPingIntervalFilter(traceObj) {
       if (!traceObj) return traceObj;
       var filtered = {};
@@ -1723,6 +1734,7 @@
       originalPlotTraceObject = window.plotTraceObject;
       var wrapped = function (traceObj, opts) {
         lastRawTrace = traceObj;
+        updateLineDashingForPingInterval();
         return originalPlotTraceObject.call(this, applyPingIntervalFilter(traceObj), opts);
       };
       wrapped.__emdiPingIntervalWrapped = true;
@@ -1734,6 +1746,7 @@
 
     window.emdiSetPingInterval = function (minutes) {
       pingIntervalMinutes = Number(minutes) || 0;
+      updateLineDashingForPingInterval();
       if (lastRawTrace && originalPlotTraceObject) {
         originalPlotTraceObject.call(null, applyPingIntervalFilter(lastRawTrace), { scrollToMap: false, highlightRowEl: null });
       }

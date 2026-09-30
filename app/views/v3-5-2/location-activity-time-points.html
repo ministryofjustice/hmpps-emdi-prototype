@@ -1473,9 +1473,11 @@
         ? (Number(point.speed) * 0.621371).toFixed(1) + 'mph' : '\u2014';
       var signalType = point.geolocationMechanism || '\u2014';
       var tagStatus = entry.isExclusion ? 'Exclusion breach' : 'No tamper';
+      // Match the number shown on the map marker, not this row's position in the (possibly thinned) list.
+      var pointNumber = point.label || (entry.index + 1);
       var rows = [
         '<tr class="govuk-table__row">',
-        '<th scope="row" class="govuk-table__header">Point ' + (entry.index + 1) + '</th>',
+        '<th scope="row" class="govuk-table__header">Point ' + escapeHtml(pointNumber) + '</th>',
         '<td class="govuk-table__cell">' + escapeHtml(accuracy) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(dateTime(point.time)) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(speed) + '</td>',
@@ -1485,7 +1487,7 @@
         '</tr>'
       ];
 
-      if (Number.isFinite(entry.gapToNextMinutes) && Math.round(entry.gapToNextMinutes) > 5) {
+      if (Number.isFinite(entry.gapToNextMinutes) && Math.round(entry.gapToNextMinutes) > (Number(window.CFG && window.CFG.MISSING_DATA_GAP_MINS) || 5)) {
         rows.push(
           '<tr class="govuk-table__row emdi-considerable-gap-row">',
           '<td class="govuk-table__cell" colspan="7">There has been a notable gap of ' + escapeHtml(formatGapDuration(entry.gapToNextMinutes)) + '</td>',
@@ -1618,22 +1620,28 @@
       });
       keyboardPointIndex = 0;
       removeKeyboardHighlight();
+      // A thinned-out ping view still needs to flag *real* signal-loss gaps, not gaps that only
+      // exist because the points in between aren't shown - so prefer each point's precomputed
+      // real neighbour gap (set by the ping-frequency filter) over this array's own adjacency.
+      var gapThresholdMins = Number(window.CFG && window.CFG.MISSING_DATA_GAP_MINS) || 5;
       (points || []).forEach(function (point, index) {
         var reasons = [];
         var isDotted = false;
         var currentDate = new Date(point.time);
         if (index > 0) {
-          var previousDate = new Date(points[index - 1].time);
-          var previousGapMinutes = (currentDate - previousDate) / 60000;
-          if (!isNaN(previousGapMinutes) && previousGapMinutes >= 5) {
+          var previousGapMinutes = Number.isFinite(point.__emdiPrevGapMinutes)
+            ? point.__emdiPrevGapMinutes
+            : (currentDate - new Date(points[index - 1].time)) / 60000;
+          if (!isNaN(previousGapMinutes) && previousGapMinutes >= gapThresholdMins) {
             reasons.push('Dotted line: ' + Math.round(previousGapMinutes) + ' minute gap from previous point');
             isDotted = true;
           }
         }
         if (index < points.length - 1) {
-          var nextDate = new Date(points[index + 1].time);
-          var nextGapMinutes = (nextDate - currentDate) / 60000;
-          if (!isNaN(nextGapMinutes) && nextGapMinutes >= 5) {
+          var nextGapMinutes = Number.isFinite(point.__emdiNextGapMinutes)
+            ? point.__emdiNextGapMinutes
+            : (new Date(points[index + 1].time) - currentDate) / 60000;
+          if (!isNaN(nextGapMinutes) && nextGapMinutes >= gapThresholdMins) {
             reasons.push('Dotted line: ' + Math.round(nextGapMinutes) + ' minute gap to next point');
             isDotted = true;
           }
@@ -1669,6 +1677,8 @@
       setupMapKeyboardAccess();
     }
 
+    window.renderAttentionTable = renderAttentionTable;
+
     var originalPlotTraceObject = window.plotTraceObject;
     setupMapKeyboardAccess();
     if (!originalPlotTraceObject) return;
@@ -1681,13 +1691,15 @@
   }());
 </script>
 
-<!-- v3-5-2 only: thins out displayed pings based on the minimum gap selected in the map controls panel -->
+<!-- v3-5-2 only: thins out displayed ping markers based on the minimum gap selected in the map -->
+<!-- controls panel. The line/route and its gap-dashing always use the full, untouched point set -->
+<!-- (via pt.__emdiHideMarker, which just skips drawing a marker) so the route shape and real -->
+<!-- signal-loss gaps never change - only which numbered pings are shown does. -->
 <script>
   (function () {
     var pingIntervalMinutes = 0;
     var lastRawTrace = null;
     var originalPlotTraceObject = null;
-    var originalGapThresholdMins = null;
 
     function pointTimeMs(point) {
       var raw = point && (point.time || point.timestamp || point.ts);
@@ -1695,49 +1707,69 @@
       return isNaN(time) ? null : time;
     }
 
-    function filterPointsByPingInterval(points, intervalMinutes) {
-      if (!intervalMinutes) return points || [];
-      var kept = [];
-      var lastTime = null;
-      (points || []).forEach(function (point) {
+    // Returns the full point array (each point copied, unwanted ones flagged __emdiHideMarker so
+    // the map skips their marker/circle but still draws the line through them) plus the separate
+    // "visible" subset (with original numbering preserved) for the points table.
+    function buildPingViews(points, intervalMinutes) {
+      var fullPoints = (points || []).map(function (point) { return Object.assign({}, point); });
+
+      // Precompute each point's REAL neighbour gap (using the full, untouched data) so the
+      // points table can tell a genuine signal-loss gap apart from a gap that only exists
+      // because a ping frequency has thinned out which points are shown.
+      fullPoints.forEach(function (point, index) {
         var time = pointTimeMs(point);
-        if (time === null || lastTime === null || (time - lastTime) >= intervalMinutes * 60000) {
-          kept.push(point);
-          if (time !== null) lastTime = time;
+        if (index > 0) {
+          var prevTime = pointTimeMs(fullPoints[index - 1]);
+          point.__emdiPrevGapMinutes = (time !== null && prevTime !== null) ? (time - prevTime) / 60000 : null;
+        }
+        if (index < fullPoints.length - 1) {
+          var nextTime = pointTimeMs(fullPoints[index + 1]);
+          point.__emdiNextGapMinutes = (time !== null && nextTime !== null) ? (nextTime - time) / 60000 : null;
         }
       });
-      return kept;
-    }
 
-    // Only break the line for notable gaps when "All" pings are shown - a thinned-out
-    // view creates artificial gaps between the remaining points, so keep it solid.
-    function updateLineDashingForPingInterval() {
-      if (!window.CFG) return;
-      if (originalGapThresholdMins === null) {
-        originalGapThresholdMins = Number(window.CFG.MISSING_DATA_GAP_MINS) || 5;
-      }
-      window.CFG.MISSING_DATA_GAP_MINS = pingIntervalMinutes ? Infinity : originalGapThresholdMins;
+      if (!intervalMinutes) return { full: fullPoints, visible: fullPoints };
+
+      var visible = [];
+      var lastTime = null;
+      fullPoints.forEach(function (point, index) {
+        var time = pointTimeMs(point);
+        var keep = time === null || lastTime === null || (time - lastTime) >= intervalMinutes * 60000;
+        if (keep) {
+          if (time !== null) lastTime = time;
+          point.label = point.label || String(index + 1);
+          visible.push(point);
+        } else {
+          point.__emdiHideMarker = true;
+        }
+      });
+
+      return { full: fullPoints, visible: visible };
     }
 
     function applyPingIntervalFilter(traceObj) {
-      if (!traceObj) return traceObj;
+      if (!traceObj) return { trace: traceObj, visiblePoints: [] };
+      var views = buildPingViews(traceObj.points, pingIntervalMinutes);
       var filtered = {};
       for (var key in traceObj) {
         if (Object.prototype.hasOwnProperty.call(traceObj, key)) filtered[key] = traceObj[key];
       }
-      filtered.points = filterPointsByPingInterval(traceObj.points, pingIntervalMinutes);
-      return filtered;
+      filtered.points = views.full;
+      return { trace: filtered, visiblePoints: views.visible };
     }
 
     function installPingIntervalWrapper() {
-      if (typeof window.plotTraceObject !== 'function' || window.plotTraceObject.__emdiPingIntervalWrapped) return;
+      if (window.__emdiPingIntervalWrapperInstalled || typeof window.plotTraceObject !== 'function') return;
+      window.__emdiPingIntervalWrapperInstalled = true;
       originalPlotTraceObject = window.plotTraceObject;
       var wrapped = function (traceObj, opts) {
         lastRawTrace = traceObj;
-        updateLineDashingForPingInterval();
-        return originalPlotTraceObject.call(this, applyPingIntervalFilter(traceObj), opts);
+        var result = applyPingIntervalFilter(traceObj);
+        return Promise.resolve(originalPlotTraceObject.call(this, result.trace, opts)).then(function (value) {
+          if (typeof window.renderAttentionTable === 'function') window.renderAttentionTable(result.visiblePoints);
+          return value;
+        });
       };
-      wrapped.__emdiPingIntervalWrapped = true;
       window.plotTraceObject = wrapped;
     }
 
@@ -1746,9 +1778,11 @@
 
     window.emdiSetPingInterval = function (minutes) {
       pingIntervalMinutes = Number(minutes) || 0;
-      updateLineDashingForPingInterval();
       if (lastRawTrace && originalPlotTraceObject) {
-        originalPlotTraceObject.call(null, applyPingIntervalFilter(lastRawTrace), { scrollToMap: false, highlightRowEl: null });
+        var result = applyPingIntervalFilter(lastRawTrace);
+        Promise.resolve(originalPlotTraceObject.call(null, result.trace, { scrollToMap: false, highlightRowEl: null })).then(function () {
+          if (typeof window.renderAttentionTable === 'function') window.renderAttentionTable(result.visiblePoints);
+        });
       }
     };
   }());

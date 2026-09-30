@@ -1719,13 +1719,17 @@
     }
 
     function installPingIntervalWrapper() {
-      if (typeof window.plotTraceObject !== 'function' || window.plotTraceObject.__emdiPingIntervalWrapped) return;
+      // Guard on a standalone flag rather than a property on the current window.plotTraceObject -
+      // bh:map-ready can fire more than once, and by the second time another wrapper (e.g. the LOI
+      // detector) may already be sitting on top, which would otherwise look "unwrapped" and cause
+      // these wrappers to keep re-wrapping each other infinitely.
+      if (window.__emdiPingIntervalWrapperInstalled || typeof window.plotTraceObject !== 'function') return;
+      window.__emdiPingIntervalWrapperInstalled = true;
       originalPlotTraceObject = window.plotTraceObject;
       var wrapped = function (traceObj, opts) {
         lastRawTrace = traceObj;
         return originalPlotTraceObject.call(this, applyPingIntervalFilter(traceObj), opts);
       };
-      wrapped.__emdiPingIntervalWrapped = true;
       window.plotTraceObject = wrapped;
     }
 
@@ -2806,6 +2810,268 @@
 </script>
 <script src="/public/javascripts/bh-update-map.js"></script>
 <script src="/public/javascripts/bh-loi-to-map-sync.js"></script>
+
+<!-- v3-5-2 only: detects visits to known locations of interest from the trail plotted for the -->
+<!-- searched date/time range, and rebuilds the table from that (instead of a fixed row list). -->
+<!-- Runs before loi-filters.js so that script's per-visit type/date filter never sees a table it doesn't understand. -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var table = document.getElementById('bh-loi-table');
+    if (!table) return;
+
+    // The old type/date filter form operates on individual visits, which no longer exist
+    // once rows are grouped by location - remove it so it can't hide the summary rows.
+    var oldFilterForm = document.getElementById('loi-filters');
+    if (oldFilterForm) oldFilterForm.remove();
+
+    var oldPagination = document.querySelector('.govuk-pagination');
+    if (oldPagination) oldPagination.remove();
+
+    table.removeAttribute('data-module');
+    table.removeAttribute('data-moj-sortable-table-init');
+    if (table.tHead) {
+      table.tHead.innerHTML = '<tr class="govuk-table__row">' +
+        '<th scope="col" class="govuk-table__header">Location type</th>' +
+        '<th scope="col" class="govuk-table__header">Address</th>' +
+        '<th scope="col" class="govuk-table__header">Visits</th>' +
+        '<th scope="col" class="govuk-table__header">Total duration</th>' +
+        '<th scope="col" class="govuk-table__header">Last visit</th>' +
+        '</tr>';
+    }
+    var tbody = table.tBodies[0];
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function formatDuration(totalMinutes) {
+      var hours = Math.floor(totalMinutes / 60);
+      var mins = totalMinutes % 60;
+      var parts = [];
+      if (hours) parts.push(hours + 'h');
+      if (mins || !hours) parts.push(mins + 'm');
+      return parts.join(' ');
+    }
+
+    function formatVisits(count) {
+      return count + (count === 1 ? ' visit' : ' visits');
+    }
+
+    function formatLastVisit(date) {
+      if (!date || isNaN(date.getTime())) return '\u2014';
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Demo catalog of known locations of interest, placed at real coordinates the
+    // Billy Hoskins trail actually passes through, so a date/time search can detect them.
+    var LOI_CATALOG = [
+      { type: 'Pubs, bars and clubs', name: 'The Clachan', address: '34 Kingly Street, London, W1B 5QH', lat: 51.51037, lng: -0.13654, radiusMeters: 130 },
+      { type: 'Pubs, bars and clubs', name: 'The Guinea', address: '30 Bruton Place, London, W1J 6NL', lat: 51.5056, lng: -0.1192, radiusMeters: 150 },
+      { type: 'Betting shops', name: 'Ladbrokes', address: '102 Victoria Street, London, SW1E 6QX', lat: 51.4971, lng: -0.1417, radiusMeters: 150 }
+    ];
+
+    function distanceMeters(lat1, lng1, lat2, lng2) {
+      var R = 6371000;
+      var toRad = function (d) { return d * Math.PI / 180; };
+      var dLat = toRad(lat2 - lat1);
+      var dLng = toRad(lng2 - lng1);
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function pad2(value) { return String(value).length < 2 ? '0' + value : String(value); }
+
+    // Some demo timestamps have unpadded seconds (e.g. "13:20:1"), so parse leniently.
+    function parsePointTimeMs(raw) {
+      if (!raw) return null;
+      var s = String(raw).replace('Z', '');
+      var m = s.match(/^(\d{4}-\d{2}-\d{2})T(\d{1,2}):(\d{1,2}):(\d{1,2})/);
+      var d = m ? new Date(m[1] + 'T' + pad2(m[2]) + ':' + pad2(m[3]) + ':' + pad2(m[4])) : new Date(s);
+      return isNaN(d.getTime()) ? null : d.getTime();
+    }
+
+    // Detect visits to the catalog locations within the currently plotted trail points,
+    // grouping points into separate visits when there's more than an hour between them.
+    function detectLoiVisits(points) {
+      var groups = [];
+
+      LOI_CATALOG.forEach(function (poi) {
+        var matchTimes = (points || [])
+          .filter(function (pt) { return Number.isFinite(pt.lat) && Number.isFinite(pt.lng); })
+          .filter(function (pt) { return distanceMeters(pt.lat, pt.lng, poi.lat, poi.lng) <= poi.radiusMeters; })
+          .map(function (pt) { return parsePointTimeMs(pt.time); })
+          .filter(function (t) { return t !== null; })
+          .sort(function (a, b) { return a - b; });
+
+        if (!matchTimes.length) return;
+
+        var visits = [];
+        matchTimes.forEach(function (t) {
+          var current = visits[visits.length - 1];
+          if (current && (t - current.end) <= 60 * 60000) {
+            current.end = t;
+          } else {
+            visits.push({ start: t, end: t });
+          }
+        });
+
+        var totalMinutes = visits.reduce(function (sum, visit) {
+          return sum + Math.max(1, Math.round((visit.end - visit.start) / 60000));
+        }, 0);
+
+        groups.push({
+          type: poi.type,
+          addressHtml: escapeHtml(poi.name) + '<br>' + escapeHtml(poi.address),
+          visits: visits.length,
+          minutes: totalMinutes,
+          lastVisit: new Date(visits[visits.length - 1].end)
+        });
+      });
+
+      groups.sort(function (a, b) { return b.lastVisit.getTime() - a.lastVisit.getTime(); });
+      return groups;
+    }
+
+    var groups = [];
+    var latestVisitDate = null;
+    var filterPanel = null;
+    var typeSelect = null;
+    var dateSelect = null;
+
+    function renderRows(filterType, dateRange) {
+      var visibleGroups = groups.filter(function (group) {
+        if (filterType && group.type !== filterType) return false;
+        if (dateRange && group.lastVisit && latestVisitDate) {
+          var days = dateRange === 'last7' ? 7 : 30;
+          var diffDays = (latestVisitDate.getTime() - group.lastVisit.getTime()) / 86400000;
+          if (diffDays > days) return false;
+        }
+        return true;
+      });
+
+      if (!tbody) return;
+
+      if (!groups.length) {
+        tbody.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">Search the map by date and time to see any locations of interest visited.</td></tr>';
+      } else if (!visibleGroups.length) {
+        tbody.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">No locations of interest match these filters.</td></tr>';
+      } else {
+        tbody.innerHTML = visibleGroups.map(function (group) {
+          return '<tr class="govuk-table__row">' +
+            '<td class="govuk-table__cell">' + escapeHtml(group.type) + '</td>' +
+            '<td class="govuk-table__cell">' + group.addressHtml + '</td>' +
+            '<td class="govuk-table__cell">' + escapeHtml(formatVisits(group.visits)) + '</td>' +
+            '<td class="govuk-table__cell">' + escapeHtml(formatDuration(group.minutes)) + '</td>' +
+            '<td class="govuk-table__cell">' + escapeHtml(formatLastVisit(group.lastVisit)) + '</td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      var statusEl = document.getElementById('emdi-loi-filter-status');
+      if (statusEl) statusEl.textContent = 'Showing ' + visibleGroups.length + ' of ' + groups.length + ' locations.';
+    }
+
+    function ensureFilterPanel() {
+      if (filterPanel || !table.parentNode) return;
+
+      filterPanel = document.createElement('div');
+      filterPanel.className = 'loi-filters govuk-!-margin-bottom-3';
+      filterPanel.innerHTML = [
+        '<div class="loi-filters__row">',
+        '  <div class="loi-filters__group">',
+        '    <label class="govuk-label" for="emdi-loi-filter-type" style="font-weight: bold;">Location</label>',
+        '    <select class="govuk-select" id="emdi-loi-filter-type"></select>',
+        '  </div>',
+        '  <div class="loi-filters__group">',
+        '    <label class="govuk-label" for="emdi-loi-filter-date" style="font-weight: bold;">Date range</label>',
+        '    <select class="govuk-select" id="emdi-loi-filter-date">',
+        '      <option value="" selected>All dates in this search</option>',
+        '      <option value="last7">Last 7 days</option>',
+        '      <option value="last30">Last 30 days</option>',
+        '    </select>',
+        '  </div>',
+        '</div>',
+        '<div class="govuk-button-group" style="margin-top: 15px;">',
+        '  <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-loi-filter-apply" type="button">Filter locations</button>',
+        '  <a href="#" id="emdi-loi-filter-clear" class="govuk-link">Clear filters</a>',
+        '</div>',
+        '<div id="emdi-loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>'
+      ].join('');
+
+      table.parentNode.insertBefore(filterPanel, table);
+
+      typeSelect = document.getElementById('emdi-loi-filter-type');
+      dateSelect = document.getElementById('emdi-loi-filter-date');
+
+      document.getElementById('emdi-loi-filter-apply').addEventListener('click', function () {
+        renderRows(typeSelect.value, dateSelect.value);
+      });
+
+      document.getElementById('emdi-loi-filter-clear').addEventListener('click', function (event) {
+        event.preventDefault();
+        typeSelect.value = '';
+        dateSelect.value = '';
+        renderRows('', '');
+      });
+    }
+
+    function updateTypeOptions() {
+      if (!typeSelect) return;
+      var types = [];
+      groups.forEach(function (group) {
+        if (group.type && types.indexOf(group.type) === -1) types.push(group.type);
+      });
+      types.sort(function (a, b) { return a.localeCompare(b); });
+
+      typeSelect.innerHTML = '<option value="" selected>All location types</option>' +
+        types.map(function (type) { return '<option value="' + escapeHtml(type) + '">' + escapeHtml(type) + '</option>'; }).join('');
+    }
+
+    // Called whenever the map plots a trail for the searched date/time range.
+    window.emdiRenderLoiFromTrail = function (points) {
+      groups = detectLoiVisits(points);
+      latestVisitDate = groups.reduce(function (latest, group) {
+        return (!latest || group.lastVisit > latest) ? group.lastVisit : latest;
+      }, null);
+
+      if (groups.length) ensureFilterPanel();
+      if (typeSelect) updateTypeOptions();
+      if (dateSelect) dateSelect.value = '';
+      if (typeSelect) typeSelect.value = '';
+
+      renderRows('', '');
+    };
+
+    renderRows('', '');
+  });
+</script>
+
+<!-- v3-5-2 only: feeds each plotted search's points into the locations-of-interest detector above -->
+<script>
+  (function () {
+    function installLoiDetectionWrapper() {
+      // Standalone flag rather than a property on window.plotTraceObject - see the matching
+      // comment on installPingIntervalWrapper for why checking the current function isn't safe.
+      if (window.__emdiLoiWrapperInstalled || typeof window.plotTraceObject !== 'function') return;
+      window.__emdiLoiWrapperInstalled = true;
+      var previousPlotTraceObject = window.plotTraceObject;
+      var wrapped = function (traceObj, opts) {
+        if (typeof window.emdiRenderLoiFromTrail === 'function') {
+          window.emdiRenderLoiFromTrail(traceObj && traceObj.points);
+        }
+        return previousPlotTraceObject.call(this, traceObj, opts);
+      };
+      window.plotTraceObject = wrapped;
+    }
+
+    installLoiDetectionWrapper();
+    document.addEventListener('bh:map-ready', installLoiDetectionWrapper);
+  }());
+</script>
 
 <!-- Table filtering -->
 <script src="/public/javascripts/loi-filters.js"></script>

@@ -1008,7 +1008,7 @@
       var exclusionLabel = document.querySelector('#emdi-toggle-exclusion + span');
       var restrictionLabel = document.querySelector('#emdi-toggle-restriction + span');
       if (exclusionLabel) exclusionLabel.textContent = 'Exclusion (' + exclusionCount + ')';
-      if (restrictionLabel) restrictionLabel.textContent = 'Restriction (' + restrictionCount + ')';
+      if (restrictionLabel) restrictionLabel.textContent = 'Inclusion (' + restrictionCount + ')';
     }
     window.updateZonePointCounts = updateZonePointCounts;
 
@@ -2035,7 +2035,7 @@
         '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--zones">',
         '  <div class="emdi-heatmap-key__title">Zones</div>',
         '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--exclusion"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Exclusion zone</div>',
-        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--restriction"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--restriction-zone"></span>Restriction zone</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--restriction"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--restriction-zone"></span>Inclusion zone</div>',
         '</div>',
         '<div class="emdi-heatmap-key__empty">No map layers selected</div>'
       ].join('');
@@ -2307,7 +2307,7 @@
       var popupHtml = [
         '<div class="gps-point-popup">',
         '  <div class="gps-point-popup__header">',
-        '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Restriction zone</h4>',
+        '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Inclusion zone</h4>',
         '  </div>',
         '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
         '    <div class="govuk-summary-list__row">',

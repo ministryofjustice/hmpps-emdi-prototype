@@ -452,7 +452,7 @@
 
 {% if showDeletedCustomLoiEmptyState %}
 {{ govukTable({
-  attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
+  attributes: { id: "bh-loi-table" },
   head: [
     { text: "Date", attributes: { "aria-sort": "descending" } },
     { text: "Location type", attributes: { "aria-sort": "none" } },
@@ -471,7 +471,7 @@
 
 
 
-      <table class="govuk-table" id="bh-loi-table" data-module="moj-sortable-table" data-moj-sortable-table-init="">
+      <table class="govuk-table" id="bh-loi-table">
 
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
@@ -874,7 +874,7 @@
 
 {# 4) Render the table #}
 {{ govukTable({
-  attributes: { id: "bh-loi-table", "data-module": "moj-sortable-table" },
+  attributes: { id: "bh-loi-table" },
   head: [
     { text: "Date", attributes: { "aria-sort": "descending" } },
     { text: "Location type", attributes: { "aria-sort": "none" } },
@@ -2915,17 +2915,34 @@
       return bTime - aTime;
     });
 
+    var sortState = { key: 'lastVisit', direction: 'desc' };
+
     if (table.tHead) {
       table.tHead.innerHTML = '<tr class="govuk-table__row">' +
         '<th scope="col" class="govuk-table__header">Location type</th>' +
         '<th scope="col" class="govuk-table__header">Address</th>' +
-        '<th scope="col" class="govuk-table__header">Visits</th>' +
-        '<th scope="col" class="govuk-table__header">Total duration</th>' +
+        '<th scope="col" class="govuk-table__header" data-sort-key="visits" aria-sort="none"><button type="button" class="emdi-loi-sort-button" data-sort-key="visits">Visits<svg class="emdi-loi-sort-indicator" width="22" height="22" focusable="false" aria-hidden="true" viewBox="0 0 22 22" fill="none"><path class="emdi-loi-sort-indicator__up" d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path><path class="emdi-loi-sort-indicator__down" d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path></svg></button></th>' +
+        '<th scope="col" class="govuk-table__header no-wrap" data-sort-key="minutes" aria-sort="none"><button type="button" class="emdi-loi-sort-button" data-sort-key="minutes">Total duration<svg class="emdi-loi-sort-indicator" width="22" height="22" focusable="false" aria-hidden="true" viewBox="0 0 22 22" fill="none"><path class="emdi-loi-sort-indicator__up" d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path><path class="emdi-loi-sort-indicator__down" d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path></svg></button></th>' +
         '<th scope="col" class="govuk-table__header">Last visit</th>' +
         '</tr>';
     }
     table.removeAttribute('data-module');
     table.removeAttribute('data-moj-sortable-table-init');
+
+    function updateSortHeaders() {
+      if (!table.tHead) return;
+      table.tHead.querySelectorAll('th[data-sort-key]').forEach(function (header) {
+        var active = header.getAttribute('data-sort-key') === sortState.key;
+        header.setAttribute('aria-sort', active ? sortState.direction === 'asc' ? 'ascending' : 'descending' : 'none');
+      });
+
+      var sortStatus = document.getElementById('emdi-loi-sort-status');
+      if (sortStatus && sortState.key !== 'lastVisit') {
+        var label = sortState.key === 'visits' ? 'Visits' : 'Total duration';
+        var direction = sortState.direction === 'asc' ? 'ascending' : 'descending';
+        sortStatus.textContent = 'Sorted by ' + label + ', ' + direction + '.';
+      }
+    }
 
     function renderRows(filterType, dateRange) {
       var visibleGroups = groups.filter(function (group) {
@@ -2938,17 +2955,36 @@
         return true;
       });
 
+      visibleGroups.sort(function (a, b) {
+        var aValue;
+        var bValue;
+        if (sortState.key === 'visits') {
+          aValue = a.visits;
+          bValue = b.visits;
+        } else if (sortState.key === 'minutes') {
+          aValue = a.minutes;
+          bValue = b.minutes;
+        } else {
+          aValue = a.lastVisit ? a.lastVisit.getTime() : 0;
+          bValue = b.lastVisit ? b.lastVisit.getTime() : 0;
+        }
+        var difference = aValue - bValue;
+        return sortState.direction === 'asc' ? difference : -difference;
+      });
+
       if (tbody) {
         tbody.innerHTML = visibleGroups.map(function (group) {
           return '<tr class="govuk-table__row">' +
             '<td class="govuk-table__cell">' + escapeHtml(group.type) + '</td>' +
             '<td class="govuk-table__cell">' + group.addressHtml + '</td>' +
-            '<td class="govuk-table__cell">' + escapeHtml(formatVisits(group.visits)) + '</td>' +
-            '<td class="govuk-table__cell">' + escapeHtml(formatDuration(group.minutes)) + '</td>' +
+            '<td class="govuk-table__cell" data-sort-value="' + group.visits + '">' + escapeHtml(formatVisits(group.visits)) + '</td>' +
+            '<td class="govuk-table__cell" data-sort-value="' + group.minutes + '">' + escapeHtml(formatDuration(group.minutes)) + '</td>' +
             '<td class="govuk-table__cell">' + escapeHtml(formatLastVisit(group.lastVisit)) + '</td>' +
             '</tr>';
         }).join('');
       }
+
+      updateSortHeaders();
 
       var statusEl = document.getElementById('emdi-loi-filter-status');
       if (statusEl) statusEl.textContent = 'Showing ' + visibleGroups.length + ' of ' + groups.length + ' locations.';
@@ -2992,13 +3028,27 @@
         '  <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-loi-filter-apply" type="button">Filter locations</button>',
         '  <a href="#" id="emdi-loi-filter-clear" class="govuk-link">Clear filters</a>',
         '</div>',
-        '<div id="emdi-loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>'
+        '<div id="emdi-loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>',
+        '<div id="emdi-loi-sort-status" class="govuk-visually-hidden" aria-live="polite"></div>'
       ].join('');
 
       table.parentNode.insertBefore(filterPanel, table);
 
       var typeSelect = document.getElementById('emdi-loi-filter-type');
       var dateSelect = document.getElementById('emdi-loi-filter-date');
+
+      table.tHead.querySelectorAll('button[data-sort-key]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var key = button.getAttribute('data-sort-key');
+          if (sortState.key === key) {
+            sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            sortState.key = key;
+            sortState.direction = 'asc';
+          }
+          renderRows(typeSelect.value, dateSelect.value);
+        });
+      });
 
       document.getElementById('emdi-loi-filter-apply').addEventListener('click', function () {
         renderRows(typeSelect.value, dateSelect.value);
@@ -4717,6 +4767,36 @@ body {
   white-space: nowrap;
 }
 
+.emdi-loi-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0b0c0c;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.emdi-loi-sort-button:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+}
+
+.emdi-loi-sort-indicator {
+  flex: 0 0 22px;
+  color: #505a5f;
+  vertical-align: middle;
+}
+
+#bh-loi-table th[aria-sort="ascending"] .emdi-loi-sort-indicator__down,
+#bh-loi-table th[aria-sort="descending"] .emdi-loi-sort-indicator__up,
+#bh-loi-table th[aria-sort="none"] .emdi-loi-sort-indicator path {
+  opacity: 0.25;
+}
 
   
   

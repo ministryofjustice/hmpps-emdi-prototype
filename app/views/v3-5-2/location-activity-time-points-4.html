@@ -2915,17 +2915,45 @@
       return bTime - aTime;
     });
 
+    var sortState = { key: 'lastVisit', direction: 'desc' };
+    var sortWasChanged = false;
+
+    function sortableHeader(label, key, classes) {
+      return '<th scope="col" class="govuk-table__header ' + (classes || '') + '" data-sort-key="' + key + '" aria-sort="none">' +
+        '<button type="button" class="emdi-loi-sort-button" data-sort-key="' + key + '">' + escapeHtml(label) +
+        '<svg class="emdi-loi-sort-indicator" width="22" height="22" focusable="false" aria-hidden="true" viewBox="0 0 22 22" fill="none">' +
+        '<path class="emdi-loi-sort-indicator__up" d="M8.1875 9.5L10.9609 3.95703L13.7344 9.5H8.1875Z" fill="currentColor"></path>' +
+        '<path class="emdi-loi-sort-indicator__down" d="M13.7344 12.0781L10.9609 17.6211L8.1875 12.0781H13.7344Z" fill="currentColor"></path>' +
+        '</svg></button></th>';
+    }
+
     if (table.tHead) {
       table.tHead.innerHTML = '<tr class="govuk-table__row">' +
-        '<th scope="col" class="govuk-table__header" aria-sort="none">Location type</th>' +
-        '<th scope="col" class="govuk-table__header">Address</th>' +
-        '<th scope="col" class="govuk-table__header" aria-sort="none">Visits</th>' +
-        '<th scope="col" class="govuk-table__header no-wrap" aria-sort="none">Total duration</th>' +
-        '<th scope="col" class="govuk-table__header" aria-sort="none">Last visit</th>' +
+        sortableHeader('Location type', 'type') +
+        sortableHeader('Address', 'address') +
+        sortableHeader('Visits', 'visits') +
+        sortableHeader('Total duration', 'minutes', 'no-wrap') +
+        sortableHeader('Last visit', 'lastVisit') +
         '</tr>';
     }
-    table.setAttribute('data-module', 'moj-sortable-table');
+    table.removeAttribute('data-module');
     table.removeAttribute('data-moj-sortable-table-init');
+
+    function updateSortHeaders() {
+      if (!table.tHead) return;
+      table.tHead.querySelectorAll('th[data-sort-key]').forEach(function (header) {
+        var active = header.getAttribute('data-sort-key') === sortState.key;
+        header.setAttribute('aria-sort', active ? sortState.direction === 'asc' ? 'ascending' : 'descending' : 'none');
+      });
+
+      var sortStatus = document.getElementById('emdi-loi-sort-status');
+      if (sortStatus && sortWasChanged) {
+        var labels = { type: 'Location type', address: 'Address', visits: 'Visits', minutes: 'Total duration', lastVisit: 'Last visit' };
+        var label = labels[sortState.key];
+        var direction = sortState.direction === 'asc' ? 'ascending' : 'descending';
+        sortStatus.textContent = 'Sorted by ' + label + ', ' + direction + '.';
+      }
+    }
 
     function renderRows(filterType, dateRange) {
       var visibleGroups = groups.filter(function (group) {
@@ -2938,16 +2966,29 @@
         return true;
       });
 
-      var activeSortHeader = table.tHead && table.tHead.querySelector('th[aria-sort="ascending"], th[aria-sort="descending"]');
-      var sortKey = activeSortHeader ? Number(activeSortHeader.cellIndex) : 4;
-      var sortDirection = activeSortHeader ? activeSortHeader.getAttribute('aria-sort') : 'descending';
-
       visibleGroups.sort(function (a, b) {
-        var values = [a.type, a.address, a.visits, a.minutes, a.lastVisit ? a.lastVisit.getTime() : 0];
-        var aValue = values[sortKey];
-        var bValue = [b.type, b.address, b.visits, b.minutes, b.lastVisit ? b.lastVisit.getTime() : 0][sortKey];
-        var difference = typeof aValue === 'string' ? aValue.localeCompare(bValue, undefined, { sensitivity: 'base' }) : aValue - bValue;
-        return sortDirection === 'ascending' ? difference : -difference;
+        var aValue;
+        var bValue;
+        if (sortState.key === 'type') {
+          aValue = a.type;
+          bValue = b.type;
+        } else if (sortState.key === 'address') {
+          aValue = a.address;
+          bValue = b.address;
+        } else if (sortState.key === 'visits') {
+          aValue = a.visits;
+          bValue = b.visits;
+        } else if (sortState.key === 'minutes') {
+          aValue = a.minutes;
+          bValue = b.minutes;
+        } else {
+          aValue = a.lastVisit ? a.lastVisit.getTime() : 0;
+          bValue = b.lastVisit ? b.lastVisit.getTime() : 0;
+        }
+        var difference = typeof aValue === 'string'
+          ? aValue.localeCompare(bValue, undefined, { sensitivity: 'base' })
+          : aValue - bValue;
+        return sortState.direction === 'asc' ? difference : -difference;
       });
 
       if (tbody) {
@@ -2957,10 +2998,12 @@
             '<td class="govuk-table__cell">' + group.addressHtml + '</td>' +
             '<td class="govuk-table__cell" data-sort-value="' + group.visits + '">' + escapeHtml(formatVisits(group.visits)) + '</td>' +
             '<td class="govuk-table__cell" data-sort-value="' + group.minutes + '">' + escapeHtml(formatDuration(group.minutes)) + '</td>' +
-            '<td class="govuk-table__cell" data-sort-value="' + (group.lastVisit ? group.lastVisit.getTime() : 0) + '">' + escapeHtml(formatLastVisit(group.lastVisit)) + '</td>' +
+            '<td class="govuk-table__cell">' + escapeHtml(formatLastVisit(group.lastVisit)) + '</td>' +
             '</tr>';
         }).join('');
       }
+
+      updateSortHeaders();
 
       var statusEl = document.getElementById('emdi-loi-filter-status');
       if (statusEl) statusEl.textContent = 'Showing ' + visibleGroups.length + ' of ' + groups.length + ' locations.';
@@ -3004,13 +3047,28 @@
         '  <button class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button" id="emdi-loi-filter-apply" type="button">Filter locations</button>',
         '  <a href="#" id="emdi-loi-filter-clear" class="govuk-link">Clear filters</a>',
         '</div>',
-        '<div id="emdi-loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>'
+        '<div id="emdi-loi-filter-status" class="govuk-visually-hidden" aria-live="polite"></div>',
+        '<div id="emdi-loi-sort-status" class="govuk-visually-hidden" aria-live="polite"></div>'
       ].join('');
 
       table.parentNode.insertBefore(filterPanel, table);
 
       var typeSelect = document.getElementById('emdi-loi-filter-type');
       var dateSelect = document.getElementById('emdi-loi-filter-date');
+
+      table.tHead.querySelectorAll('button[data-sort-key]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var key = button.getAttribute('data-sort-key');
+          sortWasChanged = true;
+          if (sortState.key === key) {
+            sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            sortState.key = key;
+            sortState.direction = 'asc';
+          }
+          renderRows(typeSelect.value, dateSelect.value);
+        });
+      });
 
       document.getElementById('emdi-loi-filter-apply').addEventListener('click', function () {
         renderRows(typeSelect.value, dateSelect.value);
@@ -3025,9 +3083,6 @@
     }
 
     renderRows('', '');
-    if (window.MOJFrontend && typeof window.MOJFrontend.initAll === 'function') {
-      window.MOJFrontend.initAll(table.parentElement);
-    }
   });
 </script>
 
@@ -4730,6 +4785,41 @@ body {
 #emdi-points-filter-type .govuk-radios__item {
   margin-right: 0;
   white-space: nowrap;
+}
+
+.emdi-loi-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #005ea5;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.emdi-loi-sort-button:hover {
+  text-decoration: underline;
+}
+
+.emdi-loi-sort-button:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
+  background: #ffdd00;
+}
+
+.emdi-loi-sort-indicator {
+  flex: 0 0 22px;
+  color: #005ea5;
+  vertical-align: middle;
+}
+
+#bh-loi-table th[aria-sort="ascending"] .emdi-loi-sort-indicator__down,
+#bh-loi-table th[aria-sort="descending"] .emdi-loi-sort-indicator__up {
+  display: none;
 }
 
 </style>

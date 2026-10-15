@@ -312,7 +312,8 @@
   <p class="govuk-body" id="emdi-table-placeholder">No table results to show. Add in the search criteria for the map to show the points in a table.</p>
   <div id="emdi-table-content" hidden>
   <h3 class="govuk-heading-m">Points</h3>
-  <p class="govuk-body">This table shows every point except points either side of a missing data gap, and can be filtered to show points inside the exclusion zone.</p>
+  <p class="govuk-body">This table shows every point on the map (tag ping) and the time between each ping.</p>
+  <p class="govuk-body">If more than 5 minutes passes between pings, this is flagged as a notable gap.</p>
   <div class="loi-filters govuk-!-margin-bottom-3">
     <div class="govuk-form-group govuk-!-margin-bottom-3">
       <fieldset class="govuk-fieldset">
@@ -326,6 +327,10 @@
             <input class="govuk-radios__input" id="emdi-points-filter-type-exclusion" name="emdi-points-filter-type" type="radio" value="exclusion">
             <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-exclusion">Show points in exclusion zones only</label>
           </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="emdi-points-filter-type-inclusion" name="emdi-points-filter-type" type="radio" value="inclusion">
+            <label class="govuk-label govuk-radios__label" for="emdi-points-filter-type-inclusion">Show points in inclusion zones only</label>
+          </div>
         </div>
       </fieldset>
     </div>
@@ -334,7 +339,7 @@
     </button>
   </div>
   <table class="govuk-table" id="emdi-points-attention-table">
-    <caption class="govuk-table__caption govuk-visually-hidden">GPS points with gaps or inside the exclusion zone</caption>
+    <caption class="govuk-table__caption govuk-visually-hidden">GPS points with gaps or inside an inclusion or exclusion zone</caption>
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">Point</th>
@@ -343,31 +348,14 @@
         <th scope="col" class="govuk-table__header">Speed</th>
         <th scope="col" class="govuk-table__header">Signal type</th>
         <th scope="col" class="govuk-table__header">Tag status</th>
+        <th scope="col" class="govuk-table__header">View on map</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="emdi-points-attention-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">Update the map to view points.</td></tr>
+      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">Update the map to view points.</td></tr>
     </tbody>
   </table>
   <div id="emdi-points-attention-pagination"></div>
-  <h3 class="govuk-heading-m govuk-!-margin-top-6">Missing data</h3>
-  <p class="govuk-body">This table shows the gaps between points where the map uses a dotted line.</p>
-  <table class="govuk-table" id="emdi-missing-data-table">
-    <caption class="govuk-table__caption govuk-visually-hidden">Missing data gaps between GPS points</caption>
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Gap start point</th>
-        <th scope="col" class="govuk-table__header">Gap start time</th>
-        <th scope="col" class="govuk-table__header">Gap end point</th>
-        <th scope="col" class="govuk-table__header">Gap end time</th>
-        <th scope="col" class="govuk-table__header">Duration</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body" id="emdi-missing-data-table-body">
-      <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">Update the map to view missing data.</td></tr>
-    </tbody>
-  </table>
-  <div id="emdi-missing-data-pagination"></div>
   </div>
   </div>
  
@@ -1074,8 +1062,8 @@
         .replace(/'/g, '&#39;');
     }
 
-    function getExclusionBoundaries() {
-      var group = window.mapLayers && window.mapLayers.exclusionZone;
+    function getZoneBoundaries(zoneName) {
+      var group = window.mapLayers && window.mapLayers[zoneName];
       var boundaries = [];
       if (!group || typeof group.eachLayer !== 'function') return boundaries;
 
@@ -1110,12 +1098,9 @@
     }
 
     var ATTENTION_PAGE_SIZE = 20;
-    var MISSING_DATA_PAGE_SIZE = 20;
     var attentionRows = [];
     var attentionPage = 1;
     var attentionEntries = [];
-    var missingDataRows = [];
-    var missingDataPage = 1;
     var keyboardPoints = [];
     var keyboardPointIndex = 0;
     var keyboardHighlightLayer;
@@ -1457,6 +1442,21 @@
         if (event.key === 'Escape' && dialog && !dialog.hidden) closeShortcutsDialog();
       });
 
+      document.addEventListener('click', function (event) {
+        var link = event.target.closest && event.target.closest('.emdi-view-on-map[data-point-index]');
+        if (!link) return;
+        event.preventDefault();
+        var pointIndex = Number(link.dataset.pointIndex);
+        var mapEl = document.getElementById('map');
+        if (mapEl) {
+          mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          suppressNextMapFocusHighlight = true;
+          mapEl.focus();
+        }
+        highlightKeyboardPoint(pointIndex);
+        openKeyboardPointPopup();
+      });
+
       keyboardAccessReady = true;
     }
 
@@ -1467,7 +1467,7 @@
         ? (Number(point.speed) * 0.621371).toFixed(1) + ' miles per hour' : '\u2014';
       var signalType = point.geolocationMechanism || '\u2014';
       var tagStatus = entry.isExclusion ? 'Exclusion breach' : 'No tamper';
-      return [
+      var rows = [
         '<tr class="govuk-table__row">',
         '<th scope="row" class="govuk-table__header">Point ' + (entry.index + 1) + '</th>',
         '<td class="govuk-table__cell">' + escapeHtml(accuracy) + '</td>',
@@ -1475,8 +1475,24 @@
         '<td class="govuk-table__cell">' + escapeHtml(speed) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(signalType) + '</td>',
         '<td class="govuk-table__cell">' + escapeHtml(tagStatus) + '</td>',
+        '<td class="govuk-table__cell">' + viewOnMapLinkHtml(entry.keyboardIndex) + '</td>',
         '</tr>'
-      ].join('');
+      ];
+
+      if (Number.isFinite(entry.gapToNextMinutes) && Math.round(entry.gapToNextMinutes) > 5) {
+        rows.push(
+          '<tr class="govuk-table__row emdi-considerable-gap-row">',
+          '<td class="govuk-table__cell" colspan="7">There has been a notable gap of ' + escapeHtml(formatGapDuration(entry.gapToNextMinutes)) + '</td>',
+          '</tr>'
+        );
+      }
+
+      return rows.join('');
+    }
+
+    function viewOnMapLinkHtml(keyboardIndex) {
+      if (!Number.isFinite(keyboardIndex) || keyboardIndex < 0) return '\u2014';
+      return '<a href="#" class="govuk-link emdi-view-on-map" data-point-index="' + keyboardIndex + '">View</a>';
     }
 
     function formatGapDuration(minutes) {
@@ -1488,18 +1504,6 @@
       return roundedMinutes + ' minutes';
     }
 
-    function buildMissingDataRowHtml(gap) {
-      return [
-        '<tr class="govuk-table__row">',
-        '<th scope="row" class="govuk-table__header">Point ' + (gap.startIndex + 1) + '</th>',
-        '<td class="govuk-table__cell">' + escapeHtml(dateTime(gap.startPoint.time)) + '</td>',
-        '<td class="govuk-table__cell">Point ' + (gap.endIndex + 1) + '</td>',
-        '<td class="govuk-table__cell">' + escapeHtml(dateTime(gap.endPoint.time)) + '</td>',
-        '<td class="govuk-table__cell">' + escapeHtml(formatGapDuration(gap.durationMinutes)) + '</td>',
-        '</tr>'
-      ].join('');
-    }
-
     function currentFilterType() {
       var checked = document.querySelector('#emdi-points-filter-type input[name="emdi-points-filter-type"]:checked');
       return checked ? checked.value : 'all';
@@ -1508,75 +1512,12 @@
     function applyAttentionFilter() {
       var filterType = currentFilterType();
       var filtered = attentionEntries.filter(function (entry) {
-        if (filterType === 'exclusion') return entry.isExclusion && !entry.isDotted;
-        return !entry.isDotted;
+        if (filterType === 'exclusion') return entry.isExclusion;
+        if (filterType === 'inclusion') return entry.isInclusion;
+        return true;
       });
       attentionRows = filtered.map(buildAttentionRowHtml);
       renderAttentionPage(1);
-    }
-
-    function buildMissingDataPaginationHtml(currentPage, totalPages) {
-      var pageNumbers = [1, totalPages, currentPage - 1, currentPage, currentPage + 1]
-        .filter(function (page) { return page >= 1 && page <= totalPages; })
-        .sort(function (a, b) { return a - b; })
-        .filter(function (page, index, all) { return all.indexOf(page) === index; });
-
-      var itemsHtml = '';
-      pageNumbers.forEach(function (page, index) {
-        if (index > 0 && page - pageNumbers[index - 1] > 1) {
-          itemsHtml += '<li class="govuk-pagination__item govuk-pagination__item--ellipsis">&ctdot;</li>';
-        }
-        var isCurrent = page === currentPage;
-        itemsHtml += '<li class="govuk-pagination__item' + (isCurrent ? ' govuk-pagination__item--current' : '') + '">' +
-          '<a class="govuk-link govuk-pagination__link" href="#" data-missing-data-page="' + page + '" aria-label="Page ' + page + '"' + (isCurrent ? ' aria-current="page"' : '') + '>' + page + '</a></li>';
-      });
-
-      var prevHtml = currentPage > 1
-        ? '<div class="govuk-pagination__prev"><a class="govuk-link govuk-pagination__link" href="#" rel="prev" data-missing-data-page="' + (currentPage - 1) + '">' +
-          '<svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13"><path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path></svg>' +
-          '<span class="govuk-pagination__link-title">Previous</span></a></div>'
-        : '';
-
-      var nextHtml = currentPage < totalPages
-        ? '<div class="govuk-pagination__next"><a class="govuk-link govuk-pagination__link" href="#" rel="next" data-missing-data-page="' + (currentPage + 1) + '">' +
-          '<span class="govuk-pagination__link-title">Next</span>' +
-          '<svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13"><path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path></svg></a></div>'
-        : '';
-
-      var startResult = (currentPage - 1) * MISSING_DATA_PAGE_SIZE + 1;
-      var endResult = Math.min(currentPage * MISSING_DATA_PAGE_SIZE, missingDataRows.length);
-      var paginationNav = totalPages > 1
-        ? '<nav class="govuk-pagination moj-pagination__pagination" aria-label="Missing data pagination">' +
-          prevHtml +
-          '<ul class="govuk-pagination__list">' + itemsHtml + '</ul>' +
-          nextHtml +
-          '</nav>'
-        : '';
-
-      return '<div class="moj-pagination">' + paginationNav +
-        '<p class="moj-pagination__results">Showing ' + startResult + ' to ' + endResult + ' of ' + missingDataRows.length + ' total results</p></div>';
-    }
-
-    function renderMissingDataPage(page) {
-      var body = document.getElementById('emdi-missing-data-table-body');
-      var paginationSlot = document.getElementById('emdi-missing-data-pagination');
-      if (!body) return;
-
-      if (!missingDataRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="5">No missing data found in the current map view.</td></tr>';
-        if (paginationSlot) paginationSlot.innerHTML = '';
-        return;
-      }
-
-      var totalPages = Math.ceil(missingDataRows.length / MISSING_DATA_PAGE_SIZE);
-      missingDataPage = Math.min(Math.max(page, 1), totalPages);
-
-      var start = (missingDataPage - 1) * MISSING_DATA_PAGE_SIZE;
-      body.innerHTML = missingDataRows.slice(start, start + MISSING_DATA_PAGE_SIZE).join('');
-
-      if (paginationSlot) {
-        paginationSlot.innerHTML = buildMissingDataPaginationHtml(missingDataPage, totalPages);
-      }
     }
 
     var filterApplyButton = document.getElementById('emdi-points-filter-apply');
@@ -1635,7 +1576,7 @@
       if (!body) return;
 
       if (!attentionRows.length) {
-        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="6">No points meet these conditions in the current map view.</td></tr>';
+        body.innerHTML = '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">No points meet these conditions in the current map view.</td></tr>';
         if (paginationSlot) paginationSlot.innerHTML = '';
         return;
       }
@@ -1660,21 +1601,12 @@
       if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    document.addEventListener('click', function (event) {
-      var link = event.target.closest && event.target.closest('#emdi-missing-data-pagination [data-missing-data-page]');
-      if (!link) return;
-      event.preventDefault();
-      renderMissingDataPage(Number(link.dataset.missingDataPage));
-      var table = document.getElementById('emdi-missing-data-table');
-      if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
     function renderAttentionTable(points) {
-      var boundaries = getExclusionBoundaries();
+      var exclusionBoundaries = getZoneBoundaries('exclusionZone');
+      var inclusionBoundaries = getZoneBoundaries('inclusionZone');
       var entries = [];
       window.emdiLoadedTrailPoints = points || [];
       if (typeof window.updateZonePointCounts === 'function') window.updateZonePointCounts(window.emdiLoadedTrailPoints);
-      var missingGaps = [];
       keyboardPoints = (points || []).filter(function (point) {
         return Number.isFinite(point.lat) && Number.isFinite(point.lng);
       });
@@ -1683,6 +1615,7 @@
       (points || []).forEach(function (point, index) {
         var reasons = [];
         var isDotted = false;
+        var gapToNextMinutes = null;
         var currentDate = new Date(point.time);
         if (index > 0) {
           var previousDate = new Date(points[index - 1].time);
@@ -1695,29 +1628,33 @@
         if (index < points.length - 1) {
           var nextDate = new Date(points[index + 1].time);
           var nextGapMinutes = (nextDate - currentDate) / 60000;
+          if (!isNaN(nextGapMinutes) && nextGapMinutes >= 0) gapToNextMinutes = nextGapMinutes;
           if (!isNaN(nextGapMinutes) && nextGapMinutes >= 5) {
             reasons.push('Dotted line: ' + Math.round(nextGapMinutes) + ' minute gap to next point');
             isDotted = true;
-            missingGaps.push({
-              startIndex: index,
-              startPoint: point,
-              endIndex: index + 1,
-              endPoint: points[index + 1],
-              durationMinutes: nextGapMinutes
-            });
           }
         }
         var isExclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
-          boundaries.some(function (boundary) { return isInside(point, boundary); });
+          exclusionBoundaries.some(function (boundary) { return isInside(point, boundary); });
+        var isInclusion = Number.isFinite(point.lat) && Number.isFinite(point.lng) &&
+          inclusionBoundaries.some(function (boundary) { return isInside(point, boundary); });
         if (isExclusion) reasons.push('Within the exclusion zone');
+        if (isInclusion) reasons.push('Within the inclusion zone');
 
-        entries.push({ index: index, point: point, reasons: reasons, isDotted: isDotted, isExclusion: isExclusion });
+        entries.push({
+          index: index,
+          point: point,
+          reasons: reasons,
+          isDotted: isDotted,
+          isExclusion: isExclusion,
+          isInclusion: isInclusion,
+          keyboardIndex: keyboardPoints.indexOf(point),
+          gapToNextMinutes: gapToNextMinutes
+        });
       });
 
       attentionEntries = entries;
-      missingDataRows = missingGaps.map(buildMissingDataRowHtml);
       applyAttentionFilter();
-      renderMissingDataPage(1);
       setupMapKeyboardAccess();
     }
 
@@ -4402,22 +4339,19 @@ body {
 }
 
 /* Place the results count on its own line below the pagination nav. */
-#emdi-points-attention-pagination .moj-pagination,
-#emdi-missing-data-pagination .moj-pagination {
+#emdi-points-attention-pagination .moj-pagination {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-#emdi-points-attention-pagination .moj-pagination__pagination,
-#emdi-missing-data-pagination .moj-pagination__pagination {
+#emdi-points-attention-pagination .moj-pagination__pagination {
   align-self: flex-start;
   margin-bottom: 0;
 }
 
-#emdi-points-attention-pagination .moj-pagination__results,
-#emdi-missing-data-pagination .moj-pagination__results {
+#emdi-points-attention-pagination .moj-pagination__results {
   align-self: flex-start;
   margin: 0;
   white-space: nowrap;

@@ -209,7 +209,7 @@
       try { container && container.focus({ preventScroll: true }); } catch (_) {}
 
       const a = popup && popup._closeButton;
-      if (a && a.tagName === 'A') {
+      if (a && a.tagName === 'A' && a.parentNode) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = a.className;

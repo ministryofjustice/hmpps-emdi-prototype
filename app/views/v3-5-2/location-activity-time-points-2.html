@@ -962,20 +962,38 @@
       return pad2(date.getDate()) + '/' + pad2(date.getMonth() + 1) + '/' + date.getFullYear();
     }
 
+    function setDateValue(input, date) {
+      if (!input) return;
+      input.value = formatUkDate(date);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
     function stepDate(input, deltaDays) {
       if (!input) return;
 
       var current = parseUkDate(input.value) || new Date();
       current.setDate(current.getDate() + deltaDays);
-      input.value = formatUkDate(current);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+      setDateValue(input, current);
       // Only updates the field value - the user must click "Update map" to refresh the trail.
     }
 
     function stepDateRange(deltaDays) {
-      stepDate(document.getElementById('bh-date-from'), deltaDays);
-      stepDate(document.getElementById('bh-date-to'), deltaDays);
+      var dateFrom = document.getElementById('bh-date-from');
+      var dateTo = document.getElementById('bh-date-to');
+      var hasDateFrom = !!(dateFrom && dateFrom.value.trim());
+      var hasDateTo = !!(dateTo && dateTo.value.trim());
+
+      if (!hasDateFrom && !hasDateTo) {
+        var initialDate = new Date();
+        if (deltaDays < 0) initialDate.setDate(initialDate.getDate() - 1);
+        setDateValue(dateFrom, initialDate);
+        setDateValue(dateTo, initialDate);
+        return;
+      }
+
+      stepDate(dateFrom, deltaDays);
+      stepDate(dateTo, deltaDays);
     }
 
     document.addEventListener('click', function (event) {

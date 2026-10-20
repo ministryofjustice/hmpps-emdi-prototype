@@ -1776,12 +1776,40 @@
     installPingIntervalWrapper();
     document.addEventListener('bh:map-ready', installPingIntervalWrapper);
 
+    function getOpenPingLocation() {
+      var popup = window.map && window.map._popup;
+      var popupElement = popup && popup.getElement && popup.getElement();
+      if (!popupElement || !popupElement.querySelector('.gps-point-card')) return null;
+
+      var location = popup.getLatLng && popup.getLatLng();
+      return location && Number.isFinite(location.lat) && Number.isFinite(location.lng)
+        ? { lat: location.lat, lng: location.lng }
+        : null;
+    }
+
+    function nearestPoint(points, location) {
+      if (!Array.isArray(points) || !points.length || !location) return null;
+      return points.reduce(function (nearest, point) {
+        if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return nearest;
+        if (!nearest) return point;
+        var pointDistance = Math.pow(point.lat - location.lat, 2) + Math.pow(point.lng - location.lng, 2);
+        var nearestDistance = Math.pow(nearest.lat - location.lat, 2) + Math.pow(nearest.lng - location.lng, 2);
+        return pointDistance < nearestDistance ? point : nearest;
+      }, null);
+    }
+
     window.emdiSetPingInterval = function (minutes) {
+      var activePingLocation = getOpenPingLocation();
       pingIntervalMinutes = Number(minutes) || 0;
       if (lastRawTrace && originalPlotTraceObject) {
         var result = applyPingIntervalFilter(lastRawTrace);
-        Promise.resolve(originalPlotTraceObject.call(null, result.trace, { scrollToMap: false, highlightRowEl: null })).then(function () {
+        Promise.resolve(originalPlotTraceObject.call(null, result.trace, { scrollToMap: false, highlightRowEl: null })).then(function (plotResult) {
           if (typeof window.renderAttentionTable === 'function') window.renderAttentionTable(result.visiblePoints);
+          var targetPoint = nearestPoint(result.visiblePoints, activePingLocation);
+          if (targetPoint && window.openPointPopupAtLatLng && window.L) {
+            window.openPointPopupAtLatLng(window.L.latLng(targetPoint.lat, targetPoint.lng));
+          }
+          return plotResult;
         });
       }
     };

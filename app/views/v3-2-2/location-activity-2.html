@@ -2667,7 +2667,7 @@
     if (directionInput) directionInput.checked = hasLayer(window.mapLayers.directionInfo);
     if (confidenceInput) confidenceInput.checked = hasLayer(window.mapLayers.accuracy);
     if (pointsInput) {
-      pointsInput.checked = window.emdiPointNumbersVisible !== false;
+      pointsInput.checked = window.emdiPointNumbersVisible === true;
       setPointNumbersVisible(pointsInput.checked);
     }
     if (clustersInput) {

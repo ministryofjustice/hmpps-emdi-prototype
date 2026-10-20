@@ -1803,10 +1803,36 @@
     document.addEventListener('bh:map-ready', installPingIntervalWrapper);
 
     window.emdiSetPingInterval = function (minutes) {
+      var pointsBeforeChange = lastRawTrace
+        ? filterPointsByPingInterval(lastRawTrace.points, pingIntervalMinutes)
+        : [];
+      var activePopup = window.map && window.map._popup;
+      var activeMarker = activePopup && activePopup._source;
+      var activePoint = activeMarker && Number.isInteger(activeMarker._pointIndex)
+        ? pointsBeforeChange[activeMarker._pointIndex]
+        : null;
+
       pingIntervalMinutes = Number(minutes) || 0;
-      if (lastRawTrace && originalPlotTraceObject) {
-        originalPlotTraceObject.call(null, applyPingIntervalFilter(lastRawTrace), { scrollToMap: false, highlightRowEl: null });
-      }
+      if (!lastRawTrace || !originalPlotTraceObject) return;
+
+      var filteredTrace = applyPingIntervalFilter(lastRawTrace);
+      Promise.resolve(originalPlotTraceObject.call(null, filteredTrace, { scrollToMap: false, highlightRowEl: null }))
+        .then(function () {
+          if (!activePoint || !filteredTrace.points.length || !window.openPointPopupAtLatLng || !window.L) return;
+
+          var activeTime = pointTimeMs(activePoint);
+          var nearestPoint = filteredTrace.points.reduce(function (nearest, point) {
+            if (!nearest) return point;
+            var pointTime = pointTimeMs(point);
+            var nearestTime = pointTimeMs(nearest);
+            if (activeTime === null || pointTime === null || nearestTime === null) return nearest;
+            return Math.abs(pointTime - activeTime) < Math.abs(nearestTime - activeTime) ? point : nearest;
+          }, null);
+
+          if (nearestPoint && Number.isFinite(nearestPoint.lat) && Number.isFinite(nearestPoint.lng)) {
+            window.openPointPopupAtLatLng(window.L.latLng(nearestPoint.lat, nearestPoint.lng));
+          }
+        });
     };
   }());
 </script>

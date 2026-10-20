@@ -25,7 +25,7 @@
     href: "mi-reporting-pop"
     
   }, {
-    text: "User view",
+    text: "PDU / Region view",
     href: "mi-reporting-user",
     active: true
   }]
@@ -325,43 +325,9 @@
   ]
 }) }}
 
-{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
-
-
-{{ mojPagination({
-  items: [{
-    text: "1",
-    href: "#",
-    selected: true
-  }, {
-    text: "2",
-    href: "#"
-    
-  }, {
-    text: "3",
-    href: "#"
-  }, {
-    type: "dots"
-  }, {
-    text: "7",
-    href: "#"
-  }],
-  results: {
-    count: 157,
-    from: 1,
-    to: 50,
-    text: "results"
-  },
-  previous: {
-    text: "Previous",
-    href: "#"
-  },
-  next: {
-    text: "Next",
-    href: "#"
-  }
-}) }}
+<div class="moj-pagination">
+  <p class="moj-pagination__results">Showing 1 to 10 of 10 results</p>
+</div>
 
 </div>
 </div>
@@ -455,7 +421,49 @@
       }
     }
 
+    function aggregateRowsByPduRegion() {
+      var groups = new Map();
+      Array.prototype.slice.call(tbody.querySelectorAll('tr')).forEach(function (row) {
+        var cells = row.cells;
+        if (!cells || cells.length < 5) return;
+
+        var pdu = normalize(cells[0].textContent);
+        var region = normalize(cells[1].textContent);
+        var key = JSON.stringify([pdu, region]);
+        var group = groups.get(key);
+        if (!group) {
+          group = { pdu: pdu, region: region, searches: 0, pops: 0, lastViewed: '', lastViewedSort: '' };
+          groups.set(key, group);
+        }
+
+        group.searches += Number(cells[2].textContent) || 0;
+        group.pops += Number(cells[3].textContent) || 0;
+
+        var lastViewedCell = cells[4];
+        var lastViewedSort = lastViewedCell.getAttribute('data-sort-value') || '';
+        if (lastViewedSort >= group.lastViewedSort) {
+          group.lastViewedSort = lastViewedSort;
+          group.lastViewed = normalize(lastViewedCell.textContent);
+        }
+      });
+
+      tbody.innerHTML = '';
+      Array.from(groups.values())
+        .sort(function (a, b) { return b.lastViewedSort.localeCompare(a.lastViewedSort); })
+        .forEach(function (group) {
+          var row = document.createElement('tr');
+          row.className = 'govuk-table__row';
+          row.appendChild(createCell(group.pdu));
+          row.appendChild(createCell(group.region));
+          row.appendChild(createCell(String(group.searches), String(group.searches)));
+          row.appendChild(createCell(String(group.pops), String(group.pops)));
+          row.appendChild(createCell(group.lastViewed, group.lastViewedSort));
+          tbody.appendChild(row);
+        });
+    }
+
     appendRandomRowsToTarget();
+    aggregateRowsByPduRegion();
     var rows = tbody ? Array.prototype.slice.call(tbody.querySelectorAll('tr')) : [];
 
     if (!dateFilter.el || !button || !clearFilters || !selectedFiltersSummary || !tbody || checkboxFilters.some(function (f) { return !f.el; })) return;

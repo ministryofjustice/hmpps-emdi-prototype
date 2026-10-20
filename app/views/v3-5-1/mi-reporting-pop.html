@@ -81,20 +81,24 @@
         <span class="govuk-label">Last viewed</span>
         <div class="govuk-checkboxes govuk-checkboxes--small mi-filter-checkboxes" id="last-viewed-filter">
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="last-viewed-filter-today" name="lastViewed" type="checkbox" value="today">
-            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-today">Today</label>
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-0-7" name="lastViewed" type="checkbox" value="0-7">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-0-7">0 to 7 days</label>
           </div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="last-viewed-filter-7" name="lastViewed" type="checkbox" value="7">
-            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-7">Last 7 days</label>
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-8-14" name="lastViewed" type="checkbox" value="8-14">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-8-14">8 to 14 days</label>
           </div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="last-viewed-filter-30" name="lastViewed" type="checkbox" value="30">
-            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-30">Last 30 days</label>
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-15-30" name="lastViewed" type="checkbox" value="15-30">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-15-30">15 to 30 days</label>
           </div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="last-viewed-filter-90" name="lastViewed" type="checkbox" value="90">
-            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-90">Last 90 days</label>
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-31-90" name="lastViewed" type="checkbox" value="31-90">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-31-90">31 to 90 days</label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="last-viewed-filter-90plus" name="lastViewed" type="checkbox" value="90+">
+            <label class="govuk-label govuk-checkboxes__label" for="last-viewed-filter-90plus">More than 90 days</label>
           </div>
         </div>
       </div>
@@ -124,13 +128,16 @@
   },
   head: [
     {
-      text: "Name / CRN"
+      text: "CRN"
     },
      {
       text: "PDU"
     },
      {
       text: "Region"
+    },
+     {
+      text: "Tier"
     },
      {
       text: "Searches"
@@ -148,7 +155,7 @@
   rows: [
     [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hoskins, Billy</span><span class="mi-name-crn__crn">Q482917</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">Q482917</span></span>',
         attributes: { "data-crn": "Q482917", "data-name": "Hoskins, Billy" }
       },
       {
@@ -156,6 +163,9 @@
       },
       {
         text: "East of England"
+      },
+      {
+        text: "C"
       },
       {
         text: "3"
@@ -170,7 +180,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Parker, Liam</span><span class="mi-name-crn__crn">M739205</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">M739205</span></span>',
         attributes: { "data-crn": "M739205", "data-name": "Parker, Liam" }
       },
       {
@@ -178,6 +188,9 @@
       },
       {
         text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "A"
       },
       {
         text: "1"
@@ -192,7 +205,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Collins, Mia</span><span class="mi-name-crn__crn">R160834</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">R160834</span></span>',
         attributes: { "data-crn": "R160834", "data-name": "Collins, Mia" }
       },
       {
@@ -200,6 +213,9 @@
       },
       {
         text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "E"
       },
       {
         text: "5"
@@ -214,7 +230,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Bennett, Noah</span><span class="mi-name-crn__crn">B951472</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">B951472</span></span>',
         attributes: { "data-crn": "B951472", "data-name": "Bennett, Noah" }
       },
       {
@@ -222,6 +238,9 @@
       },
       {
         text: "Kent, Surrey and Sussex"
+      },
+      {
+        text: "B"
       },
       {
         text: "0"
@@ -236,7 +255,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Foster, Isla</span><span class="mi-name-crn__crn">T304689</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">T304689</span></span>',
         attributes: { "data-crn": "T304689", "data-name": "Foster, Isla" }
       },
       {
@@ -244,6 +263,9 @@
       },
       {
         text: "West Midlands"
+      },
+      {
+        text: "G"
       },
       {
         text: "2"
@@ -258,7 +280,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Ward, Ethan</span><span class="mi-name-crn__crn">H827561</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">H827561</span></span>',
         attributes: { "data-crn": "H827561", "data-name": "Ward, Ethan" }
       },
       {
@@ -266,6 +288,9 @@
       },
       {
         text: "North West"
+      },
+      {
+        text: "D"
       },
       {
         text: "4"
@@ -280,7 +305,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Mitchell, Grace</span><span class="mi-name-crn__crn">N415298</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">N415298</span></span>',
         attributes: { "data-crn": "N415298", "data-name": "Mitchell, Grace" }
       },
       {
@@ -288,6 +313,9 @@
       },
       {
         text: "North West"
+      },
+      {
+        text: "F"
       },
       {
         text: "1"
@@ -302,7 +330,7 @@
     ],
      [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hughes, Leo</span><span class="mi-name-crn__crn">C672940</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">C672940</span></span>',
         attributes: { "data-crn": "C672940", "data-name": "Hughes, Leo" }
       },
       {
@@ -310,6 +338,9 @@
       },
       {
         text: "Yorkshire and The Humber"
+      },
+      {
+        text: "B"
       },
       {
         text: "5"
@@ -324,7 +355,7 @@
     ],
     [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Reed, Sophie</span><span class="mi-name-crn__crn">L508173</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">L508173</span></span>',
         attributes: { "data-crn": "L508173", "data-name": "Reed, Sophie" }
       },
       {
@@ -332,6 +363,9 @@
       },
       {
         text: "Yorkshire and The Humber"
+      },
+      {
+        text: "A"
       },
       {
         text: "0"
@@ -346,7 +380,7 @@
     ],
     [
       {
-        html: '<span class="mi-name-crn"><span class="mi-name-crn__name">Hayes, Jacob</span><span class="mi-name-crn__crn">P294760</span></span>',
+        html: '<span class="mi-name-crn"><span class="mi-name-crn__crn">P294760</span></span>',
         attributes: { "data-crn": "P294760", "data-name": "Hayes, Jacob" }
       },
       {
@@ -354,6 +388,9 @@
       },
       {
         text: "South Central"
+      },
+      {
+        text: "D"
       },
       {
         text: "2"
@@ -474,7 +511,7 @@
       cell.className = 'govuk-table__cell';
       cell.setAttribute('data-crn', crn);
       cell.setAttribute('data-name', name);
-      cell.innerHTML = '<span class="mi-name-crn"><span class="mi-name-crn__name">' + name + '</span><span class="mi-name-crn__crn">' + crn + '</span></span>';
+      cell.innerHTML = '<span class="mi-name-crn"><span class="mi-name-crn__crn">' + crn + '</span></span>';
       return cell;
     }
 
@@ -526,6 +563,7 @@
         tr.appendChild(createNameCrnCell(displayName, crn));
         tr.appendChild(createCell(pair.pdu));
         tr.appendChild(createCell(pair.region));
+        tr.appendChild(createCell(pick(['A', 'B', 'C', 'D', 'E', 'F', 'G'])));
         tr.appendChild(createCell(String(searches)));
         tr.appendChild(createCell(String(users)));
         tr.appendChild(createCell(formatDisplayDate(date), toIsoDate(date)));
@@ -633,18 +671,15 @@
       if (!rowDate) return false;
 
       var today = startOfDay(new Date());
+      var diffDays = Math.round((today - rowDate) / (1000 * 60 * 60 * 24));
 
       return filterValues.some(function (filterValue) {
-        if (filterValue === 'today') {
-          return rowDate.getTime() === today.getTime();
-        }
-
-        var days = Number(filterValue);
-        if (!Number.isFinite(days)) return false;
-
-        var threshold = new Date(today);
-        threshold.setDate(threshold.getDate() - (days - 1));
-        return rowDate >= threshold && rowDate <= today;
+        if (filterValue === '0-7')   return diffDays >= 0  && diffDays <= 7;
+        if (filterValue === '8-14')  return diffDays >= 8  && diffDays <= 14;
+        if (filterValue === '15-30') return diffDays >= 15 && diffDays <= 30;
+        if (filterValue === '31-90') return diffDays >= 31 && diffDays <= 90;
+        if (filterValue === '90+')   return diffDays > 90;
+        return false;
       });
     }
 

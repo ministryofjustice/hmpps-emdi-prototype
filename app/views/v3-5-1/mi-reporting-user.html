@@ -349,8 +349,6 @@
     var status = document.getElementById('loi-filter-status');
     var table = document.getElementById('mi-reporting-table');
     var tbody = table && table.tBodies ? table.tBodies[0] : null;
-    var targetRowCount = 50;
-
     function randomInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -392,20 +390,101 @@
       if (!tbody) return;
 
       var pduRegionPairs = [
+        { pdu: 'County Durham & Darlington', region: 'North East' },
+        { pdu: 'Gateshead & South Tyneside', region: 'North East' },
+        { pdu: 'Stockton & Hartlepool', region: 'North East' },
+        { pdu: 'Sunderland', region: 'North East' },
+        { pdu: 'Redcar, Cleveland & Middlesbrough', region: 'North East' },
+        { pdu: 'Newcastle upon Tyne', region: 'North East' },
+        { pdu: 'North Tyneside & Northumberland', region: 'North East' },
+        { pdu: 'Barnsley & Rotherham', region: 'Yorkshire & The Humber' },
+        { pdu: 'Sheffield', region: 'Yorkshire & The Humber' },
+        { pdu: 'Doncaster', region: 'Yorkshire & The Humber' },
+        { pdu: 'Leeds', region: 'Yorkshire & The Humber' },
+        { pdu: 'Wakefield', region: 'Yorkshire & The Humber' },
+        { pdu: 'Kirklees', region: 'Yorkshire & The Humber' },
+        { pdu: 'Bradford & Calderdale', region: 'Yorkshire & The Humber' },
+        { pdu: 'York', region: 'Yorkshire & The Humber' },
+        { pdu: 'North Yorkshire', region: 'Yorkshire & The Humber' },
+        { pdu: 'Hull & East Riding', region: 'Yorkshire & The Humber' },
+        { pdu: 'North & North East Lincolnshire', region: 'Yorkshire & The Humber' },
+        { pdu: 'Nottingham City', region: 'East Midlands' },
+        { pdu: 'Nottinghamshire', region: 'East Midlands' },
+        { pdu: 'Derby City', region: 'East Midlands' },
+        { pdu: 'Derbyshire', region: 'East Midlands' },
+        { pdu: 'Leicester, Leicestershire & Rutland', region: 'East Midlands' },
+        { pdu: 'East & West Lincolnshire', region: 'East Midlands' },
+        { pdu: 'Essex North', region: 'East of England' },
         { pdu: 'Essex South', region: 'East of England' },
-        { pdu: 'Kent and Medway', region: 'Kent, Surrey and Sussex' },
-        { pdu: 'Surrey', region: 'Kent, Surrey and Sussex' },
-        { pdu: 'Sussex North', region: 'Kent, Surrey and Sussex' },
-        { pdu: 'West Midlands Central', region: 'West Midlands' },
-        { pdu: 'Merseyside', region: 'North West' },
-        { pdu: 'Greater Manchester North', region: 'North West' },
-        { pdu: 'South Yorkshire', region: 'Yorkshire and The Humber' },
-        { pdu: 'West Yorkshire', region: 'Yorkshire and The Humber' },
-        { pdu: 'Hampshire and Isle of Wight', region: 'South Central' }
+        { pdu: 'Suffolk', region: 'East of England' },
+        { pdu: 'Norfolk', region: 'East of England' },
+        { pdu: 'Hertfordshire', region: 'East of England' },
+        { pdu: 'Northamptonshire', region: 'East of England' },
+        { pdu: 'Bedfordshire', region: 'East of England' },
+        { pdu: 'Cambridgeshire & Peterborough', region: 'East of England' },
+        { pdu: 'East Kent', region: 'Kent, Surrey & Sussex' },
+        { pdu: 'West Kent', region: 'Kent, Surrey & Sussex' },
+        { pdu: 'Surrey', region: 'Kent, Surrey & Sussex' },
+        { pdu: 'East Sussex', region: 'Kent, Surrey & Sussex' },
+        { pdu: 'West Sussex', region: 'Kent, Surrey & Sussex' },
+        { pdu: 'Hampshire North & East', region: 'South Central' },
+        { pdu: 'Hampshire South West', region: 'South Central' },
+        { pdu: 'Hampshire South & Isle of Wight', region: 'South Central' },
+        { pdu: 'Oxfordshire', region: 'South Central' },
+        { pdu: 'Buckinghamshire & Milton Keynes', region: 'South Central' },
+        { pdu: 'Berkshire', region: 'South Central' },
+        { pdu: 'Bristol, Gloucestershire, North Somerset & South Gloucestershire', region: 'South West' },
+        { pdu: 'Devon', region: 'South West' },
+        { pdu: 'Cornwall', region: 'South West' },
+        { pdu: 'Dorset', region: 'South West' },
+        { pdu: 'Somerset', region: 'South West' },
+        { pdu: 'Wiltshire', region: 'South West' },
+        { pdu: 'North London', region: 'London' },
+        { pdu: 'South London', region: 'London' },
+        { pdu: 'East London', region: 'London' },
+        { pdu: 'West London', region: 'London' },
+        { pdu: 'Central London', region: 'London' },
+        { pdu: 'Birmingham North, East & Solihull', region: 'West Midlands' },
+        { pdu: 'Birmingham Central & South', region: 'West Midlands' },
+        { pdu: 'Dudley & Sandwell', region: 'West Midlands' },
+        { pdu: 'Walsall & Wolverhampton', region: 'West Midlands' },
+        { pdu: 'Coventry', region: 'West Midlands' },
+        { pdu: 'Warwickshire', region: 'West Midlands' },
+        { pdu: 'Staffordshire & Stoke', region: 'West Midlands' },
+        { pdu: 'Worcestershire', region: 'West Midlands' },
+        { pdu: 'Herefordshire, Shropshire & Telford', region: 'West Midlands' },
+        { pdu: 'Salford', region: 'Greater Manchester' },
+        { pdu: 'Manchester North', region: 'Greater Manchester' },
+        { pdu: 'Manchester South', region: 'Greater Manchester' },
+        { pdu: 'Bolton', region: 'Greater Manchester' },
+        { pdu: 'Wigan', region: 'Greater Manchester' },
+        { pdu: 'Bury & Rochdale', region: 'Greater Manchester' },
+        { pdu: 'Stockport & Trafford', region: 'Greater Manchester' },
+        { pdu: 'Tameside', region: 'Greater Manchester' },
+        { pdu: 'Oldham', region: 'Greater Manchester' },
+        { pdu: 'West Cheshire', region: 'North West' },
+        { pdu: 'East Cheshire', region: 'North West' },
+        { pdu: 'Warrington & Halton', region: 'North West' },
+        { pdu: 'Knowsley & St Helens', region: 'North West' },
+        { pdu: 'Sefton', region: 'North West' },
+        { pdu: 'Liverpool North', region: 'North West' },
+        { pdu: 'Liverpool South', region: 'North West' },
+        { pdu: 'Cumbria', region: 'North West' },
+        { pdu: 'Wirral', region: 'North West' },
+        { pdu: 'North West Lancashire', region: 'North West' },
+        { pdu: 'Blackburn with Darwen', region: 'North West' },
+        { pdu: 'East Lancashire', region: 'North West' },
+        { pdu: 'Central Lancashire', region: 'North West' },
+        { pdu: 'North Wales', region: 'Wales' },
+        { pdu: 'Gwent', region: 'Wales' },
+        { pdu: 'Cardiff & Vale of Glamorgan', region: 'Wales' },
+        { pdu: 'Swansea, Neath Port Talbot', region: 'Wales' },
+        { pdu: 'Cwm Taf Morgannwg', region: 'Wales' },
+        { pdu: 'Dyfed-Powys', region: 'Wales' }
       ];
 
-      while (tbody.rows.length < targetRowCount) {
-        var pair = pick(pduRegionPairs);
+      tbody.innerHTML = '';
+      pduRegionPairs.forEach(function (pair) {
         var searches = randomInt(0, 12);
         var pops = randomInt(0, 10);
         var date = randomRecentDate();
@@ -418,7 +497,7 @@
         tr.appendChild(createCell(formatDisplayDate(date), toIsoDate(date)));
 
         tbody.appendChild(tr);
-      }
+      });
     }
 
     function aggregateRowsByPduRegion() {

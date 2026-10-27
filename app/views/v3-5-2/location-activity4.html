@@ -360,6 +360,14 @@
       <tr class="govuk-table__row"><td class="govuk-table__cell" colspan="7">Update the map to view points.</td></tr>
     </tbody>
   </table>
+  <div class="govuk-form-group govuk-!-margin-top-4">
+    <label class="govuk-label" for="emdi-points-page-size">Show results</label>
+    <select class="govuk-select" id="emdi-points-page-size" name="pointsPageSize">
+      <option value="10" selected>10 results</option>
+      <option value="25">25 results</option>
+      <option value="50">50 results</option>
+    </select>
+  </div>
   <div id="emdi-points-attention-pagination"></div>
   </div>
   </div>
@@ -886,17 +894,6 @@
 }) }}
 
 
-{% if data['personselected'] != 'mikevanpeebles' %}
-{{ govukPagination({
-  next: { href: "#" },
-  items: [
-    { number: 1, current: true, href: "#" },
-    { number: 2, href: "#" },
-    { number: 3, href: "#" }
-  ]
-}) }}
-{% endif %}
-
 {% if data['personselected'] == 'mikevanpeebles' %}
   <p class="govuk-body">No addresses have been added</p>
 {% endif %}
@@ -1098,7 +1095,7 @@
       });
     }
 
-    var ATTENTION_PAGE_SIZE = 20;
+    var ATTENTION_PAGE_SIZE = 10;
     var attentionRows = [];
     var attentionPage = 1;
     var attentionEntries = [];
@@ -1592,6 +1589,14 @@
       if (paginationSlot) {
         paginationSlot.innerHTML = buildPaginationHtml(attentionPage, totalPages);
       }
+    }
+
+    var pageSizeSelect = document.getElementById('emdi-points-page-size');
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener('change', function () {
+        ATTENTION_PAGE_SIZE = Number(pageSizeSelect.value);
+        renderAttentionPage(1);
+      });
     }
 
     document.addEventListener('click', function (event) {

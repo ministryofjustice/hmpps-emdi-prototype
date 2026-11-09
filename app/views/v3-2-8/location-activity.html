@@ -64,21 +64,63 @@
  
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full case-summary-banner" style="background: #1D70B8; color: #fff;">
-          <span class="govuk-caption-m govuk-!-margin-bottom-2">
-             <h1 class="govuk-heading-l govuk-!-margin-bottom-4" style="color: #fff;">
-      {{ persondata.name  }}
-    </h1>
-        <span class="case-summary-crn"><abbr title="Case reference number" style="text-decoration: none; color: #fff;"><strong>CRN</strong></abbr>: {{ persondata.crn  }}</span> <br> <br>
-        <strong>Date of birth</strong>: {{ persondata.dateOfBirth  }}
-        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile"></span>
-        <strong>Tier</strong>: B1
-        <span class="govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile"></span>
-        <strong>Managed by</strong>: Probation officer one
-      </span>
-   
+  <div class="govuk-grid-column-full">
+    <div class="case-summary-banner">
+      <div class="case-summary-heading">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">{{ persondata.name }}</h1>
+        <span class="case-summary-breach">In breach</span>
+      </div>
+      <p class="govuk-caption-l govuk-!-margin-bottom-1 case-summary-crn"><strong><abbr title="Case reference number">CRN</abbr>:</strong> {{ persondata.crn }}</p>
+      <div class="case-summary-details">
+        <span><strong>Date of birth:</strong> {{ persondata.dateOfBirth }}<span id="case-summary-age" data-date-of-birth="{{ persondata.dateOfBirth }}"></span></span>
+        <span><strong>Tier:</strong> <a href="#">B</a></span>
+        <span><strong>Managed by:</strong> <a href="#">Nevelina Aleksandrova</a></span>
+      </div>
+    </div>
+    <section class="case-summary-risk-panel" aria-label="Risk summary">
+      <div class="case-summary-risk-overview">
+        <div class="case-summary-score case-summary-score--high">Risk of serious harm <strong>HIGH</strong></div>
+        <div class="case-summary-predictor">
+          <span class="case-summary-predictor__label">Combined serious reoffending predictor <strong>MEDIUM</strong></span>
+          <strong class="case-summary-predictor__percentage">2.11%</strong>
+          <span class="case-summary-predictor__type">Dynamic</span>
+        </div>
+      </div>
+      <ul class="case-summary-risk-tags" aria-label="Risk factors">
+        <li class="case-summary-risk-tag case-summary-risk-tag--high">Risk to probation staff</li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--very-high">Risk to staff - <strong>Very high</strong></li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--high">Domestic abuse perpetrator - <strong>High</strong></li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--medium">Restraining order - <strong>Medium</strong></li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--medium">Risk to known adult - <strong>Medium</strong></li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--medium">Risk to public - <strong>Medium</strong></li>
+        <li class="case-summary-risk-tag case-summary-risk-tag--medium">Stalking - <strong>Medium</strong></li>
+      </ul>
+    </section>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var ageElement = document.getElementById('case-summary-age');
+    if (!ageElement) return;
+
+    var dateParts = ageElement.dataset.dateOfBirth.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+    if (!dateParts) return;
+
+    var month = new Date(dateParts[2] + ' 1, 2000').getMonth();
+    var birthDate = new Date(Number(dateParts[3]), month, Number(dateParts[1]));
+    if (isNaN(birthDate.getTime())) return;
+
+    var today = new Date();
+    var age = today.getFullYear() - birthDate.getFullYear();
+    if (today.getMonth() < birthDate.getMonth() ||
+      (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+      age -= 1;
+    }
+
+    ageElement.textContent = ' (' + age + ' years old)';
+  });
+</script>
 
 
  
@@ -1091,14 +1133,182 @@ path[stroke-width="1"]
     float: left;
 }
 
+.case-summary-banner {
+  background: #1d70b8;
+  padding: 22px 40px;
+  color: #fff;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
 .case-summary-banner,
 .case-summary-banner * {
   color: #fff !important;
 }
 
+.case-summary-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.case-summary-breach {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  background: #fff3bf;
+  color: #594d00 !important;
+  font-size: 1.1875rem;
+  line-height: 1.4;
+}
+
 .case-summary-crn {
   font-size: 24px;
   line-height: 1.2;
+}
+
+.case-summary-banner abbr {
+  text-decoration: none;
+}
+
+.case-summary-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.case-summary-details a {
+  color: #fff !important;
+  text-underline-offset: 3px;
+}
+
+.case-summary-risk-panel {
+  padding: 20px 26px;
+  background: #f3f7fa;
+  color: #0b0c0c;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.case-summary-risk-overview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.case-summary-score,
+.case-summary-predictor {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 0;
+  font-size: 1.1875rem;
+  line-height: 1.25;
+}
+
+.case-summary-score {
+  gap: 6px;
+  padding: 2px 10px;
+  border: 3px solid #d4351c;
+  border-radius: 0;
+  background: #fff;
+  color: #a12616;
+}
+
+.case-summary-predictor {
+  flex-wrap: nowrap;
+  align-items: stretch;
+  border: 3px solid #f47738;
+  border-radius: 0;
+  background: #fff;
+  color: #a34b00;
+}
+
+.case-summary-predictor__label {
+  display: flex;
+  align-items: center;
+  padding: 2px 10px;
+}
+
+.case-summary-predictor__percentage,
+.case-summary-predictor__type {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  border-left: 3px solid #f47738;
+  padding: 2px 10px;
+}
+
+.case-summary-predictor__percentage {
+  background: #fff3bf;
+  color: #0b0c0c;
+}
+
+.case-summary-predictor__type {
+  background: #fff;
+  color: #193b55;
+}
+
+.case-summary-risk-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-summary-risk-tag {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin-right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  background-color: #fff;
+  border: 2px solid;
+  padding: 5px 10px;
+  height: initial;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1;
+  user-select: none;
+  border-radius: 5px;
+}
+
+.case-summary-risk-tag--high {
+  border-color: #d4351c;
+}
+
+.case-summary-risk-tag--very-high {
+  border-color: #7a1f12;
+}
+
+.case-summary-risk-tag--medium {
+  border-color: #f47738;
+}
+
+@media (max-width: 740px) {
+  .case-summary-banner {
+    padding: 20px;
+  }
+
+  .case-summary-risk-panel {
+    padding: 16px;
+  }
+
+  .case-summary-predictor__label {
+    flex-basis: 100%;
+  }
+
+  .case-summary-predictor {
+    flex-wrap: wrap;
+  }
 }
 
 

@@ -580,7 +580,7 @@
           </tr>
 
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell" data-sort-value="2025-12-19">Friday 19 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=61-63 Crouch Street, Colchester, CO3 3EY&locationtypenotes=Regular meeting place&durationnotes=2 hours 15 mins">Send to NDelius</a></td>
+            <td class="govuk-table__cell" data-sort-value="2025-11-20">Thursday 20 November<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=61-63 Crouch Street, Colchester, CO3 3EY&locationtypenotes=Regular meeting place&durationnotes=2 hours 15 mins">Send to NDelius</a></td>
             <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Parent's house</td>
             <td class="govuk-table__cell">61-63 Crouch Street<br>Colchester<br>CO3 3EY</td>
             <td class="govuk-table__cell" data-sort-value="135">5:12pm to 7:27pm</td>
@@ -661,7 +661,7 @@
           </tr>
 
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell" data-sort-value="2025-12-22">Monday 22 December<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=Northgate Business Centre, 12 North Station Road, Colchester, CO1 1RB&locationtypenotes=Work&durationnotes=7 hours 30 mins">Send to NDelius</a></td>
+            <td class="govuk-table__cell" data-sort-value="2025-11-18">Tuesday 18 November<br>2025<br><a class="govuk-link" href="ndelius-record?addressnotes=Northgate Business Centre, 12 North Station Road, Colchester, CO1 1RB&locationtypenotes=Work&durationnotes=7 hours 30 mins">Send to NDelius</a></td>
             <td class="govuk-table__cell" data-sort-value="custom" data-loi-type="custom">Work</td>
             <td class="govuk-table__cell">Northgate Business Centre<br>12 North Station Road<br>Colchester<br>CO1 1RB</td>
             <td class="govuk-table__cell" data-sort-value="450">8:15am to 3:45pm</td>
@@ -3042,7 +3042,7 @@
       var visitDate = sourceVisitDate;
 
       if (sourceVisitDate && latestSourceDate) {
-        var daysAgo = Math.max(1, Math.round((latestSourceDate.getTime() - sourceVisitDate.getTime()) / 86400000) + 1);
+        var daysAgo = Math.max(2, Math.round((latestSourceDate.getTime() - sourceVisitDate.getTime()) / 86400000) + 2);
         visitDate = new Date(today);
         visitDate.setDate(today.getDate() - daysAgo);
 
@@ -3110,7 +3110,7 @@
           if (!days) return true;
           if (!visit.date) return false;
           var daysAgo = (today.getTime() - visit.date.getTime()) / 86400000;
-          return daysAgo <= days;
+          return daysAgo < days;
         });
         var lastVisit = matchingVisits.reduce(function (latest, visit) {
           return visit.date && (!latest || visit.date > latest) ? visit.date : latest;

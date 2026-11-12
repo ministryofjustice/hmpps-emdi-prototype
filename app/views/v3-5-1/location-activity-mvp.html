@@ -1016,7 +1016,7 @@
 
     var originalAddHeatmapLayer = window.addHeatmapLayer;
     var rawHeatData = [];
-    var levels = { veryHigh: true, high: true, medium: true, low: true };
+    var levels = { veryHigh: false, high: false, medium: false, low: false };
 
     function classifyHeatmapIntensity(intensity) {
       if (intensity > 0.75) return 'veryHigh';
@@ -1184,15 +1184,18 @@
         '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--low"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--low"></span>Low Activity</div>',
         '</div>',
         '<hr class="emdi-heatmap-key__divider">',
-        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--exclusion">',
-        '  <div class="emdi-heatmap-key__title">Exclusion zone</div>',
-        '  <div class="emdi-heatmap-key__item"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Zone</div>',
+        '<div class="emdi-heatmap-key__section emdi-heatmap-key__section--zones">',
+        '  <div class="emdi-heatmap-key__title">Zones</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--exclusion"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--exclusion-zone"></span>Exclusion zone</div>',
+        '  <div class="emdi-heatmap-key__item emdi-heatmap-key__item--inclusion"><span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--inclusion-zone"></span>Inclusion zone</div>',
         '</div>',
         '<div class="emdi-heatmap-key__empty">No map layers selected</div>'
       ].join('');
 
       var heatmapSection = keySlot.querySelector('.emdi-heatmap-key__section--heatmap');
-      var exclusionSection = keySlot.querySelector('.emdi-heatmap-key__section--exclusion');
+      var zonesSection = keySlot.querySelector('.emdi-heatmap-key__section--zones');
+      var exclusionItem = keySlot.querySelector('.emdi-heatmap-key__item--exclusion');
+      var inclusionItem = keySlot.querySelector('.emdi-heatmap-key__item--inclusion');
       var keyDivider = keySlot.querySelector('.emdi-heatmap-key__divider');
       var emptyMessage = keySlot.querySelector('.emdi-heatmap-key__empty');
       var heatmapKeyItems = {
@@ -1205,6 +1208,7 @@
       function updateKeyVisibility() {
         var heatmapOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.heatmap));
         var exclusionOn = !!(window.map && window.mapLayers && window.map.hasLayer(window.mapLayers.exclusionZone));
+        var inclusionOn = !!(window.map && window.mapLayers && window.mapLayers.restrictionZone && window.map.hasLayer(window.mapLayers.restrictionZone));
 
         var anyLevelVisible = false;
         Object.keys(heatmapKeyItems).forEach(function (id) {
@@ -1218,9 +1222,11 @@
 
         var heatmapSectionVisible = heatmapOn && anyLevelVisible;
         if (heatmapSection) heatmapSection.hidden = !heatmapSectionVisible;
-        if (exclusionSection) exclusionSection.hidden = !exclusionOn;
-        if (keyDivider) keyDivider.hidden = !(heatmapSectionVisible && exclusionOn);
-        if (emptyMessage) emptyMessage.hidden = heatmapSectionVisible || exclusionOn;
+        if (exclusionItem) exclusionItem.hidden = !exclusionOn;
+        if (inclusionItem) inclusionItem.hidden = !inclusionOn;
+        if (zonesSection) zonesSection.hidden = !(exclusionOn || inclusionOn);
+        if (keyDivider) keyDivider.hidden = !(heatmapSectionVisible && (exclusionOn || inclusionOn));
+        if (emptyMessage) emptyMessage.hidden = heatmapSectionVisible || exclusionOn || inclusionOn;
       }
       window.emdiUpdateHeatmapKeyVisibility = updateKeyVisibility;
       updateKeyVisibility();
@@ -1231,6 +1237,23 @@
         toggleTab('key');
       });
 
+      toggleBtn.addEventListener('keydown', function (event) {
+        if (event.key !== 'Tab' || event.shiftKey) return;
+        var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+        if (!mapControlsButton) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setTimeout(function () { mapControlsButton.focus(); }, 0);
+      }, true);
+
+      toggleBtn.addEventListener('blur', function () {
+        setTimeout(function () {
+          if (document.activeElement !== toggleBtn) return;
+          var mapControlsButton = document.querySelector('.emdi-layers-toggle, .emdi-layers-opener');
+          if (mapControlsButton) mapControlsButton.focus();
+        }, 0);
+      });
+
       L.DomEvent.disableClickPropagation(container);
       L.DomEvent.disableScrollPropagation(container);
       return container;
@@ -1239,20 +1262,22 @@
 
     var mapOpener = document.querySelector('.emdi-layers-opener');
     if (mapOpener) {
-      mapOpener.classList.add('leaflet-control', 'emdi-panel-toggle', 'emdi-layers-toggle');
-      mapOpener.textContent = 'Map controls';
-      mapOpener.setAttribute('aria-expanded', 'false');
-      mapOpener.style.display = '';
       if (mapOpener.parentNode !== topRightControls) {
         topRightControls.insertBefore(mapOpener, sharedPanel);
       }
-      tabButtons.layers = mapOpener;
-
-      mapOpener.onclick = function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        toggleTab('layers');
-      };
+      var mapControlsButton = document.createElement('button');
+      mapControlsButton.type = 'button';
+      mapControlsButton.className = 'leaflet-control emdi-panel-toggle emdi-layers-toggle';
+      mapControlsButton.textContent = 'Map controls';
+      mapControlsButton.setAttribute('aria-expanded', 'false');
+      mapControlsButton.setAttribute('aria-label', 'Map controls');
+      mapOpener.parentNode.replaceChild(mapControlsButton, mapOpener);
+      tabButtons.layers = mapControlsButton;
+      mapControlsButton.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          toggleTab('layers');
+      });
     }
 
     var layersPanel = document.querySelector('.leaflet-control-layers.emdi-layers-panel');
@@ -1300,18 +1325,40 @@
       [51.5346, -0.2174]
     ];
 
-    var waterlooBoundary = [
-      [51.5078, -0.1262],
-      [51.5069, -0.1155],
-      [51.5031, -0.1116],
-      [51.4997, -0.1167],
-      [51.5003, -0.1245],
-      [51.5037, -0.1284],
-      [51.5078, -0.1262]
-    ];
+    var waterlooStation = [51.5033, -0.1147];
 
     function hasLayer(layer) {
       return !!(layer && map.hasLayer(layer));
+    }
+
+    function ensureExclusionZonePattern() {
+      var svg = map.getPanes().overlayPane.querySelector('svg');
+      if (!svg || svg.querySelector('#emdi-exclusion-hatch')) return;
+
+      var namespace = 'http://www.w3.org/2000/svg';
+      var defs = svg.querySelector('defs') || document.createElementNS(namespace, 'defs');
+      if (!defs.parentNode) svg.insertBefore(defs, svg.firstChild);
+
+      var pattern = document.createElementNS(namespace, 'pattern');
+      pattern.setAttribute('id', 'emdi-exclusion-hatch');
+      pattern.setAttribute('width', '10');
+      pattern.setAttribute('height', '10');
+      pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+
+      var background = document.createElementNS(namespace, 'rect');
+      background.setAttribute('width', '10');
+      background.setAttribute('height', '10');
+      background.setAttribute('fill', '#d4351c');
+      background.setAttribute('fill-opacity', '0.55');
+      pattern.appendChild(background);
+
+      var hatch = document.createElementNS(namespace, 'path');
+      hatch.setAttribute('d', 'M-2,2 L2,-2 M0,10 L10,0 M8,12 L12,8 M-2,8 L2,12 M0,0 L10,10 M8,-2 L12,2');
+      hatch.setAttribute('stroke', '#0b0c0c');
+      hatch.setAttribute('stroke-opacity', '0.9');
+      hatch.setAttribute('stroke-width', '2.5');
+      pattern.appendChild(hatch);
+      defs.appendChild(pattern);
     }
 
     function createZonePolygon(layerGroup, coordinates, color, label, forceRebuild, className) {
@@ -1322,10 +1369,12 @@
       layerGroup.clearLayers();
       if (!Array.isArray(coordinates) || coordinates.length < 3) return;
 
+      if (className === 'emdi-exclusion-zone-path') ensureExclusionZonePattern();
+
       var polygon = L.polygon(coordinates, {
         className: className,
         color: color,
-        fillColor: color,
+        fillColor: className === 'emdi-exclusion-zone-path' ? 'url(#emdi-exclusion-hatch)' : color,
         fillOpacity: 0.35,
         weight: 2,
         pane: 'loi-areas',
@@ -1334,19 +1383,118 @@
 
       polygon.bindPopup(label, {
         closeButton: true,
-        autoClose: false,
-        closeOnClick: false,
+        autoClose: true,
+        closeOnClick: true,
         className: 'app-area-popup'
+      });
+
+      polygon.on('click', function (event) {
+        if (window.openPointPopupAtLatLng && window.openPointPopupAtLatLng(event.latlng) && event.originalEvent) {
+          event.originalEvent.preventDefault();
+          event.originalEvent.stopPropagation();
+        }
       });
 
       polygon.addTo(layerGroup);
     }
 
+    function createInclusionZone(layerGroup, forceRebuild) {
+      if (!layerGroup || typeof layerGroup.clearLayers !== 'function') return;
+      var hasExisting = typeof layerGroup.getLayers === 'function' && layerGroup.getLayers().length > 0;
+      if (hasExisting && !forceRebuild) return;
+
+      layerGroup.clearLayers();
+      var circle = L.circle(waterlooStation, {
+        className: 'emdi-waterloo-inclusion-zone',
+        color: '#6f42c1',
+        fillColor: '#6f42c1',
+        fillOpacity: 0.2,
+        weight: 3,
+        dashArray: '8 6',
+        radius: 100,
+        pane: 'loi-areas',
+        interactive: true
+      });
+
+      circle.bindPopup([
+        '<div class="gps-point-popup">',
+        '  <div class="gps-point-popup__header">',
+        '    <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Inclusion zone</h4>',
+        '  </div>',
+        '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
+        '    <div class="govuk-summary-list__row">',
+        '      <dt class="govuk-summary-list__key">Date, time</dt>',
+        '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00<br>Monday, Tuesday, Wednesday, Thursday, Friday</dd>',
+        '    </div>',
+        '    <div class="govuk-summary-list__row">',
+        '      <dt class="govuk-summary-list__key">Address</dt>',
+        '      <dd class="govuk-summary-list__value">Waterloo Station, Waterloo Road, London, SE1 8SW</dd>',
+        '    </div>',
+        '  </dl>',
+        '</div>'
+      ].join(''), {
+        closeButton: true,
+        autoClose: true,
+        closeOnClick: true,
+        className: 'gps-point-popup'
+      });
+
+      circle.addTo(layerGroup);
+    }
+
+    function updateZonePointCounts(points) {
+      var exclusionCount = 0;
+      var inclusionCount = 0;
+      var inclusionLayers = window.mapLayers.restrictionZone.getLayers();
+
+      function isInsideExclusion(latitude, longitude) {
+        var exclusionZone = window.mapLayers.exclusionZone;
+        if (!exclusionZone || typeof exclusionZone.eachLayer !== 'function') return false;
+
+        var insideZone = false;
+        exclusionZone.eachLayer(function (layer) {
+          if (insideZone || !layer || typeof layer.getLatLngs !== 'function') return;
+          var ring = layer.getLatLngs()[0] || [];
+          var inside = false;
+          for (var index = 0, previousIndex = ring.length - 1; index < ring.length; previousIndex = index++) {
+            var current = ring[index];
+            var previous = ring[previousIndex];
+            var crossesBoundary = ((current.lng > longitude) !== (previous.lng > longitude)) &&
+              (latitude < (previous.lat - current.lat) * (longitude - current.lng) /
+                (previous.lng - current.lng) + current.lat);
+            if (crossesBoundary) inside = !inside;
+          }
+          if (inside) insideZone = true;
+        });
+        return insideZone;
+      }
+
+      (points || []).forEach(function (point) {
+        if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+        if (isInsideExclusion(point.lat, point.lng)) exclusionCount += 1;
+
+        var pointLatLng = L.latLng(point.lat, point.lng);
+        if (inclusionLayers.some(function (layer) {
+          return layer && typeof layer.getLatLng === 'function' && typeof layer.getRadius === 'function' &&
+            pointLatLng.distanceTo(layer.getLatLng()) <= layer.getRadius();
+        })) inclusionCount += 1;
+      });
+
+      var exclusionLabel = document.querySelector('#emdi-toggle-exclusion + span');
+      var inclusionLabel = document.querySelector('#emdi-toggle-inclusion + span');
+      var exclusionText = 'Exclusion zone (' + exclusionCount + ')';
+      var inclusionText = 'Inclusion zone (' + inclusionCount + ')';
+      // Avoid retriggering the map observer when the counts have not changed.
+      if (exclusionLabel && exclusionLabel.textContent !== exclusionText) exclusionLabel.textContent = exclusionText;
+      if (inclusionLabel && inclusionLabel.textContent !== inclusionText) inclusionLabel.textContent = inclusionText;
+    }
+    window.updateZonePointCounts = updateZonePointCounts;
+
     function syncZonePolygons(forceRebuild) {
       var inclusionZone = window.mapLayers && window.mapLayers.inclusionZone;
       var restrictionZone = window.mapLayers && window.mapLayers.restrictionZone;
       createZonePolygon(inclusionZone, westminsterBoundary, '#d4351c', 'Inclusion Zone<br/>Westminster', !!forceRebuild, 'emdi-inclusion-zone-path');
-      createZonePolygon(restrictionZone, waterlooBoundary, '#d4351c', 'Restriction Zone<br/>Waterloo', !!forceRebuild, 'emdi-restriction-zone-path');
+      createInclusionZone(restrictionZone, !!forceRebuild);
     }
 
     function setLayerVisible(layer, visible) {
@@ -1370,16 +1518,6 @@
       { id: 'medium', key: 'medium' },
       { id: 'low', key: 'low' }
     ];
-
-    function setHeatmapLevelControlsEnabled(enabled) {
-      HEATMAP_LEVELS.forEach(function (level) {
-        var input = document.getElementById('emdi-toggle-heatmap-' + level.id);
-        if (!input) return;
-        input.disabled = !enabled;
-        var row = input.closest('.emdi-control-row');
-        if (row) row.classList.toggle('emdi-control-row--disabled', !enabled);
-      });
-    }
 
     function setBase(type) {
       var street = window.streetLayer;
@@ -1490,27 +1628,23 @@
         '<hr class="emdi-map-controls-divider">',
         '<div class="emdi-control-group emdi-control-group--heatmap">',
         '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Heatmap</div>',
-        '  <label class="emdi-control-row">',
-        '    <input type="checkbox" id="emdi-toggle-heatmap">',
-        '    <span>Heatmap</span>',
-        '  </label>',
         '  <label class="emdi-control-row emdi-control-row--sub">',
-        '    <input type="checkbox" id="emdi-toggle-heatmap-very-high" checked disabled>',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-very-high">',
         '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--very-high"></span>',
         '    <span>Very high activity</span>',
         '  </label>',
         '  <label class="emdi-control-row emdi-control-row--sub">',
-        '    <input type="checkbox" id="emdi-toggle-heatmap-high" checked disabled>',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-high">',
         '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--high"></span>',
         '    <span>High activity</span>',
         '  </label>',
         '  <label class="emdi-control-row emdi-control-row--sub">',
-        '    <input type="checkbox" id="emdi-toggle-heatmap-medium" checked disabled>',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-medium">',
         '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--medium"></span>',
         '    <span>Medium activity</span>',
         '  </label>',
         '  <label class="emdi-control-row emdi-control-row--sub">',
-        '    <input type="checkbox" id="emdi-toggle-heatmap-low" checked disabled>',
+        '    <input type="checkbox" id="emdi-toggle-heatmap-low">',
         '    <span class="emdi-heatmap-key__swatch emdi-heatmap-key__swatch--low"></span>',
         '    <span>Low activity</span>',
         '  </label>',
@@ -1520,7 +1654,11 @@
         '  <div class="emdi-map-controls-heading emdi-map-controls-heading--controls">Zones</div>',
         '  <label class="emdi-control-row">',
         '    <input type="checkbox" id="emdi-toggle-exclusion">',
-        '    <span>Exclusion</span>',
+        '    <span>Exclusion zone</span>',
+        '  </label>',
+        '  <label class="emdi-control-row">',
+        '    <input type="checkbox" id="emdi-toggle-inclusion">',
+        '    <span>Inclusion zone</span>',
         '  </label>',
         '</div>'
       ].join('');
@@ -1548,11 +1686,6 @@
         setLayerVisible(window.mapLayers.numbers, this.checked);
       });
 
-      wrapper.querySelector('#emdi-toggle-heatmap').addEventListener('change', function () {
-        setLayerVisible(window.mapLayers.heatmap, this.checked);
-        setHeatmapLevelControlsEnabled(this.checked);
-      });
-
       HEATMAP_LEVELS.forEach(function (level) {
         var input = wrapper.querySelector('#emdi-toggle-heatmap-' + level.id);
         if (!input) return;
@@ -1560,6 +1693,11 @@
           if (typeof window.emdiSetHeatmapLevel === 'function') {
             window.emdiSetHeatmapLevel(level.key, this.checked);
           }
+          var anyLevelChecked = HEATMAP_LEVELS.some(function (otherLevel) {
+            var otherInput = wrapper.querySelector('#emdi-toggle-heatmap-' + otherLevel.id);
+            return !!(otherInput && otherInput.checked);
+          });
+          setLayerVisible(window.mapLayers.heatmap, anyLevelChecked);
           if (typeof window.emdiUpdateHeatmapKeyVisibility === 'function') {
             window.emdiUpdateHeatmapKeyVisibility();
           }
@@ -1569,6 +1707,10 @@
       wrapper.querySelector('#emdi-toggle-exclusion').addEventListener('change', function () {
         setLayerVisible(window.mapLayers.exclusionZone, this.checked);
       });
+
+      wrapper.querySelector('#emdi-toggle-inclusion').addEventListener('change', function () {
+        setLayerVisible(window.mapLayers.restrictionZone, this.checked);
+      });
     }
 
     var streetInput = document.getElementById('emdi-base-street');
@@ -1576,8 +1718,8 @@
     var directionInput = document.getElementById('emdi-toggle-direction');
     var confidenceInput = document.getElementById('emdi-toggle-confidence');
     var pointsInput = document.getElementById('emdi-toggle-points');
-    var heatmapInput = document.getElementById('emdi-toggle-heatmap');
     var exclusionInput = document.getElementById('emdi-toggle-exclusion');
+    var inclusionInput = document.getElementById('emdi-toggle-inclusion');
 
     var satelliteActive = window.satelliteLayer && map.hasLayer(window.satelliteLayer);
     if (streetInput) streetInput.checked = !satelliteActive;
@@ -1588,27 +1730,80 @@
     syncZonePolygons(false);
 
     if (!window.__emdiZonesInitialised) {
-      setLayerVisible(window.mapLayers.heatmap, false);
       setLayerVisible(window.mapLayers.exclusionZone, false);
       setLayerVisible(window.mapLayers.inclusionZone, false);
       setLayerVisible(window.mapLayers.restrictionZone, false);
 
-      if (heatmapInput) heatmapInput.checked = false;
       if (exclusionInput) exclusionInput.checked = false;
+      if (inclusionInput) inclusionInput.checked = false;
 
       window.__emdiZonesInitialised = true;
     } else {
-      if (heatmapInput) heatmapInput.checked = hasLayer(window.mapLayers.heatmap);
       if (exclusionInput) exclusionInput.checked = hasLayer(window.mapLayers.exclusionZone);
+      if (inclusionInput) inclusionInput.checked = hasLayer(window.mapLayers.restrictionZone);
     }
 
-    setHeatmapLevelControlsEnabled(!!(heatmapInput && heatmapInput.checked));
+    var anyHeatmapLevelChecked = HEATMAP_LEVELS.some(function (level) {
+      var input = document.getElementById('emdi-toggle-heatmap-' + level.id);
+      return !!(input && input.checked);
+    });
+    setLayerVisible(window.mapLayers.heatmap, anyHeatmapLevelChecked);
+    updateZonePointCounts(window.emdiLoadedTrailPoints || []);
   }
 
   document.addEventListener('bh:map-ready', function () {
+    if (window.mapLayers && window.mapLayers.exclusionZone && !window.__emdiGayfereZoneAdded) {
+      var gayfereBoundary = [
+        [51.497263, -0.130043],
+        [51.497263, -0.129957],
+        [51.497137, -0.129957],
+        [51.497137, -0.130043]
+      ];
+
+      var gayfereZone = L.polygon(gayfereBoundary, {
+        className: 'emdi-exclusion-zone-path',
+        color: '#D32F2F',
+        weight: 0,
+        opacity: 0.9,
+        fillColor: 'url(#emdi-exclusion-hatch)',
+        fillOpacity: 0.55,
+        interactive: true,
+        emdiZoneLabel: '7 Gayfere Street, London',
+        emdiZoneAddress: '7 Gayfere St,<br> London, <br> SW1P 3HN'
+      });
+
+      window.mapLayers.exclusionZone.addLayer(gayfereZone);
+      window.__emdiGayfereZoneAdded = true;
+    }
+
+    if (window.mapLayers && window.mapLayers.exclusionZone && !window.__emdiAirStreetZoneAdded) {
+      var airStreetBoundary = [
+        [51.510254, -0.136258],
+        [51.510254, -0.136142],
+        [51.510146, -0.136142],
+        [51.510146, -0.136258]
+      ];
+
+      var airStreetZone = L.polygon(airStreetBoundary, {
+        className: 'emdi-exclusion-zone-path',
+        color: '#D32F2F',
+        weight: 0,
+        opacity: 0.9,
+        fillColor: 'url(#emdi-exclusion-hatch)',
+        fillOpacity: 0.55,
+        interactive: true,
+        emdiZoneLabel: '1 Air Street, London',
+        emdiZoneAddress: '1 Air St,<br> London, <br> W1J 0AB'
+      });
+
+      window.mapLayers.exclusionZone.addLayer(airStreetZone);
+      window.__emdiAirStreetZoneAdded = true;
+    }
+
     if (window.mapLayers && window.mapLayers.exclusionZone) {
       window.mapLayers.exclusionZone.eachLayer(function (layer) {
         if (layer && typeof layer.bindPopup === 'function') {
+          var address = (layer.options && layer.options.emdiZoneAddress) || 'St James Park,<br> Westminster, <br> SW1A 2BJ';
           var popupHtml = [
             '<div class="gps-point-popup">',
             '  <div class="gps-point-popup__header">',
@@ -1617,11 +1812,11 @@
             '  <dl class="govuk-summary-list govuk-!-margin-bottom-0">',
             '    <div class="govuk-summary-list__row">',
             '      <dt class="govuk-summary-list__key">Date, time</dt>',
-            '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00</dd>',
+            '      <dd class="govuk-summary-list__value">1 Feb 2026 - 15 Feb 2026<br>09:00 to 17:00<br>Monday, Tuesday, Wednesday, Thursday, Friday</dd>',
             '    </div>',
             '    <div class="govuk-summary-list__row">',
             '      <dt class="govuk-summary-list__key">Address</dt>',
-            '      <dd class="govuk-summary-list__value">St James Park,<br> Westminster, <br> SW1A 2BJ</dd>',
+            '      <dd class="govuk-summary-list__value">' + address + '</dd>',
             '    </div>',
             '  </dl>',
             '</div>'
@@ -1629,15 +1824,23 @@
 
           layer.bindPopup(popupHtml, {
             closeButton: true,
-            autoClose: false,
-            closeOnClick: false,
+            autoClose: true,
+            closeOnClick: true,
             className: 'gps-point-popup'
+          });
+
+          layer.on('click', function (event) {
+            if (window.openPointPopupAtLatLng && window.openPointPopupAtLatLng(event.latlng) && event.originalEvent) {
+              event.originalEvent.preventDefault();
+              event.originalEvent.stopPropagation();
+            }
           });
         }
       });
     }
 
     normaliseMapControlsToV325();
+    updateZonePointCounts(window.emdiLoadedTrailPoints || []);
 
     if (!window.__emdiV325ControlObserver) {
       var mapEl = document.getElementById('map');
@@ -1770,6 +1973,8 @@
     function renderPoints(tracePoints) {
       points = [];
       var list = Array.isArray(tracePoints) ? tracePoints : [];
+      window.emdiLoadedTrailPoints = list;
+      if (typeof window.updateZonePointCounts === 'function') window.updateZonePointCounts(list);
       var zones = window.mapLayers || {};
       list.forEach(function (point, index) {
         if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
@@ -2700,6 +2905,7 @@ a[aria-label="North arrow"] {
 .emdi-heatmap-key__swatch--medium { background: #3b528b; }
 .emdi-heatmap-key__swatch--low { background: #440154; }
 .emdi-heatmap-key__swatch--exclusion-zone { background: #d4351c; }
+.emdi-heatmap-key__swatch--inclusion-zone { background: #6f42c1; }
 
 /* Keep typography identical between Key and Map controls content. */
 .emdi-shared-panel {
@@ -2739,8 +2945,8 @@ a[aria-label="North arrow"] {
 .emdi-exclusion-zone-path {
   stroke: #d4351c !important;
   stroke-width: 2 !important;
-  fill: #d4351c !important;
-  fill-opacity: 0.35 !important;
+  fill: url(#emdi-exclusion-hatch) !important;
+  fill-opacity: 1 !important;
 }
 
 .emdi-inclusion-zone-path {

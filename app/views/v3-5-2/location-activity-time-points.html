@@ -950,6 +950,11 @@
     betweenPointsOnly: true,
     pathOptions: { fill: true, fillColor: 'black', fillOpacity: 0.9, weight: 2, color: 'black' }
   };
+
+  window.GPS_CONFIG = Object.assign({}, window.GPS_CONFIG, {
+    SCENARIOS_URL: '/public/data/gps-test-data2.json',
+    DEFAULT_SCENARIO_KEY: 'bh_20260901'
+  });
 </script>
 <script src="/public/javascripts/gps-map-mvp-2.js"></script>
 <script>

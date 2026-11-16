@@ -49,7 +49,8 @@
         weight: 0,
         fillColor: '#1d70b8',
         fillOpacity: 1,
-        interactive: false
+        pane: 'markerPane',
+        interactive: true
       }).addTo(pointDots);
     }
     window.addConfidenceCircle = addConfidenceCircle;

@@ -76,6 +76,7 @@
 
   // MarkerCluster group for numbered points (enabled per-page via CFG)
   let pointClusters = null;
+  let pointClusterMarkers = [];
   let directionArrowLayers = [];
 
   // ---------- overlay group helpers ----------
@@ -107,7 +108,14 @@
     groups.areas.clearLayers();
     directionArrowLayers = [];
     if (oms) { oms.clearMarkers(); }
+    if (pointClusters && window.map && window.map.hasLayer(pointClusters)) {
+      window.map.removeLayer(pointClusters);
+    }
+    if (window.mapLayers && window.mapLayers.pingClusters === pointClusters) {
+      window.mapLayers.pingClusters = null;
+    }
     pointClusters = null;
+    pointClusterMarkers = [];
   }
 
   function ensureArrowZoomHandler(map) {
@@ -689,11 +697,13 @@
     return '—';
   }
 
-  function pointPopupHTML(pt, idx, totalPoints) {
-  const pointNumber = idx + 1;
+  function pointPopupHTML(pt, idx, totalPoints, navigationIndex, navigationTotal) {
+  const pointNumber = pt.label || idx + 1;
+  const pointNavigationIndex = Number.isInteger(navigationIndex) ? navigationIndex : idx;
+  const pointNavigationTotal = Number.isInteger(navigationTotal) ? navigationTotal : totalPoints;
   const acc   = (typeof pt.accuracy === 'number') ? `${fmtNum(pt.accuracy, 0)} metres` : '—';
-  const hasPrev = idx > 0;
-  const hasNext = idx < (totalPoints - 1);
+  const hasPrev = pointNavigationIndex > 0;
+  const hasNext = pointNavigationIndex < (pointNavigationTotal - 1);
 
   // --- NEW: date + short time formatter ---
   function formatDateTime(raw) {
@@ -721,7 +731,7 @@
     ? `${fmtNum(Number(pt.speed) * 0.621371, 1)} miles per hour`
     : '—';
   const geolocationMechanism = pt.geolocationMechanism || '—';
-  const lastIndex = Math.max(0, totalPoints - 1);
+  const lastIndex = Math.max(0, pointNavigationTotal - 1);
 
   function buildNavButton(nav, targetIndex, label, iconHtml, isDisabled) {
     if (isDisabled) return '';
@@ -736,9 +746,9 @@
   const headerNav = `
     <div class="gps-point-popup__header">
       ${buildNavButton('first', 0, 'Go to first point', '&laquo;', !hasPrev)}
-      ${buildNavButton('prev', idx - 1, 'Go to previous point', '&lsaquo;', !hasPrev)}
+      ${buildNavButton('prev', pointNavigationIndex - 1, 'Go to previous point', '&lsaquo;', !hasPrev)}
       <h4 class="govuk-heading-s govuk-!-margin-bottom-0 gps-point-popup__title">Point ${pointNumber} of ${totalPoints}</h4>
-      ${buildNavButton('next', idx + 1, 'Go to next point', '&rsaquo;', !hasNext)}
+      ${buildNavButton('next', pointNavigationIndex + 1, 'Go to next point', '&rsaquo;', !hasNext)}
       ${buildNavButton('last', lastIndex, 'Go to last point', '&raquo;', !hasNext)}
     </div>
   `;
@@ -797,11 +807,14 @@
     if (!marker) return;
 
     currentPointIndex = targetIndex;
-    if (pointClusters && typeof pointClusters.zoomToShowLayer === 'function') {
-      pointClusters.zoomToShowLayer(marker, function () {
+    const clusterMarker = pointClusterMarkers[targetIndex];
+    if (pointClusters && clusterMarker && window.map && window.map.hasLayer(pointClusters) && typeof pointClusters.zoomToShowLayer === 'function') {
+      pointClusters.zoomToShowLayer(clusterMarker, function () {
+        closeMapPopupBeforeOpeningPoint();
         marker.openPopup();
       });
     } else {
+      closeMapPopupBeforeOpeningPoint();
       marker.openPopup();
     }
 
@@ -809,6 +822,33 @@
     if (map && typeof marker.getLatLng === 'function') {
       map.panTo(marker.getLatLng(), { animate: true });
     }
+  }
+
+  window.openPointPopupAtLatLng = function (latlng) {
+    const map = window.map;
+    if (!map || !latlng || !Array.isArray(pointMarkers)) return false;
+
+    const clickPoint = map.latLngToContainerPoint(latlng);
+    let nearestIndex = -1;
+    let nearestDistance = Infinity;
+    pointMarkers.forEach((marker, index) => {
+      if (!marker || typeof marker.getLatLng !== 'function') return;
+      const markerPoint = map.latLngToContainerPoint(marker.getLatLng());
+      const distance = clickPoint.distanceTo(markerPoint);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    if (nearestIndex < 0 || nearestDistance > 18) return false;
+    showPointPopup(nearestIndex);
+    return true;
+  };
+
+  function closeMapPopupBeforeOpeningPoint() {
+    const map = window.map;
+    if (map && typeof map.closePopup === 'function') map.closePopup();
   }
 
 
@@ -968,20 +1008,21 @@
     pointClusters = null;
     if (CFG.USE_POINT_CLUSTERING && typeof L.markerClusterGroup === 'function') {
       pointClusters = L.markerClusterGroup({
-        spiderfyOnMaxZoom: true,
+        spiderfyOnMaxZoom: false,
+        disableClusteringAtZoom: 16,
         showCoverageOnHover: false,
         zoomToBoundsOnClick: true,
         iconCreateFunction: function (cluster) {
-          const count = cluster.getChildCount();
-          const label = count === 1 ? '1 point' : `${count} points`;
+          const label = cluster.getChildCount();
           return L.divIcon({
             html: `<span>${label}</span>`,
             className: 'marker-cluster marker-cluster-small gps-point-cluster',
-            iconSize: L.point(68, 68)
+            iconSize: L.point(40, 40)
           });
         }
       });
-      groups.numbers.addLayer(pointClusters);
+      if (window.mapLayers) window.mapLayers.pingClusters = pointClusters;
+      if (window.emdiPingClustersVisible !== false) pointClusters.addTo(map);
     }
 
     // (Re-)initialise spiderfy — replaces per-marker click listeners
@@ -992,6 +1033,7 @@
       });
       oms.addListener('click', function (m) {
         currentPointIndex = m._pointIndex;
+        closeMapPopupBeforeOpeningPoint();
         m.openPopup();
       });
     } else {
@@ -1001,13 +1043,17 @@
     const allBounds = L.latLngBounds([]);
 
     const latlngs = [];
+    const visiblePointCount = (traceObj.points || []).filter(point => !point.__emdiHideMarker).length;
 
     (traceObj.points || []).forEach((pt, idx) => {
+      const pointNavigationIndex = pointMarkers.length;
       const ll = [pt.lat, pt.lng];
       latlngs.push(ll);
 
       // --- accuracy circles + dot ---
-      if (Number.isFinite(pt.accuracy) && pt.accuracy > 0) {
+      // pt.__emdiHideMarker lets a page thin out which points get a marker/circle without
+      // touching the line/arrows or gap-dashing, which still use every point in the array.
+      if (!pt.__emdiHideMarker && Number.isFinite(pt.accuracy) && pt.accuracy > 0) {
         const popupOptions = {
           closeButton: true,
           autoClose: true,
@@ -1028,18 +1074,30 @@
           fillOpacity: 0
         }).addTo(groups.accuracy);
 
-        accCircle.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
+        accCircle.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length, pointNavigationIndex, visiblePointCount), popupOptions);
         accCircle.on('click', function (e) {
           if (e && e.originalEvent) {
             e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
           }
+          closeMapPopupBeforeOpeningPoint();
           this.openPopup();
         });
 
         // Dot in the centre
         if (window.addConfidenceCircle) {
-          window.addConfidenceCircle(pt.lat, pt.lng, pt.accuracy);
+          const dot = window.addConfidenceCircle(pt.lat, pt.lng, pt.accuracy);
+          if (dot && typeof dot.bindPopup === 'function') {
+            dot.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length, pointNavigationIndex, visiblePointCount), popupOptions);
+            dot.on('click', function (e) {
+              if (e && e.originalEvent) {
+                e.originalEvent.preventDefault();
+                e.originalEvent.stopPropagation();
+              }
+              closeMapPopupBeforeOpeningPoint();
+              this.openPopup();
+            });
+          }
         } else {
           const dot = L.circleMarker(ll, {
             radius: 5,
@@ -1050,18 +1108,20 @@
             interactive: true
           }).addTo(groups.pointDots);
 
-          dot.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), popupOptions);
+          dot.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length, pointNavigationIndex, visiblePointCount), popupOptions);
           dot.on('click', function (e) {
             if (e && e.originalEvent) {
               e.originalEvent.preventDefault();
               e.originalEvent.stopPropagation();
             }
+            closeMapPopupBeforeOpeningPoint();
             this.openPopup();
           });
         }
       }
 
       // --- hidden marker with tooltip + popup ---
+      if (!pt.__emdiHideMarker) {
       const markerPopupOptions = {
         closeButton: true,
         autoClose: true,
@@ -1109,16 +1169,27 @@
         icon: markerIcon
       });
 
+      marker.addTo(groups.numbers);
+
       if (pointClusters) {
-        pointClusters.addLayer(marker);
-      } else {
-        marker.addTo(groups.numbers);
+        const clusterMarker = L.marker(ll, {
+          interactive: false,
+          keyboard: false,
+          icon: L.divIcon({
+            className: 'gps-cluster-member-marker',
+            html: '',
+            iconSize: [1, 1],
+            iconAnchor: [0, 0]
+          })
+        });
+        pointClusters.addLayer(clusterMarker);
+        pointClusterMarkers.push(clusterMarker);
       }
 
       marker._pointIndex = idx;
       pointMarkers.push(marker);
 
-      marker.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length), markerPopupOptions);
+      marker.bindPopup(pointPopupHTML(pt, idx, traceObj.points.length, pointNavigationIndex, visiblePointCount), markerPopupOptions);
 
       if (oms) {
         // OMS intercepts overlapping clicks and spiderfies; click fires via oms listener
@@ -1130,8 +1201,10 @@
             e.originalEvent.stopPropagation();
           }
           currentPointIndex = this._pointIndex;
+          closeMapPopupBeforeOpeningPoint();
           this.openPopup();
         });
+      }
       }
     }); // <-- THIS WAS MISSING
 

@@ -465,7 +465,7 @@
   },
   {
     type: "Uncle's house",
-    addressHtml: "St James's Park<br>Westminster<br>London<br>SW1A 2BJ",
+    addressHtml: "10 St James's Road<br>Westminster<br>London<br>SW1A 2BJ",
     ndeliusAddress: "St James's Park, Westminster, London, SW1A 2BJ",
     visits: [
       { iso: "2025-12-25", date: "Thursday 25 December", time: "2:00pm to 4:00pm", duration: "2 hours", minutes: 120, trace: "bh_20260212" },
@@ -475,8 +475,8 @@
   },
   {
     type: "Work",
-    addressHtml: "Ministry of Justice<br>102 Petty France<br>Westminster, London<br>SW1H 9AJ",
-    ndeliusAddress: "Ministry of Justice, 102 Petty France, Westminster, London, SW1H 9AJ",
+    addressHtml: "12 Victoria Street<br>Westminster<br>London<br>SW1H 0NN",
+    ndeliusAddress: "12 Victoria Street, Westminster, London, SW1H 0NN",
     visits: [
       { iso: "2025-12-26", date: "Friday 26 December", time: "8:00am to 4:00pm", duration: "8 hours", minutes: 480, trace: "bh_20260212" },
       { iso: "2025-11-18", date: "Tuesday 18 November", time: "8:15am to 3:45pm", duration: "7 hours 30 mins", minutes: 450, trace: "bh_20260212" },
@@ -487,8 +487,8 @@
   },
   {
     type: "Work",
-    addressHtml: "50 Broadway<br>Westminster<br>London<br>SW1H 0DB",
-    ndeliusAddress: "50 Broadway, Westminster, London, SW1H 0DB",
+    addressHtml: "88 Horseferry Road<br>Westminster<br>London<br>SW1P 2EE",
+    ndeliusAddress: "88 Horseferry Road, Westminster, London, SW1P 2EE",
     visits: [
       { iso: "2025-12-15", date: "Monday 15 December", time: "8:05am to 12:20pm", duration: "4 hours 15 mins", minutes: 255, trace: "bh_20260212" },
       { iso: "2025-12-19", date: "Friday 19 December", time: "9:10am to 5:05pm", duration: "7 hours 55 mins", minutes: 475, trace: "bh_20260214" },
@@ -2807,10 +2807,10 @@
       });
       var marker = window.L.marker(customLocation, {
         icon: pinIcon,
-        title: 'Custom location: Ex-partners house',
-        alt: 'Custom location: Ex-partners house'
+        title: 'Location of interest: Home',
+        alt: 'Location of interest: Home'
       });
-      marker.bindPopup('<strong>Ex-partners house</strong><br>7 Gayfere Street<br>Westminster, London<br>SW1P 3HN');
+      marker.bindPopup('<strong>Home</strong><br>7 Gayfere Street<br>Westminster, London<br>SW1P 3HN');
       marker.addTo(loiLayer);
       window.emdiCustomLoiMarker = marker;
       window.__emdiCustomLoiMarkerAdded = true;
@@ -2860,7 +2860,7 @@
     // The old type/date filter form operates on individual visits, which no longer exist
     // once rows are grouped by location - remove it so it can't hide the summary rows.
     var oldFilterForm = document.getElementById('loi-filters');
-    if (oldFilterForm) oldFilterForm.remove();
+    if (oldFilterForm) oldFilterForm.parentElement.remove();
 
     var oldPagination = document.querySelector('.govuk-pagination');
     if (oldPagination) oldPagination.remove();
@@ -2942,6 +2942,7 @@
       var typeText = cellText(cells[1]);
       var addressHtml = cells[2].innerHTML;
       var addressKey = cellText(cells[2]).toLowerCase();
+      if (typeText.toLowerCase() === 'home' || addressKey === '7 gayfere street westminster london sw1p 3hn') return;
       var durationMinutes = parseDurationMinutes(tr.textContent);
       var sourceVisitDate = parseVisitDate(cells[0]);
       var visitDate = sourceVisitDate;

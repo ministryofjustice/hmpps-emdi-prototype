@@ -166,10 +166,8 @@
 
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
-{% call govukDetails({ summaryText: "Last updated" }) %}
-  This person's data was last updated: <span id="person-data-updated-at"></span>.<br>
-  System data was last updated: <span id="system-data-updated-at"></span>.
-{% endcall %}
+<p>This person's data was last updated: <span id="person-data-updated-at"></span>.</p>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -204,7 +202,7 @@
         class="govuk-button govuk-button--secondary"
         role="button"
         data-module="govuk-button">
-        Save search
+        Save search to contacts
       </a>
     </div>
   </div>

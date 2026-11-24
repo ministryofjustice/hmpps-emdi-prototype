@@ -43,10 +43,10 @@
 
     {% endif %}
 
-{% set pageName="Save search" %}
+{% set pageName="Save search to contacts" %}
 
 {% block content %}
-<h1 class="govuk-heading-l govuk-!-margin-bottom-6">Save search</h1>
+<h1 class="govuk-heading-l govuk-!-margin-bottom-6">Save search to contacts</h1>
 
 <form action="#" method="post" novalidate>
 
@@ -57,6 +57,7 @@
     id: "description",
     name: "description",
     label: { html: "<strong>Description</strong>" },
+    value: "Review of electronic monitoring GPS information",
     classes: "govuk-!-width-two-thirds"
   }) }}
 
@@ -136,6 +137,33 @@
           </fieldset>
         </div>
 
+        {% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{{ govukRadios({
+  classes: "govuk-radios--small",
+  name: "changedName",
+  fieldset: {
+    legend: {
+      text: "Contact outcome",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  items: [
+    {
+      value: "Enforcement",
+      text: "Enforcement actions initiated"
+    },
+    {
+      value: "Nosentence",
+      text: "No sentence management issues"
+    },
+    {
+      value: "risk",
+      text: "Risk management actions initiated"
+    }
+  ]
+}) }}
+
 {# --- Precompute attribute values --- #}
 {% set addrAttr = (data.selectedAddress or "") | replace(", ", "\n") %}
 {% if data.loiName and (data.loiName | length) %}
@@ -169,7 +197,7 @@
 
 <div class="govuk-button-group">
 {{ govukButton({
-  text: "Save search",
+  text: "Save search to contacts",
   href: "location-activity",
   attributes: { id: "send-to-ndelius-btn" }
 }) }}

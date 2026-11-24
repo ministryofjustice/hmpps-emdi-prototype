@@ -121,44 +121,32 @@
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
 
-{% from "govuk/components/details/macro.njk" import govukDetails %}
+<div class="govuk-inset-text data-delay-inset">
+ <strong>Data delay </strong> <br> <br>
+  There is currently a problem connecting to the trail data across all cases. The data portal was last updated on <span id="portal-data-updated-at"></span>. After this time, location data will be missing from the map. <br> <br>
 
-{% call govukDetails({
-  summaryText: "Last updated"
-}) %}
- This person's data was last updated: <span id="person-data-updated-at"></span>.  <br>
- System data was last updated: <span id="system-data-updated-at"></span>.
- 
-{% endcall %}
+  The tag is still recording. When the delay is resolved, all trail data will be available to search.
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    function formatUpdatedTime(minutesAgo) {
-      var updatedAt = new Date(Date.now() - minutesAgo * 60 * 1000);
-      var date = updatedAt.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
+    function formatUpdatedTime(updatedAt) {
+      var date = updatedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
       var hour24 = updatedAt.getHours();
       var hour = hour24 % 12 || 12;
       var minute = String(updatedAt.getMinutes()).padStart(2, '0');
       var period = hour24 >= 12 ? 'pm' : 'am';
-
       return date + ' at ' + hour + ':' + minute + period;
     }
 
-    function updateDataInformation() {
-      var systemTimestamp = document.getElementById('system-data-updated-at');
-      var personTimestamp = document.getElementById('person-data-updated-at');
-      if (systemTimestamp) systemTimestamp.textContent = formatUpdatedTime(5);
-      if (personTimestamp) personTimestamp.textContent = formatUpdatedTime(10);
-    }
-
-    updateDataInformation();
-    window.setInterval(updateDataInformation, 60 * 1000);
+    var portalTimestamp = document.getElementById('portal-data-updated-at');
+    var updatedAt = new Date();
+    updatedAt.setDate(updatedAt.getDate() - 1);
+    updatedAt.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60), 0, 0);
+    if (portalTimestamp) portalTimestamp.textContent = formatUpdatedTime(updatedAt);
   });
 </script>
+
 
 <div class="moj-page-header-actions">
   <div class="moj-page-header-actions__actions">
@@ -3094,6 +3082,10 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
   .govuk-caption-m {
     color: black;
+  }
+
+  .data-delay-inset {
+    border-left-color: #d4351c;
   }
 
   .govuk-service-navigation__link {
